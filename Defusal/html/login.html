@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Learn Data Structures | DataLab</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="min-h-screen bg-slate-950 text-white">
+
+    <!-- ================= HEADER ================= -->
+    <header
+        class="flex items-center justify-between
+               border-b border-cyan-400/20
+               bg-slate-950/90 px-8 py-6
+               md:px-16"
+    >
+
+        <!-- Navigation -->
+        <nav class="hidden gap-8 md:flex">
+
+            <a
+                href="../index.html"
+                class="text-slate-300 transition hover:text-cyan-400"
+            >
+                Home
+            </a>
+
+            <a
+                href="learn.html"
+                class="text-cyan-400"
+            >
+                Learn
+            </a>
+
+            <a
+                href="revision.html"
+                class="text-slate-300 transition hover:text-cyan-400"
+            >
+                Revision
+            </a>
+
+        </nav>
+
+    </header>
+
+<!-- Login section -->
+<main class="flex min-h-[calc(100vh-89px)] items-center justify-center bg-gray-100 px-6 py-12">
+
+    <!-- Card container -->
+    <div class="relative w-full max-w-md">
+
+        <!-- Cyan background card -->
+        <div
+            class="absolute inset-0 rotate-[-6deg] rounded-3xl
+                   bg-gradient-to-br from-cyan-400 to-sky-500
+                   shadow-xl"
+        ></div>
+
+        <!-- White login card -->
+        <div
+            class="relative rounded-3xl bg-white
+                   px-10 py-14 shadow-2xl
+                   sm:px-16"
+        >
+            <h1 class="mb-10 text-3xl font-bold text-slate-900">
+                Login
+            </h1>
+
+            <form id="loginForm" class="space-y-8">
+
+                <!-- Email -->
+                <div>
+                    <label
+                        for="email"
+                        class="mb-2 block text-sm font-medium text-slate-600"
+                    >
+                        Email Address
+                    </label>
+
+                    <input
+                        id="email"
+                        name="email"
+                        type="email"
+                        required
+                        autocomplete="email"
+                        class="w-full border-b-2 border-gray-300
+                               bg-transparent px-1 py-2 text-slate-900
+                               outline-none transition
+                               focus:border-cyan-500"
+                    >
+                </div>
+
+                <!-- Password -->
+                <div>
+                    <label
+                        for="password"
+                        class="mb-2 block text-sm font-medium text-slate-600"
+                    >
+                        Password
+                    </label>
+
+                    <input
+                        id="password"
+                        name="password"
+                        type="password"
+                        required
+                        autocomplete="current-password"
+                        class="w-full border-b-2 border-gray-300
+                               bg-transparent px-1 py-2 text-slate-900
+                               outline-none transition
+                               focus:border-cyan-500"
+                    >
+                </div>
+
+                <!-- Login button -->
+                <button
+                    type="submit"
+                    class="w-full rounded-lg bg-cyan-500
+                           px-4 py-3 font-semibold text-white
+                           transition hover:bg-cyan-600"
+                >
+                    Login
+                </button>
+
+                <!-- Register link -->
+                <p class="text-center text-sm text-slate-600">
+                    Don't have an account?
+
+                    <a
+                        href="register.html"
+                        class="font-semibold text-cyan-600 hover:underline"
+                    >
+                        Register
+                    </a>
+                </p>
+
+            </form>
+
+        </div>
+    </div>
+</main>
+
+<script src="js/script.js"></script>
+</body>
+</html>
