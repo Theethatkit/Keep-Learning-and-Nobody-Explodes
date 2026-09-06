@@ -11,84 +11,54 @@
 
     <title>Register | DataLab</title>
 
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- CSS: register.html is inside the html folder -->
-    <link rel="stylesheet" href="../css/style.css">
+    <!-- Register CSS -->
+    <link rel="stylesheet" href="../css/register.css">
 </head>
 
-<body class="min-h-screen bg-slate-950 text-white">
+<body>
 
-    <!-- Header -->
-    <header
-        class="flex items-center justify-between
-               border-b border-cyan-400/20
-               bg-slate-950/90 px-8 py-6
-               md:px-16"
-    >
+    <!-- HEADER -->
+    <header class="navbar">
 
-        <nav class="hidden gap-8 md:flex">
-            <a
-                href="../index.html"
-                class="text-slate-300 transition hover:text-cyan-400"
-            >
+        <nav class="nav-links">
+
+            <a href="../index.html" class="nav-link">
                 Home
             </a>
 
-            <a
-                href="lessons.html"
-                class="text-slate-300 transition hover:text-cyan-400"
-            >
+            <a href="lessons.html" class="nav-link">
                 Learn
             </a>
 
-            <a
-                href="revision.html"
-                class="text-slate-300 transition hover:text-cyan-400"
-            >
+            <a href="revision.html" class="nav-link">
                 Revision
             </a>
+
         </nav>
+
     </header>
 
-    <!-- Register section -->
-    <main
-        class="flex min-h-[calc(100vh-89px)]
-               items-center justify-center
-               bg-gray-100 px-6 py-12"
-    >
+    <!-- REGISTER SECTION -->
+    <main class="auth-section">
 
         <!-- Card container -->
-        <div class="relative w-full max-w-md">
+        <div class="card-container">
 
             <!-- Cyan card behind the form -->
-            <div
-                class="absolute inset-0 rotate-[-6deg]
-                       rounded-3xl
-                       bg-gradient-to-br
-                       from-cyan-400 to-sky-500
-                       shadow-xl"
-            ></div>
+            <div class="cyan-card"></div>
 
             <!-- White register card -->
-            <div
-                class="relative rounded-3xl bg-white
-                       px-10 py-12 shadow-2xl
-                       sm:px-16"
-            >
-                <h1 class="mb-8 text-3xl font-bold text-slate-900">
-                    Register
-                </h1>
+            <div class="form-card">
 
-                <form id="registerForm" class="space-y-6">
+                <h1>Register</h1>
+
+                <form id="registerForm" class="auth-form">
 
                     <!-- Username -->
                     <div>
                         <label
                             for="username"
-                            class="mb-2 block text-sm font-medium
-                                   text-slate-600"
+                            class="form-label"
                         >
                             Username
                         </label>
@@ -99,10 +69,7 @@
                             type="text"
                             required
                             autocomplete="username"
-                            class="w-full border-b-2 border-gray-300
-                                   bg-transparent px-1 py-2
-                                   text-slate-900 outline-none
-                                   transition focus:border-cyan-500"
+                            class="form-input"
                         >
                     </div>
 
@@ -110,8 +77,7 @@
                     <div>
                         <label
                             for="email"
-                            class="mb-2 block text-sm font-medium
-                                   text-slate-600"
+                            class="form-label"
                         >
                             Gmail Address
                         </label>
@@ -123,10 +89,7 @@
                             required
                             autocomplete="email"
                             placeholder="example@gmail.com"
-                            class="w-full border-b-2 border-gray-300
-                                   bg-transparent px-1 py-2
-                                   text-slate-900 outline-none
-                                   transition focus:border-cyan-500"
+                            class="form-input"
                         >
                     </div>
 
@@ -134,8 +97,7 @@
                     <div>
                         <label
                             for="password"
-                            class="mb-2 block text-sm font-medium
-                                   text-slate-600"
+                            class="form-label"
                         >
                             Password
                         </label>
@@ -147,13 +109,10 @@
                             required
                             minlength="6"
                             autocomplete="new-password"
-                            class="w-full border-b-2 border-gray-300
-                                   bg-transparent px-1 py-2
-                                   text-slate-900 outline-none
-                                   transition focus:border-cyan-500"
+                            class="form-input"
                         >
 
-                        <p class="mt-2 text-xs text-gray-400">
+                        <p class="password-help">
                             Password must contain at least 6 characters.
                         </p>
                     </div>
@@ -161,33 +120,34 @@
                     <!-- Register button -->
                     <button
                         type="submit"
-                        class="w-full rounded-lg bg-cyan-500
-                               px-4 py-3 font-semibold text-white
-                               transition hover:bg-cyan-600"
+                        class="submit-button"
                     >
                         Create Account
                     </button>
 
                     <!-- Login link -->
-                    <p class="text-center text-sm text-slate-600">
+                    <p class="switch-page">
                         Already have an account?
 
                         <a
                             href="login.html"
-                            class="font-semibold text-cyan-600
-                                   hover:underline"
+                            class="switch-link"
                         >
                             Log in
                         </a>
                     </p>
 
                 </form>
+
             </div>
+
         </div>
+
     </main>
 
     <!-- Register JavaScript -->
     <script src="../js/register.js"></script>
 
 </body>
+
 </html>
