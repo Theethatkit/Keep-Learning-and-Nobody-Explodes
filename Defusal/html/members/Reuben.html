@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reuben - Team</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="../../css/style.css">
+
+    <style>
+        .tag {
+            display: inline-block;
+            padding: 0 0.35rem;
+            border-radius: 9999px;
+            background-color: rgba(34, 211, 238, 0.12);
+            color: #22d3ee;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+            .tag:active,
+            .tag:focus,
+            .tag:hover {
+                background-color: #22d3ee;
+                color: #020617;
+            }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+            .reveal.is-visible {
+                opacity: 1;
+                transform: translateY(0);
+            }
+    </style>
+</head>
+
+<body>
+
+    <main class="min-h-screen bg-slate-950">
+
+        <!-- Personal info section -->
+        <section class="px-6 py-16 md:px-16">
+
+            <a href="../team.html"
+               class="mb-10 inline-block text-sm font-semibold
+                tracking-widest text-cyan-400
+                transition hover:text-white">
+                &larr; BACK TO TEAM
+            </a>
+
+            <div class="mx-auto flex max-w-6xl flex-col items-center
+                gap-12 md:flex-row md:items-start">
+
+                <!-- Photo (left) -->
+                <div class="reveal w-full flex-shrink-0 md:w-1/3">
+                    <div class="overflow-hidden rounded-3xl border
+                        border-cyan-400/20 bg-slate-900 shadow-2xl">
+                        <img src="../../images/memberPhoto/reubenPhoto.jpg"
+                             alt="Photo of Reuben"
+                             class="h-full w-full object-cover">
+                    </div>
+
+                    <div class="mt-6 text-center md:text-left">
+                        <h1 class="text-3xl font-black text-white">Reuben</h1>
+                        <p class="mt-1 h-5 text-sm font-semibold tracking-[0.3em] text-cyan-400">
+                            <span id="typewriter"></span><span class="animate-pulse">|</span>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Text (right) -->
+                <div class="w-full rounded-3xl border border-cyan-400/20
+                    bg-slate-900/70 px-8 py-10 leading-7
+                    text-slate-200 shadow-2xl backdrop-blur-sm
+                    md:w-2/3 md:px-12 md:py-12">
+                    <p class="reveal mb-5">
+                        Hello world! I'm Reuben, if you've clicked this then welcome to
+                        my page 🙂! I'm an international undergraduate student at
+                        Beijing Institute of Technology coming from Indonesia. At the
+                        time of writing, I'm 19 years old. Currently, I'm studying
+                        Computer Science as a second year. I chose Computer Science
+                        for my field of study because of my passion and fascination
+                        with technology, and how it works behind the scenes.
+                    </p>
+
+                    <p class="reveal mb-5">
+                        After spending a year on campus, I believe that I've found
+                        where my passion lies: that is Game Development. During my
+                        second semester, I was given the opportunity to have a try at
+                        building a 2D game using Raylib and the C programming
+                        language. To put it shortly, we made a 2D top-down rogue-like
+                        game. I've come to a realization that while designing and
+                        building the game, I had a very fun time doing so. Besides
+                        finding my passion, I've also strengthened my skills in
+                        general computer knowledge, programming, logical, and
+                        mathematical skills, which I personally believe are all
+                        necessary for anyone majoring in Computer Science.
+                    </p>
+
+                    <p class="reveal mb-5">
+                        Outside of my academic life, I'm also currently learning the
+                        Mandarin language, because as of right now I can only speak
+                        two languages: my home country's, that is Indonesian, and
+                        English. I believe that learning Mandarin can also help me
+                        with daily communication, broadening my connections and
+                        relationships with those around me, and understanding
+                        Chinese culture better.
+                    </p>
+
+                    <p class="reveal mb-5">
+                        I also have some hobbies of my own. My favorite sport is
+                        swimming, since I've already been doing it for more than 6
+                        years at this point. My favorite anime/manga at the moment
+                        is
+                        <a href="https://jujutsu-kaisen.fandom.com/wiki/Jujutsu_Kaisen_Wiki" target="_blank" rel="noopener" class="tag">Jujutsu Kaisen</a>,
+                        since I think its story and power system are quite
+                        interesting. My favorite games to play in my free time are
+                        <a href="https://genshin-impact.fandom.com/wiki/Genshin_Impact_Wiki" target="_blank" rel="noopener" class="tag">Genshin Impact</a>
+                        and
+                        <a href="https://arknights.fandom.com/wiki/Arknights_Wiki" target="_blank" rel="noopener" class="tag">Arknights</a>,
+                        which both had some inspiration on that game I mentioned we
+                        worked on during my 2nd semester. Recently, I've also been
+                        picking up a TV show that I've been enjoying, which is
+                        <a href="https://en.wikipedia.org/wiki/Dexter_(TV_series)" target="_blank" rel="noopener" class="tag">Dexter</a>.
+                    </p>
+
+                    <p class="reveal">
+                        That's all about me, thank you for taking your time to
+                        visit my page, and have fun looking around the rest of
+                        our website!
+                    </p>
+
+                    <!-- Expandable fun facts -->
+                    <div class="mt-8 border-t border-cyan-400/20 pt-6">
+                        <button id="factsToggle"
+                                class="flex w-full items-center justify-between
+                            text-left text-sm font-semibold tracking-widest
+                            text-cyan-400 transition hover:text-white">
+                            <span>QUICK FUN FACTS</span>
+                            <span id="factsIcon" class="text-lg transition-transform duration-300">+</span>
+                        </button>
+
+                        <div id="factsPanel"
+                             class="grid grid-rows-[0fr] transition-all duration-300 ease-out">
+                            <ul class="overflow-hidden text-sm leading-7 text-slate-300">
+                                <li class="pt-4"> - 🏊 Favorite sport: Swimming</li>
+                                <li> - Favorite color: <red>Red</red></li>
+                                <li> - Favorite games: Genshin Impact & Arknights</li>
+                                <li> - Favorite animanga series: Jujutsu Kaisen</li>
+                                <li> - Favorite TV show: Dexter</li>
+                                <li> - Learning Mandarin as a 3rd language</li>
+                                <li> - Walks surprisingly alot everyday</li>
+                                <li> - Likes larping</li>
+                                <li> - Initially came up with the team name "LARP COMPANY"</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <script src="../../js/script.js"></script>
+    <script>
+        // --- Typewriter effect (fast) ---
+        const roles = ["COMPUTER SCIENCE STUDENT", "WRITER OF LARP COMPANY", "GAME DEV ENJOYER", "LARPER"];
+        const typewriterEl = document.getElementById("typewriter");
+        let roleIndex = 0;
+        let charIndex = 0;
+        let deleting = false;
+
+        const TYPE_SPEED = 35;
+        const DELETE_SPEED = 20;
+        const PAUSE_AFTER_TYPE = 900;
+        const PAUSE_AFTER_DELETE = 250;
+
+        function tickTypewriter() {
+        const current = roles[roleIndex];
+
+        if (!deleting) {
+        charIndex++;
+        typewriterEl.textContent = current.slice(0, charIndex);
+        if (charIndex === current.length) {
+        deleting = true;
+        setTimeout(tickTypewriter, PAUSE_AFTER_TYPE);
+        return;
+        }
+        setTimeout(tickTypewriter, TYPE_SPEED);
+        } else {
+        charIndex--;
+        typewriterEl.textContent = current.slice(0, charIndex);
+        if (charIndex === 0) {
+        deleting = false;
+        roleIndex = (roleIndex + 1) % roles.length;
+        setTimeout(tickTypewriter, PAUSE_AFTER_DELETE);
+        return;
+        }
+        setTimeout(tickTypewriter, DELETE_SPEED);
+        }
+        }
+        tickTypewriter();
+
+        // --- Scroll-in reveal ---
+        const revealEls = document.querySelectorAll(".reveal");
+        const observer = new IntersectionObserver(
+        (entries) => {
+        entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+        entry.target.classList.add("is-visible");
+        observer.unobserve(entry.target);
+        }
+        });
+        },
+        { threshold: 0.15 }
+        );
+        revealEls.forEach((el) => observer.observe(el));
+
+        // --- Expandable fun facts ---
+        const factsToggle = document.getElementById("factsToggle");
+        const factsPanel = document.getElementById("factsPanel");
+        const factsIcon = document.getElementById("factsIcon");
+
+        factsToggle.addEventListener("click", () => {
+        const isOpen = factsPanel.classList.toggle("grid-rows-[1fr]");
+        factsPanel.classList.toggle("grid-rows-[0fr]", !isOpen);
+        factsIcon.textContent = isOpen ? "\u2212" : "+";
+        factsIcon.style.transform = isOpen ? "rotate(180deg)" : "rotate(0deg)";
+        });
+    </script>
+</body>
+
+</html>
