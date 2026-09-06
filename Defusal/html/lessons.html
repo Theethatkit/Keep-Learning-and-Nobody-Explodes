@@ -11,42 +11,27 @@
 
     <title>Learn Data Structures | DataLab</title>
 
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="../css/style.css">
+    <!-- Lessons CSS -->
+    <link rel="stylesheet" href="../css/lessons.css">
 </head>
 
-<body class="min-h-screen bg-slate-950 text-white">
+<body>
 
-    <!-- ================= HEADER ================= -->
-    <header
-        class="flex items-center justify-between
-               border-b border-cyan-400/20
-               bg-slate-950/90 px-8 py-6
-               md:px-16"
-    >
+    <!-- HEADER -->
+    <header class="navbar">
 
         <!-- Navigation -->
-        <nav class="hidden gap-8 md:flex">
+        <nav class="nav-links">
 
-            <a
-                href="../index.html"
-                class="text-slate-300 transition hover:text-cyan-400"
-            >
+            <a href="../index.html" class="nav-link">
                 Home
             </a>
 
-            <a
-                href="learn.html"
-                class="text-cyan-400"
-            >
+            <a href="learn.html" class="nav-link active">
                 Learn
             </a>
 
-            <a
-                href="revision.html"
-                class="text-slate-300 transition hover:text-cyan-400"
-            >
+            <a href="revision.html" class="nav-link">
                 Revision
             </a>
 
@@ -54,127 +39,111 @@
 
     </header>
 
-
-    <!-- ================= MAIN CONTENT ================= -->
-    <main class="mx-auto w-[86%] max-w-6xl py-20">
+    <!-- MAIN CONTENT -->
+    <main class="lessons-container">
 
         <!-- Data Structure explanation -->
-        <section class="mb-14 max-w-3xl">
+        <section class="introduction">
 
-            <p
-                class="mb-3 text-sm font-bold
-                       tracking-[0.2em] text-cyan-400"
-            >
+            <p class="eyebrow">
                 LEARNING PATH
             </p>
 
-            <h1
-                class="mb-6 text-4xl font-bold
-                       md:text-6xl"
-            >
+            <h1 class="page-title">
                 What is a Data Structure?
             </h1>
 
-            <p
-                class="text-lg leading-8 text-slate-400"
-            >
-                A data structure is a way of organizing and storing data in a computer so that it can be accessed and used efficiently. It refers to the logical or mathematical representation of data, as well as the implementation in a computer program.
+            <p class="intro-text">
+                A data structure is a way of organizing and storing
+                data in a computer so that it can be accessed and used
+                efficiently. It refers to the logical or mathematical
+                representation of data, as well as the implementation
+                in a computer program.
             </p>
 
-            <p
-                class="mt-6 text-lg leading-8 text-slate-400"
-            >
+            <p class="intro-text second-paragraph">
                 Data structures can be divided into two main groups:
                 linear data structures and non-linear data structures.
             </p>
 
         </section>
 
-
-        <!-- ================= CATEGORY SECTION ================= -->
+        <!-- CATEGORY SECTION -->
         <section>
 
-            <h2 class="mb-7 text-2xl font-bold">
+            <h2 class="category-title">
                 Choose a category
             </h2>
 
             <!-- Category cards -->
-            <div class="grid gap-6 md:grid-cols-2">
+            <div class="category-grid">
 
+                <!-- LINEAR CARD -->
+                <article class="category-card">
 
-                <!-- ===== LINEAR CARD ===== -->
-                <article
-                    class="flex h-full min-h-[320px] flex-col
-                           rounded-2xl border border-slate-700
-                           bg-slate-900/80 p-8
-                           transition duration-300
-                           hover:-translate-y-1
-                           hover:border-cyan-400"
-                >
-
-                    <p class="font-mono text-lg text-cyan-400">
+                    <p class="card-number">
                         01
                     </p>
 
-                    <h3 class="mt-5 text-3xl font-bold">
+                    <h3 class="card-title">
                         Linear Data Structures
                     </h3>
 
-                    <p class="mt-4 leading-7 text-slate-400">
-                        A data structure in which data elements are arranged sequentially or linearly, where each element is attached to its previous and next adjacent elements, is called a linear data structure.
+                    <p class="card-description">
+                        A data structure in which data elements are
+                        arranged sequentially or linearly, where each
+                        element is attached to its previous and next
+                        adjacent elements, is called a linear data
+                        structure.
                     </p>
 
-                    <p class="mt-5 gap-x-3 inline-flex text-sm text-slate-200">
-                         <span>Array</span>  |  <span>Linked List</span>  |  <span>Stack</span>  |  <span>Queue</span>
+                    <p class="topic-list">
+                        <span>Array</span>
+                        |
+                        <span>Linked List</span>
+                        |
+                        <span>Stack</span>
+                        |
+                        <span>Queue</span>
                     </p>
 
                     <!-- Go to Linear lesson -->
                     <a
                         href="html/linear.html"
-                        class="mt-3 self-start rounded-lg
-                               bg-cyan-300 px-5 py-3
-                               font-bold text-slate-950
-                               transition hover:bg-cyan-200"
+                        class="explore-button"
                     >
                         Explore Linear →
                     </a>
 
                 </article>
 
+                <!-- NON-LINEAR CARD -->
+                <article class="category-card">
 
-                <!-- ===== NON-LINEAR CARD ===== -->
-                <article
-                    class="flex h-full min-h-[320px] flex-col
-                           rounded-2xl border border-slate-700
-                           bg-slate-900/80 p-8
-                           transition duration-300
-                           hover:-translate-y-1
-                           hover:border-cyan-400"
-                >
-
-                    <p class="font-mono text-lg text-cyan-400">
+                    <p class="card-number">
                         02
                     </p>
 
-                    <h3 class="mt-5 text-3xl font-bold">
+                    <h3 class="card-title">
                         Non-linear Data Structures
                     </h3>
 
-                    <p class="mt-4 leading-7 text-slate-400">
-                        Data structures where data elements are not placed sequentially or linearly are called non-linear data structures.
+                    <p class="card-description">
+                        Data structures where data elements are not
+                        placed sequentially or linearly are called
+                        non-linear data structures.
                     </p>
 
-                    <p class="mt-12 gap-x-3 inline-flex text-sm text-slate-200">
-                         <span>Tree</span>  |  <span>Graph</span>
+                    <p class="topic-list non-linear-topics">
+                        <span>Tree</span>
+                        |
+                        <span>Graph</span>
                     </p>
 
                     <!-- Go to Non-linear lesson -->
                     <a
                         href="html/non-linear.html"
-                        class="mt-auto self-start rounded-lg
-                               bg-cyan-300 px-5 py-3
-                               font-bold text-slate-950
-                               transition hover:bg-cyan-200"
+                        class="explore-button push-bottom"
                     >
                         Explore Non-linear →
                     </a>
@@ -187,8 +156,9 @@
 
     </main>
 
-
+    <!-- JavaScript -->
     <script src="js/script.js"></script>
+
 </body>
 
 </html>
