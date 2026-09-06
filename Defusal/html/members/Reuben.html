@@ -4,212 +4,700 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reuben - Team</title>
+    <title>reuben.sys — CHARACTER_DATA</title>
 
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
 
     <style>
-        .tag {
-            display: inline-block;
-            padding: 0 0.35rem;
-            border-radius: 9999px;
-            background-color: rgba(34, 211, 238, 0.12);
-            color: #22d3ee;
-            font-weight: 600;
+        :root {
+            --bg: #07060c;
+            --panel: #0d0d16;
+            --panel-2: #12121e;
+            --line: #29283d;
+            --green: #4dffb0;
+            --green-dim: #2c9c72;
+            --violet: #a06bff;
+            --pink: #ff3ea5;
+            --text: #d6e2da;
+            --muted: #6f7a8a;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scrollbar-color: var(--violet) var(--bg);
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'VT323', monospace;
+            font-size: 1.15rem;
+            position: relative;
+        }
+
+            /* Scanline / CRT texture overlay */
+            body::before {
+                content: "";
+                position: fixed;
+                inset: 0;
+                pointer-events: none;
+                z-index: 50;
+                background-image: repeating-linear-gradient( to bottom, rgba(0,0,0,0) 0px, rgba(0,0,0,0.12) 1px, rgba(0,0,0,0) 3px );
+            }
+
+            body::after {
+                content: "";
+                position: fixed;
+                inset: 0;
+                pointer-events: none;
+                z-index: 49;
+                background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.55) 100%);
+            }
+
+        .pixel {
+            font-family: 'Press Start 2P', monospace;
+        }
+
+        a {
+            color: inherit;
+        }
+
+        /* Window chrome */
+        .terminal-window {
+            max-width: 1040px;
+            margin: 2rem auto;
+            border: 1px solid var(--line);
+            background: var(--panel);
+            box-shadow: 0 0 0 1px #000, 0 0 40px rgba(160,107,255,0.08);
+        }
+
+        .titlebar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.7rem 1rem;
+            border-bottom: 1px solid var(--line);
+            background: var(--panel-2);
+        }
+
+        .dots {
+            display: flex;
+            gap: 0.4rem;
+        }
+
+        .dot {
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+        }
+
+            .dot.r {
+                background: #ff5f56;
+            }
+
+            .dot.y {
+                background: #ffbd2e;
+            }
+
+            .dot.g {
+                background: #27c93f;
+            }
+
+        .titlebar .filename {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.65rem;
+            color: var(--muted);
+        }
+
+        .titlebar .back {
+            font-size: 1rem;
+            color: var(--green);
             text-decoration: none;
-            transition: background-color 0.2s ease, color 0.2s ease;
         }
 
-            .tag:active,
-            .tag:focus,
-            .tag:hover {
-                background-color: #22d3ee;
-                color: #020617;
+            .titlebar .back:hover, .titlebar .back:focus {
+                color: var(--pink);
             }
 
-        .reveal {
-            opacity: 0;
-            transform: translateY(24px);
-            transition: opacity 0.6s ease, transform 0.6s ease;
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.6rem 1.25rem 0;
         }
 
-            .reveal.is-visible {
-                opacity: 1;
-                transform: translateY(0);
+            .brand img {
+                height: 2.2rem;
+                filter: grayscale(40%) brightness(1.1);
             }
+
+            .brand a {
+                text-decoration: none;
+            }
+
+        .content {
+            padding: 1.75rem 1.75rem 3rem;
+        }
+
+        /* Boot header */
+        .boot-line {
+            color: var(--muted);
+            font-size: 1rem;
+            margin: 0 0 1rem;
+        }
+
+        .glitch-name {
+            position: relative;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 2.1rem;
+            line-height: 1.3;
+            color: var(--text);
+            display: inline-block;
+        }
+
+            .glitch-name::before,
+            .glitch-name::after {
+                content: attr(data-text);
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                color: var(--text);
+                background: var(--panel);
+                overflow: hidden;
+            }
+
+            .glitch-name::before {
+                color: var(--pink);
+                animation: glitchTop 0.7s steps(2, end) 2;
+                animation-delay: 0.15s;
+            }
+
+            .glitch-name::after {
+                color: var(--green);
+                animation: glitchBottom 0.7s steps(2, end) 2;
+                animation-delay: 0.15s;
+            }
+
+        @keyframes glitchTop {
+            0% {
+                clip-path: inset(0 0 85% 0);
+                transform: translate(0,0);
+            }
+
+            30% {
+                clip-path: inset(0 0 85% 0);
+                transform: translate(-3px,-2px);
+            }
+
+            60% {
+                clip-path: inset(10% 0 70% 0);
+                transform: translate(3px,1px);
+            }
+
+            100% {
+                clip-path: inset(0 0 100% 0);
+                transform: translate(0,0);
+            }
+        }
+
+        @keyframes glitchBottom {
+            0% {
+                clip-path: inset(85% 0 0 0);
+                transform: translate(0,0);
+            }
+
+            30% {
+                clip-path: inset(75% 0 0 0);
+                transform: translate(3px,2px);
+            }
+
+            60% {
+                clip-path: inset(60% 0 20% 0);
+                transform: translate(-3px,-1px);
+            }
+
+            100% {
+                clip-path: inset(100% 0 0 0);
+                transform: translate(0,0);
+            }
+        }
+
+        .rank-line {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.7rem;
+            color: var(--violet);
+            margin: 0.9rem 0 0;
+        }
+
+        .role-line {
+            margin-top: 0.7rem;
+            font-size: 1.15rem;
+            color: var(--green);
+            min-height: 1.5rem;
+        }
+
+            .role-line .prompt {
+                color: var(--muted);
+            }
+
+            .role-line .cursor {
+                color: var(--green);
+            }
+
+        /* Layout grid */
+        .top-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+            align-items: start;
+        }
+
+        @media (min-width: 820px) {
+            .top-grid {
+                grid-template-columns: 260px 1fr;
+            }
+
+            .id-col {
+                position: sticky;
+                top: 1.5rem;
+            }
+        }
+
+        .frame {
+            border: 2px solid var(--violet);
+            padding: 6px;
+            background: #000;
+            clip-path: polygon(0 12px, 12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%);
+        }
+
+            .frame img {
+                display: block;
+                width: 100%;
+                aspect-ratio: 3/4;
+                object-fit: cover;
+                filter: contrast(1.05) saturate(0.9);
+            }
+
+        /* Vars block */
+        .vars {
+            background: var(--panel-2);
+            border: 1px solid var(--line);
+            border-left: 3px solid var(--violet);
+            padding: 1rem 1.2rem;
+            font-size: 1.05rem;
+            line-height: 1.9;
+        }
+
+            .vars .k {
+                color: var(--violet);
+            }
+
+            .vars .s {
+                color: var(--green);
+            }
+
+            .vars .op {
+                color: var(--muted);
+            }
+
+        /* Bars */
+        .bars {
+            margin-top: 1.5rem;
+        }
+
+            .bars h2 {
+                font-family: 'Press Start 2P', monospace;
+                font-size: 0.85rem;
+                color: var(--pink);
+                margin: 0 0 1rem;
+            }
+
+        .bar-row {
+            margin-bottom: 0.8rem;
+            font-size: 1.05rem;
+        }
+
+            .bar-row .label {
+                display: inline-block;
+                width: 130px;
+                color: var(--text);
+            }
+
+        .bar-track {
+            display: inline-block;
+            width: 220px;
+            max-width: 50vw;
+            height: 14px;
+            border: 1px solid var(--line);
+            background: #000;
+            vertical-align: middle;
+            position: relative;
+        }
+
+        .bar-fill {
+            display: block;
+            height: 100%;
+            background: linear-gradient(90deg, var(--green-dim), var(--green));
+        }
+
+        .bar-pct {
+            margin-left: 0.6rem;
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+
+        /* Logs / biography */
+        .logs {
+            margin-top: 3rem;
+        }
+
+        .log-entry {
+            max-width: 66ch;
+            margin-bottom: 2rem;
+        }
+
+            .log-entry .tag-line {
+                font-family: 'Press Start 2P', monospace;
+                font-size: 0.72rem;
+                color: var(--violet);
+                margin-bottom: 0.7rem;
+            }
+
+            .log-entry p {
+                margin: 0;
+                padding-left: 1rem;
+                border-left: 2px solid var(--line);
+                line-height: 1.65;
+                font-size: 1.18rem;
+                color: var(--text);
+            }
+
+        .sign-off {
+            max-width: 66ch;
+            color: var(--muted);
+            border-top: 1px dashed var(--line);
+            padding-top: 1.4rem;
+            font-size: 1.1rem;
+        }
+
+        .tag {
+            color: var(--pink);
+            text-decoration: none;
+            border-bottom: 1px dotted var(--pink);
+        }
+
+            .tag:hover, .tag:focus, .tag:active {
+                color: var(--green);
+                border-color: var(--green);
+            }
+
+        /* Modules / inventory */
+        .modules {
+            margin-top: 3rem;
+        }
+
+            .modules h2 {
+                font-family: 'Press Start 2P', monospace;
+                font-size: 0.85rem;
+                color: var(--pink);
+                margin: 0 0 1rem;
+            }
+
+            .modules .path {
+                color: var(--muted);
+                margin-bottom: 0.6rem;
+                font-size: 1.05rem;
+            }
+
+        .module-list {
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--line);
+        }
+
+        .module-row {
+            display: flex;
+            gap: 0.9rem;
+            padding: 0.65rem 1rem;
+            text-decoration: none;
+            color: var(--text);
+            border-bottom: 1px solid var(--line);
+            font-size: 1.1rem;
+            transition: background-color 0.15s ease, color 0.15s ease;
+        }
+
+            .module-row:last-child {
+                border-bottom: none;
+            }
+
+            .module-row .kind {
+                color: var(--violet);
+                width: 90px;
+                flex-shrink: 0;
+            }
+
+            .module-row:hover, .module-row:focus, .module-row:active {
+                background: var(--panel-2);
+                color: var(--green);
+            }
+
+        /* Hidden files toggle */
+        .hidden-files {
+            margin-top: 3rem;
+            border-top: 1px solid var(--line);
+            padding-top: 1.5rem;
+        }
+
+        .hf-toggle {
+            background: none;
+            border: none;
+            color: var(--green);
+            font-family: 'VT323', monospace;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0;
+        }
+
+            .hf-toggle:hover, .hf-toggle:focus {
+                color: var(--pink);
+            }
+
+        .hf-panel {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 0.3s ease;
+        }
+
+            .hf-panel.open {
+                grid-template-rows: 1fr;
+            }
+
+        .hf-panel-inner {
+            overflow: hidden;
+        }
+
+        .hf-list {
+            list-style: none;
+            margin: 1rem 0 0;
+            padding: 0;
+            font-size: 1.1rem;
+            line-height: 1.9;
+            color: var(--text);
+        }
+
+            .hf-list li::before {
+                content: "[OK] ";
+                color: var(--green-dim);
+            }
+
+        .accent-red {
+            color: #ff5c5c;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .glitch-name::before, .glitch-name::after {
+                animation: none;
+                display: none;
+            }
+
+            .hf-panel, .module-row, .tag {
+                transition: none !important;
+            }
+        }
     </style>
 </head>
 
 <body>
 
-    <main class="min-h-screen bg-slate-950">
+    <div class="terminal-window" id="sheet">
+        <div class="titlebar">
+            <div class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+            <span class="filename">REUBEN.SYS — CHARACTER_DATA</span>
+            <a href="../team.html" class="back">cd ../team</a>
+        </div>
 
-        <!-- Navigation bar (matches homepage) -->
-        <header class="relative z-10 flex items-center bg-slate-900
-                   justify-between px-12 py-6
-                   md:px-16">
-            <a href="../../index.html"><img src="../../images/Logo.png" alt="Logo" class="h-20"></a>
+        <div class="brand">
+            <a href="../../index.html"><img src="../../images/Logo.png" alt="Logo"></a>
+        </div>
 
-            <nav class="hidden gap-8 text-xl md:flex">
-                <a href="../lessons.html" class="text-white transition hover:text-cyan-400">Learn</a>
-                <a href="../revision.html" class="text-white transition hover:text-cyan-400">Revision</a>
-                <a href="../team.html" class="text-white transition hover:text-cyan-400">Team</a>
-            </nav>
+        <div class="content">
+            <div class="top-grid">
+                <div class="id-col">
+                    <p class="boot-line">&gt; decrypting profile... access granted.</p>
 
-            <a href="../login.html"
-               class="rounded-full border border-white
-                px-5 py-2 text-white
-                transition
-                hover:border-cyan-400
-                hover:bg-cyan-400
-                hover:text-slate-950">
-                Log in
-            </a>
-        </header>
+                    <h1 class="glitch-name" data-text="REUBEN">REUBEN</h1>
 
-        <!-- Personal info section -->
-        <section class="px-6 py-16 md:px-16">
+                    <p class="rank-line">LVL 2 CS UNDERGRADUATE</p>
+                    <p class="role-line"><span class="prompt">&gt;</span> <span id="typewriter"></span><span class="cursor">_</span></p>
 
-            <a href="../team.html"
-               class="mb-10 inline-block text-sm font-semibold
-                tracking-widest text-cyan-400
-                transition hover:text-white">
-                &larr; BACK TO TEAM
-            </a>
-
-            <div class="mx-auto flex max-w-6xl flex-col items-center
-                gap-12 md:flex-row md:items-start">
-
-                <!-- Photo (left) -->
-                <div class="reveal w-full flex-shrink-0 md:w-1/3">
-                    <div class="overflow-hidden rounded-3xl border
-                        border-cyan-400/20 bg-slate-900 shadow-2xl">
-                        <img src="../../images/reuben2.jpg"
-                             alt="Photo of Reuben"
-                             class="h-full w-full object-cover">
-                    </div>
-
-                    <div class="mt-6 text-center md:text-left">
-                        <h1 class="text-3xl font-black text-white">Reuben</h1>
-                        <p class="mt-1 h-5 text-sm font-semibold tracking-[0.3em] text-cyan-400">
-                            <span id="typewriter"></span><span class="animate-pulse">|</span>
-                        </p>
+                    <div class="frame">
+                        <img src="../../images/reuben2.jpg" alt="Portrait of Reuben">
                     </div>
                 </div>
 
-                <!-- Text (right) -->
-                <div class="w-full rounded-3xl border border-cyan-400/20
-                    bg-slate-900/70 px-8 py-10 leading-7
-                    text-slate-200 shadow-2xl backdrop-blur-sm
-                    md:w-2/3 md:px-12 md:py-12">
-                    <p class="reveal mb-5">
-                        Hello world! I'm Reuben, if you've clicked this then welcome to
-                        my page 🙂! I'm an international undergraduate student at
-                        Beijing Institute of Technology coming from Indonesia. At the
-                        time of writing, I'm 19 years old. Currently, I'm studying
-                        Computer Science as a second year. I chose Computer Science
-                        for my field of study because of my passion and fascination
-                        with technology, and how it works behind the scenes.
-                    </p>
+                <div>
+                    <div class="vars">
+                        <div><span class="k">class</span> <span class="op">=</span> <span class="s">"Programmer &amp; Game Developer"</span></div>
+                        <div><span class="k">guild</span> <span class="op">=</span> <span class="s">"LARP Company"</span></div>
+                        <div><span class="k">origin</span> <span class="op">=</span> <span class="s">"Indonesia -&gt; Beijing Institute of Technology"</span></div>
+                    </div>
 
-                    <p class="reveal mb-5">
-                        After spending a year on campus, I believe that I've found
-                        where my passion lies: that is Game Development. During my
-                        second semester, I was given the opportunity to have a try at
-                        building a 2D game using Raylib and the C programming
-                        language. To put it shortly, we made a 2D top-down rogue-like
-                        game. I've come to a realization that while designing and
-                        building the game, I had a very fun time doing so. Besides
-                        finding my passion, I've also strengthened my skills in
-                        general computer knowledge, programming, logical, and
-                        mathematical skills, which I personally believe are all
-                        necessary for anyone majoring in Computer Science.
-                    </p>
+                    <div class="bars">
+                        <h2>STATUS.CHECK</h2>
+                        <div class="bar-row">
+                            <span class="label">PROGRAMMING</span>
+                            <span class="bar-track"><span class="bar-fill" style="width:96%"></span></span>
+                            <span class="bar-pct">96%</span>
+                        </div>
+                        <div class="bar-row">
+                            <span class="label">SWIMMING</span>
+                            <span class="bar-track"><span class="bar-fill" style="width:90%"></span></span>
+                            <span class="bar-pct">90%</span>
+                        </div>
+                        <div class="bar-row">
+                            <span class="label">LARPING</span>
+                            <span class="bar-track"><span class="bar-fill" style="width:80%"></span></span>
+                            <span class="bar-pct">80%</span>
+                        </div>
+                        <div class="bar-row">
+                            <span class="label">MANDARIN</span>
+                            <span class="bar-track"><span class="bar-fill" style="width:35%"></span></span>
+                            <span class="bar-pct">35%</span>
+                        </div>
+                    </div>
 
-                    <p class="reveal mb-5">
-                        Outside of my academic life, I'm also currently learning the
-                        Mandarin language, because as of right now I can only speak
-                        two languages: my home country's, that is Indonesian, and
-                        English. I believe that learning Mandarin can also help me
-                        with daily communication, broadening my connections and
-                        relationships with those around me, and understanding
-                        Chinese culture better.
-                    </p>
+                    <div class="logs">
+                        <div class="log-entry">
+                            <p class="tag-line">// 01_origin_story.log</p>
+                            <p>
+                                Hello world! I'm Reuben, if you've clicked this then welcome to
+                                my page. I'm an international undergraduate student at Beijing
+                                Institute of Technology coming from Indonesia. At the time of
+                                writing, I'm 19 years old. Currently, I'm studying Computer
+                                Science as a second year. I chose Computer Science for my field
+                                of study because of my passion and fascination with technology,
+                                and how it works behind the scenes.
+                            </p>
+                        </div>
 
-                    <p class="reveal mb-5">
-                        I also have some hobbies of my own. My favorite sport is
-                        swimming, since I've already been doing it for more than 6
-                        years at this point. My favorite anime/manga at the moment
-                        is
-                        <a href="https://jujutsu-kaisen.fandom.com/wiki/Jujutsu_Kaisen_Wiki" target="_blank" rel="noopener" class="tag">Jujutsu Kaisen</a>,
-                        since I think its story and power system are quite
-                        interesting. My favorite games to play in my free time are
-                        <a href="https://genshin-impact.fandom.com/wiki/Genshin_Impact_Wiki" target="_blank" rel="noopener" class="tag">Genshin Impact</a>
-                        and
-                        <a href="https://arknights.fandom.com/wiki/Arknights_Wiki" target="_blank" rel="noopener" class="tag">Arknights</a>,
-                        which both had some inspiration on that game I mentioned we
-                        worked on during my 2nd semester. Recently, I've also been
-                        picking up a TV show that I've been enjoying, which is
-                        <a href="https://en.wikipedia.org/wiki/Dexter_(TV_series)" target="_blank" rel="noopener" class="tag">Dexter</a>.
-                    </p>
+                        <div class="log-entry">
+                            <p class="tag-line">// 02_the_calling.log</p>
+                            <p>
+                                After spending a year on campus, I believe that I've found where
+                                my passion lies: that is Game Development. During my second
+                                semester, I was given the opportunity to have a try at building a
+                                2D game using Raylib and the C programming language. To put it
+                                shortly, we made a 2D top-down rogue-like game. I've come to a
+                                realization that while designing and building the game, I had a
+                                very fun time doing so. Besides finding my passion, I've also
+                                strengthened my skills in general computer knowledge,
+                                programming, logical, and mathematical skills, which I personally
+                                believe are all necessary for anyone majoring in Computer
+                                Science.
+                            </p>
+                        </div>
 
-                    <p class="reveal">
-                        That's all about me, thank you for taking your time to
-                        visit my page, and have fun looking around the rest of
-                        our website!
-                    </p>
+                        <div class="log-entry">
+                            <p class="tag-line">// 03_new_tongues.log</p>
+                            <p>
+                                Outside of my academic life, I'm also currently learning the
+                                Mandarin language, because as of right now I can only speak two
+                                languages: my home country's, that is Indonesian, and English. I
+                                believe that learning Mandarin can also help me with daily
+                                communication, broadening my connections and relationships with
+                                those around me, and understanding Chinese culture better.
+                            </p>
+                        </div>
 
-                    <!-- Expandable fun facts -->
-                    <div class="mt-8 border-t border-cyan-400/20 pt-6">
-                        <button id="factsToggle"
-                                class="flex w-full items-center justify-between
-                            text-left text-sm font-semibold tracking-widest
-                            text-cyan-400 transition hover:text-white">
-                            <span>QUICK FUN FACTS</span>
-                            <span id="factsIcon" class="text-lg transition-transform duration-300">+</span>
+                        <div class="log-entry">
+                            <p class="tag-line">// 04_off_duty.log</p>
+                            <p>
+                                I also have some hobbies of my own. My favorite sport is
+                                swimming, since I've already been doing it for more than 6 years
+                                at this point. My favorite anime/manga at the moment is
+                                <a href="https://jujutsu-kaisen.fandom.com/wiki/Jujutsu_Kaisen_Wiki" target="_blank" rel="noopener" class="tag">Jujutsu Kaisen</a>,
+                                since I think its story and power system are quite interesting.
+                                My favorite games to play in my free time are
+                                <a href="https://genshin-impact.fandom.com/wiki/Genshin_Impact_Wiki" target="_blank" rel="noopener" class="tag">Genshin Impact</a>
+                                and
+                                <a href="https://arknights.fandom.com/wiki/Arknights_Wiki" target="_blank" rel="noopener" class="tag">Arknights</a>,
+                                which both had some inspiration on that game I mentioned we
+                                worked on during my 2nd semester. Recently, I've also been
+                                picking up a TV show that I've been enjoying, which is
+                                <a href="https://en.wikipedia.org/wiki/Dexter_(TV_series)" target="_blank" rel="noopener" class="tag">Dexter</a>.
+                            </p>
+                        </div>
+
+                        <p class="sign-off">
+                            &gt; end of log. thank you for reading — have fun looking around the
+                            rest of our website.
+                        </p>
+                    </div>
+
+                    <div class="modules">
+                        <h2>LOADED_MODULES</h2>
+                        <p class="path">&gt; ./interests/</p>
+                        <div class="module-list">
+                            <a class="module-row" href="https://jujutsu-kaisen.fandom.com/wiki/Jujutsu_Kaisen_Wiki" target="_blank" rel="noopener">
+                                <span class="kind">[ANIME]</span> jujutsu_kaisen.mod
+                            </a>
+                            <a class="module-row" href="https://genshin-impact.fandom.com/wiki/Genshin_Impact_Wiki" target="_blank" rel="noopener">
+                                <span class="kind">[GAME]</span> genshin_impact.mod
+                            </a>
+                            <a class="module-row" href="https://arknights.fandom.com/wiki/Arknights_Wiki" target="_blank" rel="noopener">
+                                <span class="kind">[GAME]</span> arknights.mod
+                            </a>
+                            <a class="module-row" href="https://en.wikipedia.org/wiki/Dexter_(TV_series)" target="_blank" rel="noopener">
+                                <span class="kind">[SHOW]</span> dexter.mkv
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="hidden-files">
+                        <button id="hfToggle" class="hf-toggle" aria-expanded="false" aria-controls="hfPanel">
+                            &gt; access hidden_files.log [Y/N]
                         </button>
 
-                        <div id="factsPanel"
-                             class="grid grid-rows-[0fr] transition-all duration-300 ease-out">
-                            <ul class="overflow-hidden text-sm leading-7 text-slate-300">
-                                <li class="pt-4"> - 🏊 Favorite sport: Swimming</li>
-                                <li> - Favorite color: <red>Red</red></li>
-                                <li> - Favorite games: Genshin Impact & Arknights</li>
-                                <li> - Favorite animanga series: Jujutsu Kaisen</li>
-                                <li> - Favorite TV show: Dexter</li>
-                                <li> - Learning Mandarin as a 3rd language</li>
-                                <li> - Walks surprisingly alot everyday</li>
-                                <li> - Likes larping</li>
-                                <li> - Initially came up with the team name "LARP COMPANY"</li>
-                            </ul>
+                        <div id="hfPanel" class="hf-panel">
+                            <div class="hf-panel-inner">
+                                <ul class="hf-list">
+                                    <li>favorite_sport: Swimming</li>
+                                    <li>favorite_color: <span class="accent-red">Red</span></li>
+                                    <li>favorite_games: Genshin Impact &amp; Arknights</li>
+                                    <li>favorite_anime: Jujutsu Kaisen</li>
+                                    <li>favorite_show: Dexter</li>
+                                    <li>learning: Mandarin (3rd language)</li>
+                                    <li>walks_surprisingly_a_lot: true</li>
+                                    <li>likes_larping: true</li>
+                                    <li>proposed_team_name: "LARP Company"</li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
-
             </div>
-        </section>
 
-    </main>
+        </div>
+    </div>
 
     <script src="../../js/script.js"></script>
     <script>
-        // --- Typewriter effect (fast) ---
+        // Typewriter
         const roles = ["COMPUTER SCIENCE STUDENT", "WRITER OF LARP COMPANY", "GAME DEV ENJOYER", "LARPER"];
         const typewriterEl = document.getElementById("typewriter");
-        let roleIndex = 0;
-        let charIndex = 0;
-        let deleting = false;
-
-        const TYPE_SPEED = 35;
-        const DELETE_SPEED = 20;
-        const PAUSE_AFTER_TYPE = 900;
-        const PAUSE_AFTER_DELETE = 250;
+        let roleIndex = 0, charIndex = 0, deleting = false;
+        const TYPE_SPEED = 35, DELETE_SPEED = 20, PAUSE_AFTER_TYPE = 900, PAUSE_AFTER_DELETE = 250;
 
         function tickTypewriter() {
         const current = roles[roleIndex];
-
         if (!deleting) {
         charIndex++;
         typewriterEl.textContent = current.slice(0, charIndex);
@@ -233,31 +721,12 @@
         }
         tickTypewriter();
 
-        // --- Scroll-in reveal ---
-        const revealEls = document.querySelectorAll(".reveal");
-        const observer = new IntersectionObserver(
-        (entries) => {
-        entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-        entry.target.classList.add("is-visible");
-        observer.unobserve(entry.target);
-        }
-        });
-        },
-        { threshold: 0.15 }
-        );
-        revealEls.forEach((el) => observer.observe(el));
-
-        // --- Expandable fun facts ---
-        const factsToggle = document.getElementById("factsToggle");
-        const factsPanel = document.getElementById("factsPanel");
-        const factsIcon = document.getElementById("factsIcon");
-
-        factsToggle.addEventListener("click", () => {
-        const isOpen = factsPanel.classList.toggle("grid-rows-[1fr]");
-        factsPanel.classList.toggle("grid-rows-[0fr]", !isOpen);
-        factsIcon.textContent = isOpen ? "\u2212" : "+";
-        factsIcon.style.transform = isOpen ? "rotate(180deg)" : "rotate(0deg)";
+        // Hidden files toggle
+        const hfToggle = document.getElementById("hfToggle");
+        const hfPanel = document.getElementById("hfPanel");
+        hfToggle.addEventListener("click", () => {
+        const isOpen = hfPanel.classList.toggle("open");
+        hfToggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
         });
     </script>
 </body>
