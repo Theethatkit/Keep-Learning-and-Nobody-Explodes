@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Me · Bomb Defusal</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Comic Sans MS', 'Chalkboard SE', cursive, sans-serif;
+            background: #0e1a1f;
+            color: #f2e8d5;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background-image: radial-gradient(circle at 20% 30%, #1e3a3f 0%, #0b1418 100%);
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            max-width: 1300px;
+            width: 100%;
+            background: #2b1e1a;
+            background-image: repeating-linear-gradient(45deg, #3d2c26 0px, #3d2c26 2px, #4d352e 2px, #4d352e 6px);
+            border-radius: 60px 60px 40px 40px;
+            box-shadow: 0 20px 0 #0f0a08, 0 30px 40px rgba(0,0,0,0.7), inset 0 -6px 0 #5f3f35;
+            border: 4px solid #e0b354;
+            padding: 25px 25px 35px;
+            transition: 0.2s;
+            position: relative;
+            align-items: stretch;
+        }
+
+        .left {
+            width: 45%;
+            min-width: 320px;
+            padding: 20px 20px 10px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex: 1 1 40%;
+        }
+
+        .card {
+            background: #2c1d17;
+            background-image: radial-gradient(circle at 30% 20%, #4b3128, #1f130f);
+            width: 100%;
+            max-width: 480px;
+            padding: 40px 30px 35px;
+            border-radius: 60px 60px 60px 60px;
+            text-align: center;
+            box-shadow: 0 16px 0 #0a0605, inset 0 -8px 0 #4d2f24, 0 12px 30px rgba(0,0,0,0.6);
+            border: 4px solid #ebc26a;
+            border-top-width: 8px;
+            position: relative;
+            transform: rotate(-0.5deg);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .profile {
+            width: 180px;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 50%;
+            margin-bottom: 18px;
+            border: 8px solid #f5cb7e;
+            box-shadow: 0 0 0 6px #3d281d, 0 12px 0 #281a12;
+            background: #d9b382;
+            transform: scale(0.95);
+            transition: 0.15s;
+            align-self: center;
+        }
+
+        .profile:hover {
+            transform: scale(1.02) rotate(-2deg);
+        }
+
+        .card h2 {
+            font-size: 34px;
+            font-weight: 900;
+            color: #fce3b5;
+            text-shadow: 4px 4px 0 #3a2017, 0 6px 0 #281a12;
+            letter-spacing: 2px;
+            font-family: 'Comic Sans MS', 'Chalkboard SE', cursive;
+            margin-top: 6px;
+        }
+
+        .line {
+            width: 80%;
+            height: 6px;
+            background: repeating-linear-gradient(90deg, #ecb84c, #ecb84c 8px, #f5d742 8px, #f5d742 16px);
+            margin: 12px auto 16px;
+            border-radius: 20px;
+            border: 2px solid #553a28;
+            box-shadow: inset 0 2px 4px #0e0705;
+        }
+
+        .job {
+            letter-spacing: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #fadf9e;
+            text-shadow: 3px 3px 0 #462b1d;
+            background: #231611;
+            display: inline-block;
+            padding: 6px 28px;
+            border-radius: 60px;
+            border: 3px solid #dba54b;
+            box-shadow: inset 0 -4px 0 #51311f;
+            margin-bottom: 30px;
+            font-family: 'Comic Sans MS', cursive;
+            align-self: center;
+        }
+
+        .socials {
+            display: flex;
+            justify-content: center;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+
+        .socials a {
+            width: 64px;
+            height: 64px;
+            background: #d9a34a;
+            background: radial-gradient(circle at 30% 30%, #f5d37a, #bb7e2e);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #1c0f0a;
+            text-decoration: none;
+            font-size: 32px;
+            font-weight: bold;
+            border: 5px solid #f7e1a3;
+            box-shadow: 0 8px 0 #6b401f, 0 8px 12px rgba(0,0,0,0.4);
+            transition: 0.08s linear;
+            transform: rotate(2deg);
+            font-family: 'Comic Sans MS', cursive;
+            text-shadow: 2px 2px 0 #f5d37a;
+        }
+
+        .socials a:active {
+            transform: translateY(6px) rotate(1deg);
+            box-shadow: 0 2px 0 #6b401f;
+        }
+
+        .socials a:hover {
+            background: #f5d37a;
+            border-color: #ffe19e;
+            transform: scale(1.06) rotate(-2deg);
+        }
+
+        .right {
+            width: 50%;
+            min-width: 300px;
+            background: #1d1815;
+            background-image: repeating-linear-gradient(0deg, #2d221d 0px, #2d221d 3px, #1b1411 3px, #1b1411 8px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 40px 40px 35px;
+            border-radius: 60px 60px 60px 60px;
+            border: 6px solid #e7b85c;
+            border-left-width: 12px;
+            border-right-width: 8px;
+            box-shadow: inset 0 0 0 4px #37261e, 0 16px 0 #0f0a07;
+            margin: 10px 0 10px 10px;
+            flex: 1 1 45%;
+            transform: rotate(0.5deg);
+            position: relative;
+        }
+
+        .right h1 {
+            font-size: 72px;
+            font-weight: 900;
+            color: #fad97c;
+            text-shadow: 6px 6px 0 #3f2418, 0 10px 0 #1f100b;
+            letter-spacing: 8px;
+            font-family: 'Comic Sans MS', 'Chalkboard SE', cursive;
+            margin-bottom: 8px;
+            transform: rotate(-1deg);
+        }
+
+        .right h1 span {
+            color: #f5492b;
+            text-shadow: 0 0 8px #ff7b3a, 4px 4px 0 #581f12;
+            display: inline-block;
+            transform: rotate(6deg);
+        }
+
+        .subtitle {
+            font-size: 22px;
+            font-weight: bold;
+            background: #2f1d15;
+            padding: 12px 18px;
+            border-radius: 100px;
+            display: inline-block;
+            border: 4px dotted #eab85c;
+            color: #fad99b;
+            text-shadow: 0 2px 0 #4a2b1b;
+            box-shadow: inset 0 -4px 0 #2f1a10;
+            margin-bottom: 22px;
+            font-family: 'Comic Sans MS', cursive;
+            transform: rotate(1deg);
+        }
+
+        .about {
+            max-width: 650px;
+            line-height: 1.9;
+            color: #efe2cb;
+            background: transparent;
+            padding: 0;
+            border-radius: 0;
+            border: none;
+            box-shadow: none;
+            font-size: 18px;
+            font-weight: 500;
+            backdrop-filter: none;
+        }
+
+        .about p {
+            margin-bottom: 14px;
+            font-weight: 500;
+        }
+
+        .about p:last-child {
+            margin-bottom: 0;
+        }
+
+        .about strong {
+            color: #fbc85a;
+            font-weight: 700;
+            background: transparent;
+            padding: 0;
+            border-radius: 0;
+            border: none;
+        }
+
+        @media (max-width: 900px) {
+            .container {
+                flex-direction: column;
+                border-radius: 40px;
+                padding: 30px 15px 40px;
+                border-width: 6px;
+            }
+
+            .left, .right {
+                width: 100%;
+                min-width: unset;
+                margin: 8px 0;
+                flex: 1 1 auto;
+            }
+
+            .right {
+                border-radius: 40px 12px 40px 12px;
+                padding: 30px 20px;
+                margin-left: 0;
+            }
+
+            .card {
+                border-radius: 40px 40px 40px 40px;
+                padding: 28px 18px;
+            }
+
+            .right h1 {
+                font-size: 52px;
+            }
+
+            .profile {
+                width: 140px;
+                height: 140px;
+            }
+
+            .card h2 {
+                font-size: 28px;
+            }
+
+            .about {
+                font-size: 16px;
+                padding: 0;
+            }
+
+            .socials a {
+                width: 56px;
+                height: 56px;
+                font-size: 26px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .right h1 {
+                font-size: 38px;
+                letter-spacing: 4px;
+            }
+            .subtitle {
+                font-size: 17px;
+            }
+            .job {
+                font-size: 14px;
+                letter-spacing: 4px;
+            }
+        }
+
+        .card .profile {
+            border-style: dashed;
+            border-color: #f5b342 #d68f3a #f5b342 #d68f3a;
+        }
+
+        .right .about p::before {
+            content: "⚡ ";
+            color: #f5b342;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <section class="left">
+        <div class="card">
+            <img src="guo.jpg" alt="Kristian" class="profile">
+
+            <h2>Kristian 罗国龙</h2>
+
+            <div class="line"></div>
+
+            <p class="job">
+                💣 DESIGNER
+            </p>
+
+            <div class="socials">
+                <a href="https://www.instagram.com/kristian.lung/" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="https://github.com/KristianLung" aria-label="GitHub"><i class="fab fa-github"></i></a>
+            </div>
+        </div>
+    </section>
+
+    <section class="right">
+
+        <h1>HOLA<span>!!!</span></h1>
+
+        <p class="subtitle">
+            🔥 LARP COMPANY BOMB SQUAD 🔥
+        </p>
+
+        <div class="about">
+
+            <p>
+                <strong>💣</strong> Hello internet people! My name is Kristian, or 罗国龙 in Chinese, and welcome to my page! I'm originally from Indonesia, and I'm currently <strong>20</strong> years old. I'm pursuing a degree in Computer Science.
+            </p>
+
+            <p>
+                <strong>🧨</strong> After a year of studying computer science, I've become much more aware of the incredible range of applications that this field offers. From Finance and Marketing to Agriculture, Health, Cybersecurity, and Entertainment. The possibilities are truly endless. It's fascinating to see how algorithms and data structures can be applied to solve real-world problems in virtually every industry you can think of.
+            </p>
+
+            <p>
+                <strong>🔧</strong> Among all these exciting areas, I am most drawn to <strong>Cybersecurity</strong>. In an increasingly digital world, protecting sensitive information and ensuring the integrity of systems has become more critical than ever. I hope to deepen my knowledge in this field and contribute to developing robust security measures that can safeguard our digital future. I believe that with the right skills and mindset, we can build a safer internet for everyone.
+            </p>
+
+            <p>
+                <strong>🎬</strong> When I'm not buried in code or studying security protocols, I love to express my creativity through <strong>video editing</strong>. There's something incredibly satisfying about piecing together clips, adding transitions, and syncing everything to music to tell a compelling story. I enjoy working on personal projects, fan edits, and even short films. It's a great way to relax and let my imagination run wild.
+            </p>
+
+            <p>
+                <strong>🎤</strong> Another one of my biggest passions is <strong>singing</strong>. Singing always puts me in a good mood. I often record covers just for fun, or join friends for karaoke sessions. Music has always been a huge part of my life, and it's something I hope to keep doing alongside my tech career.
+            </p>
+
+            <p>
+                <strong>🚀</strong> Looking ahead, I'm excited to see where my journey takes me. I want to combine my technical skills with my creative hobbies and maybe even work on projects that involve multimedia security or audio-visual tech. The future is full of possibilities, and I can't wait to explore them all. Thanks for stopping by, and feel free to connect with me on social media!
+            </p>
+
+        </div>
+
+    </section>
+
+</div>
+
+<script>
+    (function() {
+        const socials = document.querySelectorAll('.socials a');
+        socials.forEach(btn => {
+            btn.addEventListener('mouseenter', () => {
+                btn.style.transform = 'scale(1.2) rotate(-6deg)';
+            });
+            btn.addEventListener('mouseleave', () => {
+                btn.style.transform = 'scale(1) rotate(2deg)';
+            });
+        });
+    })();
+</script>
+
+</body>
+</html>
