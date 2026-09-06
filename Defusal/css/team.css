@@ -1,0 +1,11 @@
+.member-photo {
+    width: 128px;
+    height: 128px;
+    min-width: 128px;
+    min-height: 128px;
+    border-radius: 50%;
+    border: 4px solid #22d3ee;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+}
