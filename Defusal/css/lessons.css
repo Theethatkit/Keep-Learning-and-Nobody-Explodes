@@ -16,27 +16,54 @@ a {
     text-decoration: none;
 }
 
-/* Navigation bar */
+/* ================= NAVIGATION BAR ================= */
+
 .navbar {
     display: flex;
     align-items: center;
     justify-content: space-between;
 
+    width: 100%;
     padding: 24px 64px;
 
     background-color: rgba(2, 6, 23, 0.9);
     border-bottom: 1px solid rgba(34, 211, 238, 0.2);
 }
 
+
+/* Logo */
+
+.logo {
+    display: block;
+
+    width: auto;
+    height: 64px;
+}
+
+
+/* Navigation links container */
+
 .nav-links {
     display: flex;
+    align-items: center;
+
     gap: 32px;
 }
 
+
+/* Each navigation link */
+
 .nav-link {
     color: #cbd5e1;
+
+    font-size: 16px;
+    text-decoration: none;
+
     transition: color 0.3s;
 }
+
+
+/* Hover and active page */
 
 .nav-link:hover,
 .nav-link.active {
@@ -54,7 +81,7 @@ a {
 
 /* Introduction */
 .introduction {
-    max-width: 768px;
+    max-width: 1000px;
     margin-bottom: 56px;
 }
 
