@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Bomb Defusal | Module 1 - Multiple Choice</title>
+
+    <!-- Tailwind CSS (navbar, to match team.html) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Defusal CSS -->
+    <link rel="stylesheet" href="../css/defusal.css">
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <header class="bg-slate-900 text-white">
+
+        <div class="mx-auto flex max-w-7xl items-center justify-between px-8 py-6">
+
+            <a href="../index.html">
+                <img src="../images/Logo.png" alt="Logo" class="h-16">
+            </a>
+
+            <nav class="flex gap-8">
+                <a href="../index.html" class="hover:text-cyan-400">
+                    Home
+                </a>
+
+                <a href="lessons.html" class="hover:text-cyan-400">
+                    Learn
+                </a>
+
+                <a href="revision.html" class="text-cyan-400">
+                    Revision
+                </a>
+            </nav>
+
+        </div>
+
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="defusal-container">
+
+        <!-- ===================== DIFFICULTY SCREEN ===================== -->
+        <!-- First screen: pick a difficulty before the bomb is armed -->
+        <section id="setupScreen" class="screen setup-screen">
+
+            <p class="eyebrow">BOMB DEFUSAL &middot; REVISION</p>
+            <h1 class="page-title">Choose Your Difficulty</h1>
+            <p class="intro-text">
+                Pick a difficulty to arm the bomb. Once it's armed you'll
+                see the whole thing &mdash; tap the lit module to zoom in
+                and start defusing. The timer only runs while you're
+                zoomed in, so it's safe to step back and think.
+            </p>
+
+            <div class="setup-field">
+                <label for="difficultySelect">Difficulty</label>
+                <select id="difficultySelect"></select>
+                <p id="difficultyPreview" class="difficulty-preview"></p>
+            </div>
+
+            <div class="setup-field setup-checkbox">
+                <input type="checkbox" id="practiceModeToggle">
+                <label for="practiceModeToggle">
+                    Practice mode (no timer, no strikes)
+                </label>
+            </div>
+
+            <button id="startButton" class="primary-button">
+                Arm Bomb
+            </button>
+
+        </section>
+
+        <!-- ===================== OVERVIEW SCREEN ===================== -->
+        <!-- The whole bomb, timer paused while zoomed out -->
+        <section id="overviewScreen" class="screen overview-screen hidden">
+
+            <p class="eyebrow">ARMED &middot; <span id="overviewDifficultyLabel"></span></p>
+            <h1 class="page-title">The Bomb</h1>
+            <p class="intro-text">
+                Tap the lit module to zoom in. The clock is paused while
+                you're looking at the whole bomb.
+            </p>
+
+            <div class="bomb-casing">
+
+                <div class="bomb-cap"></div>
+
+                <div class="bomb-body">
+
+                    <span class="bomb-rivet bomb-rivet-left"></span>
+                    <span class="bomb-rivet bomb-rivet-right"></span>
+
+                    <div class="bomb-grid">
+
+                        <!-- Module 4: True or False (locked) -->
+                        <div class="bomb-cell locked" title="Coming soon">
+                            <span class="cell-led"></span>
+                            <div class="cell-content mock-truefalse">
+                                <span class="mock-btn true-btn">True</span>
+                                <span class="mock-btn false-btn">False</span>
+                            </div>
+                            <span class="cell-lock">&#128274;</span>
+                        </div>
+
+                        <!-- Module 3: Connect the Dots (locked) -->
+                        <div class="bomb-cell locked" title="Coming soon">
+                            <span class="cell-led"></span>
+                            <div class="cell-content mock-connect">
+                                <span class="connect-dots">
+                                    <span class="connect-dot"></span>
+                                    <span class="connect-dot"></span>
+                                    <span class="connect-dot"></span>
+                                </span>
+                                <span class="connect-pills">
+                                    <span class="connect-pill"></span>
+                                    <span class="connect-pill"></span>
+                                    <span class="connect-pill"></span>
+                                </span>
+                            </div>
+                            <span class="cell-lock">&#128274;</span>
+                        </div>
+
+                        <!-- Module 2: Fill in the Blanks (locked) -->
+                        <div class="bomb-cell locked" title="Coming soon">
+                            <span class="cell-led"></span>
+                            <div class="cell-content mock-keyboard">&#9000;</div>
+                            <span class="cell-lock">&#128274;</span>
+                        </div>
+
+                        <!-- Module 5: Choose the Answer (locked) -->
+                        <div class="bomb-cell locked" title="Coming soon">
+                            <span class="cell-led"></span>
+                            <div class="cell-content mini-shape-grid-6">
+                                <span class="shape shape-circle"></span>
+                                <span class="shape shape-diamond"></span>
+                                <span class="shape shape-square"></span>
+                                <span class="shape shape-hexagon"></span>
+                                <span class="shape shape-triangle"></span>
+                                <span class="shape shape-star"></span>
+                            </div>
+                            <span class="cell-lock">&#128274;</span>
+                        </div>
+
+                        <!-- Timer -->
+                        <div class="bomb-cell timer-cell">
+                            <span class="timer-cell-label">Timer</span>
+                            <div id="overviewTimerDisplay" class="timer-lcd">10:00</div>
+                        </div>
+
+                        <!-- Module 1: Multiple Choice (active) -->
+                        <button id="module1Slot" class="bomb-cell module1-cell" type="button">
+                            <span class="cell-led active"></span>
+                            <div class="cell-content mini-shape-grid">
+                                <span class="shape shape-circle"></span>
+                                <span class="shape shape-triangle"></span>
+                                <span class="shape shape-square"></span>
+                                <span class="shape shape-diamond"></span>
+                            </div>
+                            <span class="cell-hint">Tap to defuse</span>
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- ===================== GAME SCREEN ===================== -->
+        <!-- Zoomed into Module 1: timer counts down here -->
+        <section id="gameScreen" class="screen game-screen hidden">
+
+            <button id="backToOverviewFromGame" class="back-link" type="button">
+                &larr; Back to Bomb Overview
+            </button>
+
+            <div class="bomb-shell" id="bombShell">
+
+                <!-- Top display strip -->
+                <div class="bomb-display">
+
+                    <div class="display-block">
+                        <span class="display-label">Time</span>
+                        <span id="timerDisplay" class="timer-lcd timer-lcd-small">10:00</span>
+                    </div>
+
+                    <div class="display-block">
+                        <span class="display-label">Strikes</span>
+                        <div id="strikesDisplay" class="strikes-display"></div>
+                    </div>
+
+                    <div class="display-block">
+                        <span class="display-label">Solved</span>
+                        <span id="progressDisplay" class="led-text">0 / 0</span>
+                    </div>
+
+                </div>
+
+                <!-- Module 1 face: four shape buttons, 2x2 -->
+                <div class="module-face">
+
+                    <p class="module-label">Module 1: Multiple Choice</p>
+
+                    <div class="shape-grid">
+                        <button class="shape-button" data-option-id="a">
+                            <span class="option-letter">A</span>
+                            <span class="shape shape-circle"></span>
+                        </button>
+
+                        <button class="shape-button" data-option-id="b">
+                            <span class="option-letter">B</span>
+                            <span class="shape shape-triangle"></span>
+                        </button>
+
+                        <button class="shape-button" data-option-id="c">
+                            <span class="option-letter">C</span>
+                            <span class="shape shape-square"></span>
+                        </button>
+
+                        <button class="shape-button" data-option-id="d">
+                            <span class="option-letter">D</span>
+                            <span class="shape shape-diamond"></span>
+                        </button>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Question popup, shown over the bomb while a question is active -->
+            <div id="questionPopup" class="question-popup">
+
+                <p class="question-topic" id="questionTopic">Topic</p>
+                <p class="question-prompt" id="questionPrompt">
+                    Question text goes here.
+                </p>
+
+                <ul class="option-list" id="optionList">
+                    <!-- option rows injected here by JS -->
+                </ul>
+
+            </div>
+
+        </section>
+
+        <!-- ===================== RESULT SCREEN ===================== -->
+        <!-- Shown after the bomb is defused or explodes -->
+        <section id="resultScreen" class="screen result-screen hidden">
+
+            <h1 id="resultTitle" class="result-title">Defused!</h1>
+            <p id="resultSubtitle" class="result-subtitle">
+                Nice work, agent.
+            </p>
+
+            <div class="result-stats">
+                <div class="stat-row">
+                    <span>Correct answers</span>
+                    <span id="resultAccuracy">0 / 0</span>
+                </div>
+                <div class="stat-row">
+                    <span>Time remaining</span>
+                    <span id="resultTime">0:00</span>
+                </div>
+                <div class="stat-row">
+                    <span>Strikes used</span>
+                    <span id="resultStrikes">0</span>
+                </div>
+                <div class="stat-row stat-row-total">
+                    <span>Score</span>
+                    <span id="resultScore">0</span>
+                </div>
+            </div>
+
+            <div class="result-buttons">
+                <button id="retryButton" class="primary-button">
+                    Retry
+                </button>
+                <button id="changeDifficultyButton" class="secondary-button">
+                    Change Difficulty
+                </button>
+            </div>
+
+        </section>
+
+    </main>
+
+    <script src="../js/defusal.js"></script>
+
+</body>
+</html>
