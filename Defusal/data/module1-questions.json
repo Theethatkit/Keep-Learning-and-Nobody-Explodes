@@ -1,0 +1,197 @@
+{
+    "moduleType": "multipleChoice",
+
+    "difficulties": {
+        "easy": {
+            "label": "Easy",
+            "questionCount": 5,
+            "startingTimeSeconds": 600,
+            "mistakesAllowed": 3,
+            "baseScore": 500,
+            "timeBonusCap": 500
+        },
+        "intermediate": {
+            "label": "Intermediate",
+            "questionCount": 5,
+            "startingTimeSeconds": 420,
+            "mistakesAllowed": 3,
+            "baseScore": 1000,
+            "timeBonusCap": 750
+        },
+        "hard": {
+            "label": "Hard",
+            "questionCount": 10,
+            "startingTimeSeconds": 300,
+            "mistakesAllowed": 2,
+            "baseScore": 2000,
+            "timeBonusCap": 1000
+        },
+        "expert": {
+            "label": "Expert",
+            "questionCount": 10,
+            "startingTimeSeconds": 180,
+            "mistakesAllowed": 2,
+            "baseScore": 3000,
+            "timeBonusCap": 1500
+        }
+    },
+
+    "questions": [
+        {
+            "id": "mc-e-01",
+            "difficulty": "easy",
+            "topic": "Array",
+            "prompt": "What is the time complexity of accessing an element in an array by its index?",
+            "options": [
+                { "id": "a", "shape": "circle", "text": "O(1)" },
+                { "id": "b", "shape": "triangle", "text": "O(n)" },
+                { "id": "c", "shape": "square", "text": "O(log n)" },
+                { "id": "d", "shape": "diamond", "text": "O(n^2)" }
+            ],
+            "correctOptionId": "a"
+        },
+        {
+            "id": "mc-e-02",
+            "difficulty": "easy",
+            "topic": "Stack",
+            "prompt": "A Stack follows which access order?",
+            "options": [
+                { "id": "a", "shape": "circle", "text": "First In First Out" },
+                { "id": "b", "shape": "triangle", "text": "Last In First Out" },
+                { "id": "c", "shape": "square", "text": "Random Access" },
+                { "id": "d", "shape": "diamond", "text": "Priority Based" }
+            ],
+            "correctOptionId": "b"
+        },
+        {
+            "id": "mc-e-03",
+            "difficulty": "easy",
+            "topic": "Queue",
+            "prompt": "Which operation removes an element from the front of a Queue?",
+            "options": [
+                { "id": "a", "shape": "circle", "text": "push" },
+                { "id": "b", "shape": "triangle", "text": "pop" },
+                { "id": "c", "shape": "square", "text": "dequeue" },
+                { "id": "d", "shape": "diamond", "text": "peek" }
+            ],
+            "correctOptionId": "c"
+        },
+        {
+            "id": "mc-e-04",
+            "difficulty": "easy",
+            "topic": "Linked List",
+            "prompt": "What does a node in a singly linked list store, besides its data?",
+            "options": [
+                { "id": "a", "shape": "circle", "text": "A pointer to the previous node" },
+                { "id": "b", "shape": "triangle", "text": "A pointer to the next node" },
+                { "id": "c", "shape": "square", "text": "Its own array index" },
+                { "id": "d", "shape": "diamond", "text": "A pointer to the root node" }
+            ],
+            "correctOptionId": "b"
+        },
+        {
+            "id": "mc-e-05",
+            "difficulty": "easy",
+            "topic": "Array vs Linked List",
+            "prompt": "Which structure allocates its elements in contiguous memory?",
+            "options": [
+                { "id": "a", "shape": "circle", "text": "Array" },
+                { "id": "b", "shape": "triangle", "text": "Linked List" },
+                { "id": "c", "shape": "square", "text": "Tree" },
+                { "id": "d", "shape": "diamond", "text": "Graph" }
+            ],
+            "correctOptionId": "a"
+        },
+        {
+            "id": "mc-i-01",
+            "difficulty": "intermediate",
+            "topic": "Stack",
+            "prompt": "Which real-world scenario best matches how a Stack behaves?",
+            "options": [
+                { "id": "a", "shape": "circle", "text": "A queue of people at a ticket counter" },
+                { "id": "b", "shape": "triangle", "text": "A stack of plates, taken from the top" },
+                { "id": "c", "shape": "square", "text": "A family tree" },
+                { "id": "d", "shape": "diamond", "text": "A road network" }
+            ],
+            "correctOptionId": "b"
+        },
+        {
+            "id": "mc-i-02",
+            "difficulty": "intermediate",
+            "topic": "Tree",
+            "prompt": "In a Binary Search Tree, where are values smaller than a node's value stored?",
+            "options": [
+                { "id": "a", "shape": "circle", "text": "In the left subtree" },
+                { "id": "b", "shape": "triangle", "text": "In the right subtree" },
+                { "id": "c", "shape": "square", "text": "At the root only" },
+                { "id": "d", "shape": "diamond", "text": "In a separate array" }
+            ],
+            "correctOptionId": "a"
+        },
+        {
+            "id": "mc-i-03",
+            "difficulty": "intermediate",
+            "topic": "Graph",
+            "prompt": "What is a common way to represent a Graph in memory?",
+            "options": [
+                { "id": "a", "shape": "circle", "text": "Linked list only" },
+                { "id": "b", "shape": "triangle", "text": "Adjacency matrix or adjacency list" },
+                { "id": "c", "shape": "square", "text": "Stack of nodes" },
+                { "id": "d", "shape": "diamond", "text": "Sorted array" }
+            ],
+            "correctOptionId": "b"
+        },
+        {
+            "id": "mc-i-04",
+            "difficulty": "intermediate",
+            "topic": "Queue",
+            "prompt": "Which type of Queue allows insertion and removal from both ends?",
+            "options": [
+                { "id": "a", "shape": "circle", "text": "Priority Queue" },
+                { "id": "b", "shape": "triangle", "text": "Circular Queue" },
+                { "id": "c", "shape": "square", "text": "Deque" },
+                { "id": "d", "shape": "diamond", "text": "Simple Queue" }
+            ],
+            "correctOptionId": "c"
+        },
+        {
+            "id": "mc-i-05",
+            "difficulty": "intermediate",
+            "topic": "Linked List",
+            "prompt": "What is one advantage of a Linked List over an Array?",
+            "options": [
+                { "id": "a", "shape": "circle", "text": "Constant time random access" },
+                { "id": "b", "shape": "triangle", "text": "Easier insertion and deletion at any position" },
+                { "id": "c", "shape": "square", "text": "Uses less memory per element" },
+                { "id": "d", "shape": "diamond", "text": "Better cache locality" }
+            ],
+            "correctOptionId": "b"
+        },
+        {
+            "id": "mc-h-01",
+            "difficulty": "hard",
+            "topic": "Tree",
+            "prompt": "What is the time complexity of searching a balanced Binary Search Tree with n nodes?",
+            "options": [
+                { "id": "a", "shape": "circle", "text": "O(1)" },
+                { "id": "b", "shape": "triangle", "text": "O(n)" },
+                { "id": "c", "shape": "square", "text": "O(log n)" },
+                { "id": "d", "shape": "diamond", "text": "O(n log n)" }
+            ],
+            "correctOptionId": "c"
+        },
+        {
+            "id": "mc-h-02",
+            "difficulty": "hard",
+            "topic": "Graph",
+            "prompt": "Which traversal algorithm uses a Queue as its core data structure?",
+            "options": [
+                { "id": "a", "shape": "circle", "text": "Depth-First Search" },
+                { "id": "b", "shape": "triangle", "text": "Breadth-First Search" },
+                { "id": "c", "shape": "square", "text": "In-order Traversal" },
+                { "id": "d", "shape": "diamond", "text": "Binary Search" }
+            ],
+            "correctOptionId": "b"
+        }
+    ]
+}
