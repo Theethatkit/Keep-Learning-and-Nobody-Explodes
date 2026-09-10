@@ -1,9 +1,10 @@
 // ===================================================================
 // Bomb Defusal - Module 1 (Multiple Choice)
 //
-// Loads the question bank from data/module1-questions.json, runs the
-// timer/strikes/scoring shell, and handles the 4-shape-button
-// multiple choice interaction.
+// Question data comes from data/module1-questions.js (loaded first,
+// as a plain <script> tag), so this file's job is just the
+// timer/strikes/scoring shell and the 4-shape-button multiple choice
+// interaction.
 // ===================================================================
 
 // ------------------- Screens -------------------
@@ -44,8 +45,11 @@ const resultScore = document.getElementById("resultScore");
 const retryButton = document.getElementById("retryButton");
 const changeDifficultyButton = document.getElementById("changeDifficultyButton");
 
-// ------------------- Question bank (filled in after fetch) -------------------
-let questionBank = null;
+// ------------------- Question bank -------------------
+// Provided by data/module1-questions.js, which is loaded via a plain
+// <script> tag before this file - so this works straight from
+// file://, no local server needed just to read the question data.
+let questionBank = MODULE1_QUESTION_BANK;
 
 // ------------------- Run state -------------------
 let runState = null;
@@ -59,24 +63,8 @@ const SHAPE_BY_OPTION_ID = {
     d: "diamond"
 };
 
-// ------------------- Load the question bank -------------------
-fetch("../data/module1-questions.json")
-    .then(function (response) {
-        return response.json();
-    })
-    .then(function (data) {
-        questionBank = data;
-        populateDifficultyOptions();
-    })
-    .catch(function (error) {
-        console.error("Could not load the question bank:", error);
-        alert(
-            "Could not load the question bank. If you're opening this " +
-            "file directly, run it through a local server instead " +
-            "(e.g. VS Code Live Server), since fetch() needs http:// " +
-            "to read local JSON files."
-        );
-    });
+// ------------------- Set up the difficulty dropdown -------------------
+populateDifficultyOptions();
 
 // fill the difficulty <select> from the JSON config
 function populateDifficultyOptions() {
@@ -118,10 +106,6 @@ difficultySelect.addEventListener("change", renderDifficultyPreview);
 
 // ------------------- Starting a run -------------------
 startButton.addEventListener("click", function () {
-    if (!questionBank) {
-        return;
-    }
-
     const difficultyId = difficultySelect.value;
     const isPracticeMode = practiceModeToggle.checked;
 
