@@ -4,10 +4,8 @@
 <head>
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
     <title>Bomb Defusal | Module 1 - Multiple Choice</title>
 
@@ -209,48 +207,54 @@
 
                 </div>
 
-                <!-- Module 1 face: four shape buttons, 2x2 -->
+                <!-- Module 1 face: four shape buttons on the left,
+                     the question panel on the right -->
                 <div class="module-face">
 
                     <p class="module-label">Module 1: Multiple Choice</p>
 
-                    <div class="shape-grid">
-                        <button class="shape-button" data-option-id="a">
-                            <span class="option-letter">A</span>
-                            <span class="shape shape-circle"></span>
-                        </button>
+                    <div class="module-face-columns">
 
-                        <button class="shape-button" data-option-id="b">
-                            <span class="option-letter">B</span>
-                            <span class="shape shape-triangle"></span>
-                        </button>
+                        <div class="shape-grid">
+                            <button class="shape-button" data-option-id="a">
+                                <span class="option-letter">A</span>
+                                <span class="shape shape-circle"></span>
+                            </button>
 
-                        <button class="shape-button" data-option-id="c">
-                            <span class="option-letter">C</span>
-                            <span class="shape shape-square"></span>
-                        </button>
+                            <button class="shape-button" data-option-id="b">
+                                <span class="option-letter">B</span>
+                                <span class="shape shape-triangle"></span>
+                            </button>
 
-                        <button class="shape-button" data-option-id="d">
-                            <span class="option-letter">D</span>
-                            <span class="shape shape-diamond"></span>
-                        </button>
+                            <button class="shape-button" data-option-id="c">
+                                <span class="option-letter">C</span>
+                                <span class="shape shape-square"></span>
+                            </button>
+
+                            <button class="shape-button" data-option-id="d">
+                                <span class="option-letter">D</span>
+                                <span class="shape shape-diamond"></span>
+                            </button>
+                        </div>
+
+                        <!-- Question popup, shown beside the shape buttons
+                             while a question is active -->
+                        <div id="questionPopup" class="question-popup">
+
+                            <p class="question-topic" id="questionTopic">Topic</p>
+                            <p class="question-prompt" id="questionPrompt">
+                                Question text goes here.
+                            </p>
+
+                            <ul class="option-list" id="optionList">
+                                <!-- option rows injected here by JS -->
+                            </ul>
+
+                        </div>
+
                     </div>
 
                 </div>
-
-            </div>
-
-            <!-- Question popup, shown over the bomb while a question is active -->
-            <div id="questionPopup" class="question-popup">
-
-                <p class="question-topic" id="questionTopic">Topic</p>
-                <p class="question-prompt" id="questionPrompt">
-                    Question text goes here.
-                </p>
-
-                <ul class="option-list" id="optionList">
-                    <!-- option rows injected here by JS -->
-                </ul>
 
             </div>
 
