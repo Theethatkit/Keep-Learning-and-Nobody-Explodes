@@ -206,6 +206,10 @@ a {
     font-family: inherit;
 }
 
+    .bomb-cell:disabled {
+        cursor: default;
+    }
+
 .cell-led {
     width: 70%;
     height: 8px;
@@ -279,6 +283,41 @@ a {
     50% {
         opacity: 0.4;
     }
+}
+
+/* A module whose question set has already been finished this arm -
+   the bomb isn't defused until every module reaches this state. */
+.bomb-cell.solved {
+    cursor: default;
+}
+
+    .bomb-cell.solved:hover {
+        background-color: transparent;
+    }
+
+    .bomb-cell.solved .cell-content {
+        opacity: 0.45;
+    }
+
+    .bomb-cell.solved .cell-led {
+        background-color: #4ade80;
+        box-shadow: 0 0 10px rgba(74, 222, 128, 0.8);
+    }
+
+    .bomb-cell.solved .cell-hint {
+        animation: none;
+        opacity: 1;
+    }
+
+/* "2 / 3 modules solved" line under the overview intro text */
+.modules-solved-label {
+    margin-top: -8px;
+    margin-bottom: 8px;
+    color: #94a3b8;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
 }
 
 /* Locked-module mockups (decorative only) */
@@ -742,6 +781,112 @@ a {
     opacity: 0.85;
 }
 
+/* Module 2 - on-screen keypad, standing in for the shape-grid /
+   truefalse-grid on the other modules. Wider than the other two
+   since it needs to fit a full QWERTY row. */
+.keypad-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 0 0 auto;
+    width: 340px;
+}
+
+.keypad-row {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+}
+
+.keypad-key {
+    flex: 1 1 0;
+    height: 42px;
+    min-width: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #1e293b;
+    color: white;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    border: 2px solid #334155;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.1s, border-color 0.15s, background-color 0.15s;
+}
+
+    .keypad-key:hover:not(:disabled) {
+        border-color: #22d3ee;
+        transform: translateY(-1px);
+    }
+
+    .keypad-key:active:not(:disabled) {
+        transform: translateY(0);
+    }
+
+    .keypad-key:disabled {
+        cursor: default;
+        opacity: 0.5;
+    }
+
+.keypad-key-wide {
+    flex: 2 1 0;
+    font-size: 12px;
+    letter-spacing: 0.03em;
+}
+
+.keypad-key-submit {
+    background-color: #6d28d9;
+    border-color: #6d28d9;
+}
+
+.keypad-key.correct {
+    background-color: rgba(74, 222, 128, 0.35);
+    border-color: #4ade80;
+}
+
+.keypad-key.wrong {
+    background-color: rgba(248, 113, 113, 0.35);
+    border-color: #f87171;
+}
+
+/* The typed-answer readout, styled like a little LCD screen to match
+   the timer/strikes displays */
+.answer-display {
+    margin-top: 16px;
+    min-height: 24px;
+    padding: 10px 14px;
+    background-color: #05070a;
+    border: 2px solid #334155;
+    border-radius: 8px;
+    font-family: "Courier New", monospace;
+    font-size: 20px;
+    letter-spacing: 0.08em;
+    color: #22d3ee;
+    word-break: break-word;
+}
+
+    .answer-display.answer-display-placeholder {
+        color: #475569;
+        font-family: inherit;
+        font-size: 15px;
+        letter-spacing: normal;
+        text-transform: none;
+    }
+
+    .answer-display.correct {
+        border-color: #4ade80;
+        color: #4ade80;
+    }
+
+    .answer-display.wrong {
+        border-color: #f87171;
+        color: #f87171;
+    }
+
 /* Question popup */
 .question-popup {
     flex: 1 1 auto;
@@ -935,6 +1080,12 @@ a {
     .truefalse-grid {
         width: 100%;
         max-width: 260px;
+        margin: 0 auto;
+    }
+
+    .keypad-grid {
+        width: 100%;
+        max-width: 340px;
         margin: 0 auto;
     }
 }
