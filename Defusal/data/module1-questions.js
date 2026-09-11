@@ -29,7 +29,7 @@ const MODULE1_QUESTION_BANK = {
             "label": "Expert",
             "questionCount": 10,
             "startingTimeSeconds": 180,
-            "mistakesAllowed": 2,
+            "mistakesAllowed": 1,
             "baseScore": 3000,
             "timeBonusCap": 1500
         }

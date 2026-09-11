@@ -250,6 +250,18 @@ a {
         background-color: #202024;
     }
 
+/* Any unlocked module cell (Module 4's True/False, and whichever
+   module gets wired up next) gets the same hover/cursor affordance
+   as Module 1 without needing a module-specific class. */
+.playable-cell {
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+    .playable-cell:hover {
+        background-color: #202024;
+    }
+
 .cell-hint {
     color: #4ade80;
     font-size: 11px;
@@ -667,6 +679,69 @@ a {
     transform: rotate(45deg);
 }
 
+/* Module 4 - True/False buttons, standing in for the shape-grid on
+   Module 1. Same footprint (260px column) so the two-column layout
+   lines up the same way. */
+.truefalse-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    flex: 0 0 auto;
+    width: 260px;
+}
+
+.truefalse-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    height: 100px;
+    padding: 0;
+    color: white;
+    font-family: inherit;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border: 2px solid #334155;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: transform 0.15s, border-color 0.2s, background-color 0.2s;
+}
+
+    .truefalse-button:hover:not(:disabled) {
+        border-color: #22d3ee;
+        transform: translateY(-2px);
+    }
+
+    .truefalse-button:disabled {
+        cursor: default;
+    }
+
+.truefalse-true {
+    background-color: #6d28d9;
+}
+
+.truefalse-false {
+    background-color: #ef4444;
+}
+
+.truefalse-icon {
+    font-size: 24px;
+    line-height: 1;
+}
+
+.truefalse-button.correct {
+    background-color: rgba(74, 222, 128, 0.35);
+    border-color: #4ade80;
+}
+
+.truefalse-button.wrong {
+    background-color: rgba(248, 113, 113, 0.35);
+    border-color: #f87171;
+    opacity: 0.85;
+}
+
 /* Question popup */
 .question-popup {
     flex: 1 1 auto;
@@ -856,7 +931,8 @@ a {
         flex-direction: column;
     }
 
-    .shape-grid {
+    .shape-grid,
+    .truefalse-grid {
         width: 100%;
         max-width: 260px;
         margin: 0 auto;

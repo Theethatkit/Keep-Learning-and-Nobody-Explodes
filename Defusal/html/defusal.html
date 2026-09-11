@@ -102,15 +102,15 @@
 
                     <div class="bomb-grid">
 
-                        <!-- Module 4: True or False (locked) -->
-                        <div class="bomb-cell locked" title="Coming soon">
-                            <span class="cell-led"></span>
+                        <!-- Module 4: True or False (active) -->
+                        <button id="module4Slot" class="bomb-cell playable-cell" type="button">
+                            <span class="cell-led active"></span>
                             <div class="cell-content mock-truefalse">
                                 <span class="mock-btn true-btn">True</span>
                                 <span class="mock-btn false-btn">False</span>
                             </div>
-                            <span class="cell-lock">&#128274;</span>
-                        </div>
+                            <span class="cell-hint">Tap to defuse</span>
+                        </button>
 
                         <!-- Module 3: Connect the Dots (locked) -->
                         <div class="bomb-cell locked" title="Coming soon">
@@ -260,6 +260,77 @@
 
         </section>
 
+        <!-- ===================== MODULE 4 GAME SCREEN ===================== -->
+        <!-- Zoomed into Module 4: same shell/timer/strikes pattern as
+             Module 1, just with two True/False buttons instead of the
+             four shape buttons -->
+        <section id="module4GameScreen" class="screen game-screen hidden">
+
+            <button id="backToOverviewFromModule4" class="back-link" type="button">
+                &larr; Back to Bomb Overview
+            </button>
+
+            <div class="bomb-shell" id="module4BombShell">
+
+                <!-- Top display strip -->
+                <div class="bomb-display">
+
+                    <div class="display-block">
+                        <span class="display-label">Time</span>
+                        <span id="module4TimerDisplay" class="timer-lcd timer-lcd-small">10:00</span>
+                    </div>
+
+                    <div class="display-block">
+                        <span class="display-label">Strikes</span>
+                        <div id="module4StrikesDisplay" class="strikes-display"></div>
+                    </div>
+
+                    <div class="display-block">
+                        <span class="display-label">Solved</span>
+                        <span id="module4ProgressDisplay" class="led-text">0 / 0</span>
+                    </div>
+
+                </div>
+
+                <!-- Module 4 face: True/False buttons on the left,
+                     the question panel on the right -->
+                <div class="module-face">
+
+                    <p class="module-label">Module 4: True or False</p>
+
+                    <div class="module-face-columns">
+
+                        <div class="truefalse-grid">
+                            <button class="truefalse-button truefalse-true" data-answer="true">
+                                <span class="truefalse-icon">&#10003;</span>
+                                <span class="truefalse-text">True</span>
+                            </button>
+
+                            <button class="truefalse-button truefalse-false" data-answer="false">
+                                <span class="truefalse-icon">&#10007;</span>
+                                <span class="truefalse-text">False</span>
+                            </button>
+                        </div>
+
+                        <!-- Question popup, shown beside the True/False
+                             buttons while a question is active -->
+                        <div id="module4QuestionPopup" class="question-popup">
+
+                            <p class="question-topic" id="module4QuestionTopic">Topic</p>
+                            <p class="question-prompt" id="module4QuestionPrompt">
+                                Question text goes here.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
         <!-- ===================== RESULT SCREEN ===================== -->
         <!-- Shown after the bomb is defused or explodes -->
         <section id="resultScreen" class="screen result-screen hidden">
@@ -302,6 +373,7 @@
     </main>
 
     <script src="../data/module1-questions.js"></script>
+    <script src="../data/module4-questions.js"></script>
     <script src="../js/defusal.js"></script>
 
 </body>
