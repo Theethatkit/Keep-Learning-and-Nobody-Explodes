@@ -87,9 +87,12 @@
             <p class="eyebrow">ARMED &middot; <span id="overviewDifficultyLabel"></span></p>
             <h1 class="page-title">The Bomb</h1>
             <p class="intro-text">
-                Tap the lit module to zoom in. The clock is paused while
-                you're looking at the whole bomb.
+                Tap a lit module to zoom in. The clock is paused while
+                you're looking at the whole bomb, and keeps running
+                across every module you enter - defuse all of them
+                before it hits zero.
             </p>
+            <p id="overviewModulesSolvedLabel" class="modules-solved-label"></p>
 
             <div class="bomb-casing">
 
@@ -130,12 +133,12 @@
                             <span class="cell-lock">&#128274;</span>
                         </div>
 
-                        <!-- Module 2: Fill in the Blanks (locked) -->
-                        <div class="bomb-cell locked" title="Coming soon">
-                            <span class="cell-led"></span>
+                        <!-- Module 2: Fill in the Blanks (active) -->
+                        <button id="module2Slot" class="bomb-cell playable-cell" type="button">
+                            <span class="cell-led active"></span>
                             <div class="cell-content mock-keyboard">&#9000;</div>
-                            <span class="cell-lock">&#128274;</span>
-                        </div>
+                            <span class="cell-hint">Tap to defuse</span>
+                        </button>
 
                         <!-- Module 5: Choose the Answer (locked) -->
                         <div class="bomb-cell locked" title="Coming soon">
@@ -260,6 +263,113 @@
 
         </section>
 
+        <!-- ===================== MODULE 2 GAME SCREEN ===================== -->
+        <!-- Zoomed into Module 2: same shell/timer/strikes pattern as
+             the other modules, but the "buttons on the left" are an
+             on-screen keypad instead of shape or True/False buttons -
+             typing spells out an answer that gets checked on Enter -->
+        <section id="module2GameScreen" class="screen game-screen hidden">
+
+            <button id="backToOverviewFromModule2" class="back-link" type="button">
+                &larr; Back to Bomb Overview
+            </button>
+
+            <div class="bomb-shell" id="module2BombShell">
+
+                <!-- Top display strip -->
+                <div class="bomb-display">
+
+                    <div class="display-block">
+                        <span class="display-label">Time</span>
+                        <span id="module2TimerDisplay" class="timer-lcd timer-lcd-small">10:00</span>
+                    </div>
+
+                    <div class="display-block">
+                        <span class="display-label">Strikes</span>
+                        <div id="module2StrikesDisplay" class="strikes-display"></div>
+                    </div>
+
+                    <div class="display-block">
+                        <span class="display-label">Solved</span>
+                        <span id="module2ProgressDisplay" class="led-text">0 / 0</span>
+                    </div>
+
+                </div>
+
+                <!-- Module 2 face: on-screen keypad on the left,
+                     the question panel on the right -->
+                <div class="module-face">
+
+                    <p class="module-label">Module 2: Fill in the Blanks</p>
+
+                    <div class="module-face-columns">
+
+                        <div class="keypad-grid">
+                            <div class="keypad-row">
+                                <button class="keypad-key" data-letter="Q">Q</button>
+                                <button class="keypad-key" data-letter="W">W</button>
+                                <button class="keypad-key" data-letter="E">E</button>
+                                <button class="keypad-key" data-letter="R">R</button>
+                                <button class="keypad-key" data-letter="T">T</button>
+                                <button class="keypad-key" data-letter="Y">Y</button>
+                                <button class="keypad-key" data-letter="U">U</button>
+                                <button class="keypad-key" data-letter="I">I</button>
+                                <button class="keypad-key" data-letter="O">O</button>
+                                <button class="keypad-key" data-letter="P">P</button>
+                            </div>
+
+                            <div class="keypad-row">
+                                <button class="keypad-key" data-letter="A">A</button>
+                                <button class="keypad-key" data-letter="S">S</button>
+                                <button class="keypad-key" data-letter="D">D</button>
+                                <button class="keypad-key" data-letter="F">F</button>
+                                <button class="keypad-key" data-letter="G">G</button>
+                                <button class="keypad-key" data-letter="H">H</button>
+                                <button class="keypad-key" data-letter="J">J</button>
+                                <button class="keypad-key" data-letter="K">K</button>
+                                <button class="keypad-key" data-letter="L">L</button>
+                            </div>
+
+                            <div class="keypad-row">
+                                <button class="keypad-key" data-letter="Z">Z</button>
+                                <button class="keypad-key" data-letter="X">X</button>
+                                <button class="keypad-key" data-letter="C">C</button>
+                                <button class="keypad-key" data-letter="V">V</button>
+                                <button class="keypad-key" data-letter="B">B</button>
+                                <button class="keypad-key" data-letter="N">N</button>
+                                <button class="keypad-key" data-letter="M">M</button>
+                            </div>
+
+                            <div class="keypad-row">
+                                <button class="keypad-key keypad-key-wide" data-action="backspace">&larr; Delete</button>
+                                <button class="keypad-key keypad-key-wide" data-action="space">Space</button>
+                                <button class="keypad-key keypad-key-wide keypad-key-submit" data-action="submit">Enter</button>
+                            </div>
+                        </div>
+
+                        <!-- Question popup, shown beside the keypad
+                             while a question is active -->
+                        <div id="module2QuestionPopup" class="question-popup">
+
+                            <p class="question-topic" id="module2QuestionTopic">Topic</p>
+                            <p class="question-prompt" id="module2QuestionPrompt">
+                                Question text goes here.
+                            </p>
+
+                            <div id="module2AnswerDisplay" class="answer-display answer-display-placeholder">
+                                type your answer...
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
         <!-- ===================== MODULE 4 GAME SCREEN ===================== -->
         <!-- Zoomed into Module 4: same shell/timer/strikes pattern as
              Module 1, just with two True/False buttons instead of the
@@ -373,6 +483,7 @@
     </main>
 
     <script src="../data/module1-questions.js"></script>
+    <script src="../data/module2-questions.js"></script>
     <script src="../data/module4-questions.js"></script>
     <script src="../js/defusal.js"></script>
 
