@@ -1,4 +1,4 @@
-/* ================= RESET ================= */
+/* ================= General Settings ================= */
 
 * {
     box-sizing: border-box;
@@ -13,333 +13,487 @@ html {
 body {
     min-height: 100vh;
 
-    background-color: #020617;
-    color: #ffffff;
+    color: #cbd5e1;
 
-    font-family: Arial, Helvetica, sans-serif;
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    background:
+        radial-gradient(
+            circle at 80% 10%,
+            rgba(8, 145, 178, 0.16),
+            transparent 32%
+        ),
+        radial-gradient(
+            circle at 10% 70%,
+            rgba(37, 99, 235, 0.12),
+            transparent 35%
+        ),
+        #020617;
+}
+
+
+/* ================= Main Container ================= */
+
+.container {
+    width: min(1160px, calc(100% - 40px));
+    margin: 0 auto;
+    padding: 70px 0 100px;
+}
+
+
+/* ================= Introduction ================= */
+
+.introduction {
+    max-width: 850px;
+    margin-bottom: 70px;
+}
+
+.back-link {
+    display: inline-block;
+
+    margin-bottom: 40px;
+
+    color: #94a3b8;
+    font-size: 14px;
+
+    transition:
+        color 0.25s ease,
+        transform 0.25s ease;
+}
+
+.back-link:hover {
+    color: #22d3ee;
+    transform: translateX(-4px);
+}
+
+.section-label {
+    margin-bottom: 10px;
+
+    color: #22d3ee;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+}
+
+.introduction h1 {
+    margin-bottom: 24px;
+
+    color: #f8fafc;
+    font-size: clamp(45px, 7vw, 76px);
+    line-height: 1.05;
+    letter-spacing: -3px;
+}
+
+.introduction-text {
+    max-width: 760px;
+    margin-bottom: 12px;
+
+    color: #94a3b8;
+    font-size: 18px;
+    line-height: 1.8;
+}
+
+
+/* ================= Topics ================= */
+
+.topics-heading {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 30px;
+
+    margin-bottom: 28px;
+}
+
+.topics-heading h2 {
+    color: #f8fafc;
+    font-size: 32px;
+}
+
+.topics-heading > p {
+    max-width: 390px;
+
+    color: #64748b;
+    text-align: right;
+}
+
+
+/* ================= Card Grid ================= */
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+}
+
+
+/* ================= Topic Cards ================= */
+
+.topic-card {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+
+    min-height: 430px;
+    padding: 30px;
+
+    overflow: hidden;
+    cursor: pointer;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(15, 23, 42, 0.94),
+            rgba(7, 15, 30, 0.96)
+        );
+
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    border-radius: 22px;
+
+    transition:
+        opacity 0.4s ease,
+        transform 0.3s ease,
+        border-color 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+.topic-card::before {
+    content: "";
+
+    position: absolute;
+    top: -100px;
+    right: -100px;
+
+    width: 220px;
+    height: 220px;
+
+    opacity: 0;
+
+    background-color: rgba(34, 211, 238, 0.1);
+    border-radius: 50%;
+    filter: blur(20px);
+
+    transition: opacity 0.3s ease;
+}
+
+.topic-card:hover,
+.topic-card:focus {
+    outline: none;
+
+    border-color: rgba(34, 211, 238, 0.65);
+
+    box-shadow:
+        0 25px 55px rgba(0, 0, 0, 0.35),
+        0 0 30px rgba(34, 211, 238, 0.08);
+
+    transform: translateY(-9px);
+}
+
+.topic-card:hover::before,
+.topic-card:focus::before {
+    opacity: 1;
+}
+
+.card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 22px;
+}
+
+.card-number {
+    color: #22d3ee;
+    font-family: monospace;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.difficulty {
+    padding: 5px 11px;
+
+    color: #a7f3d0;
+    font-size: 11px;
+
+    background-color: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(52, 211, 153, 0.2);
+    border-radius: 999px;
+}
+
+.topic-card h3 {
+    margin: 22px 0 10px;
+
+    color: #f8fafc;
+    font-size: 27px;
+}
+
+.card-description {
+    min-height: 88px;
+
+    color: #94a3b8;
     line-height: 1.7;
 }
 
 
-/* ================= NAVIGATION BAR ================= */
+/* ================= Topic Details ================= */
 
-.navbar {
+.topic-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+
+    margin: 20px 0;
+}
+
+.topic-details span {
+    padding: 5px 10px;
+
+    color: #bae6fd;
+    font-size: 11px;
+
+    background-color: rgba(14, 165, 233, 0.08);
+    border: 1px solid rgba(56, 189, 248, 0.18);
+    border-radius: 999px;
+}
+
+
+/* ================= Topic Button ================= */
+
+.topic-button {
     display: flex;
     align-items: center;
     justify-content: space-between;
 
     width: 100%;
-    padding: 24px 64px;
+    margin-top: auto;
+    padding: 12px 16px;
 
-    background-color: rgba(2, 6, 23, 0.9);
-    border-bottom: 1px solid rgba(34, 211, 238, 0.2);
+    color: #e0f2fe;
+    font-size: 14px;
+    font-weight: 700;
+
+    background-color: rgba(30, 41, 59, 0.9);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 10px;
+
+    transition:
+        color 0.25s ease,
+        background-color 0.25s ease,
+        border-color 0.25s ease;
+}
+
+.topic-button span {
+    font-size: 19px;
+    transition: transform 0.25s ease;
+}
+
+.topic-card:hover .topic-button {
+    color: #020617;
+
+    background-color: #22d3ee;
+    border-color: #22d3ee;
+}
+
+.topic-card:hover .topic-button span {
+    transform: translateX(5px);
 }
 
 
-/* Logo */
+/* ================= Array Icon ================= */
 
-.logo {
-    display: block;
+.array-icon {
+    display: flex;
+    gap: 7px;
 
-    width: auto;
-    height: 64px;
+    min-height: 60px;
+}
+
+.array-icon span {
+    display: grid;
+    place-items: center;
+
+    width: 58px;
+    height: 55px;
+
+    color: #cffafe;
+    font-size: 13px;
+    font-weight: 700;
+
+    background-color: #164e63;
+    border: 1px solid #22d3ee;
+    border-radius: 8px;
 }
 
 
-/* Navigation links container */
+/* ================= Linked List Icon ================= */
 
-.nav-links {
+.linked-list-icon {
     display: flex;
     align-items: center;
 
-    gap: 32px;
+    min-height: 60px;
 }
 
-
-/* Each navigation link */
-
-.nav-link {
-    color: #cbd5e1;
-
-    font-size: 16px;
-    text-decoration: none;
-
-    transition: color 0.3s ease;
-}
-
-
-/* Navigation hover and active page */
-
-.nav-link:hover,
-.nav-link.active {
-    color: #22d3ee;
-}
-
-
-/* ================= MAIN CONTAINER ================= */
-
-.container {
-    width: calc(100% - 80px);
-    max-width: 1800px;
-
-    margin: 0 auto;
-    padding: 60px 0 100px;
-}
-
-
-/* ================= INTRODUCTION ================= */
-
-.introduction {
-    max-width: 1000px;
-}
-
-.section-label {
-    margin-bottom: 5px;
-
-    color: #22d3ee;
-
-    font-size: 14px;
-    font-weight: bold;
-    letter-spacing: 2px;
-}
-
-.introduction h1 {
-    margin-bottom: 18px;
-
-    color: #f8fafc;
-
-    font-size: 60px;
-    line-height: 1.2;
-}
-
-.introduction-text {
-    margin-bottom: 20px;
-
-    color: #8fa8ca;
-
-    font-size: 18px;
-    line-height: 32px;
-}
-
-
-/* ================= TOPICS SECTION ================= */
-
-.topics {
-    margin-top: 43px;
-}
-
-.topics h2 {
-    margin-bottom: 10px;
-
-    color: #f8fafc;
-
-    font-size: 24px;
-}
-
-.topics-description {
-    margin-bottom: 18px;
-
-    color: #8fa8ca;
-
-    font-size: 15px;
-}
-
-
-/* ================= CARD GRID ================= */
-
-.card-grid {
+.list-node {
     display: grid;
+    place-items: center;
 
-    /* 4 cards  */
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    width: 52px;
+    height: 52px;
 
-    gap: 20px;
+    color: #dbeafe;
+    font-weight: 700;
 
-    
-    padding: 25px 8px 45px;
+    background-color: #1e3a8a;
+    border: 1px solid #60a5fa;
+    border-radius: 50%;
+}
+
+.list-arrow {
+    margin: 0 6px;
+
+    color: #22d3ee;
+    font-size: 20px;
 }
 
 
-/* ================= TOPIC CARD ================= */
+/* ================= Stack Icon ================= */
 
-.topic-card {
-    position: relative;
-
-    min-width: 0;
-    min-height: 300px;
-
+.stack-icon {
     display: flex;
     flex-direction: column;
 
-    padding: 25px;
+    width: 120px;
+    min-height: 60px;
+}
 
-    background-color: #0f172a;
+.stack-icon span {
+    display: grid;
+    place-items: center;
 
-    border: 1px solid #334155;
-    border-radius: 14px;
+    height: 24px;
 
-    cursor: pointer;
+    color: #fef3c7;
+    font-size: 11px;
 
-    transition:
-        transform 0.3s ease,
-        border-color 0.3s ease,
-        background-color 0.3s ease,
-        box-shadow 0.3s ease;
+    background-color: rgba(245, 158, 11, 0.15);
+    border: 1px solid #fbbf24;
+}
+
+.stack-icon span:first-child {
+    border-radius: 7px 7px 0 0;
+}
+
+.stack-icon span:last-child {
+    border-radius: 0 0 7px 7px;
 }
 
 
-/* card hover effect */
+/* ================= Queue Icon ================= */
 
-.topic-card:hover {
-    z-index: 10;
+.queue-icon {
+    display: flex;
+    align-items: center;
+    gap: 5px;
 
-    transform: translateY(-18px) scale(1.1);
+    min-height: 60px;
+}
 
-    background-color: #131e35;
-    border-color: #22d3ee;
+.queue-node {
+    display: grid;
+    place-items: center;
 
-    box-shadow:
-        0 25px 60px rgba(0, 0, 0, 0.5),
-        0 0 30px rgba(34, 211, 238, 0.22);
+    width: 46px;
+    height: 46px;
+
+    color: #f3e8ff;
+    font-size: 11px;
+    font-weight: 700;
+
+    background-color: rgba(147, 51, 234, 0.15);
+    border: 1px solid #c084fc;
+    border-radius: 7px;
+}
+
+.queue-label {
+    color: #94a3b8;
+    font-size: 10px;
 }
 
 
-/* card number */
+/* ================= Animation ================= */
 
-.card-number {
-    margin-bottom: 8px;
+.topic-card.card-hidden {
+    opacity: 0;
+    transform: translateY(30px);
+}
 
-    color: #22d3ee;
-
-    font-family: monospace;
-    font-size: 18px;
-    font-weight: bold;
+.topic-card.card-visible {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 
-/* topic title */
+/* ================= Footer ================= */
 
-.topic-card h3 {
-    margin-bottom: 10px;
+footer {
+    padding: 28px 20px;
 
-    color: #f8fafc;
+    color: #64748b;
+    text-align: center;
 
-    font-size: 30px;
-    line-height: 1.3;
+    border-top: 1px solid rgba(148, 163, 184, 0.12);
 }
 
 
-/* card description */
+/* ================= Responsive Design ================= */
 
-.card-description {
-    margin-bottom: 18px;
-
-    color: #8fa8ca;
-
-    font-size: 16px;
-    line-height: 28px;
-}
-
-
-/* Operations */
-
-.operations {
-    margin-top: auto;
-    margin-bottom: 12px;
-
-    color: #f1f5f9;
-
-    font-size: 14px;
-}
-
-
-/* ================= BUTTON ================= */
-
-.topic-button {
-    display: inline-block;
-
-    width: fit-content;
-    padding: 12px 20px;
-
-    background-color: #5ee7f7;
-    color: #020617;
-
-    border-radius: 6px;
-
-    font-size: 16px;
-    font-weight: bold;
-    text-decoration: none;
-
-    transition:
-        background-color 0.2s ease,
-        transform 0.2s ease,
-        box-shadow 0.2s ease;
-}
-
-.topic-button:hover {
-    background-color: #22d3ee;
-
-    transform: translateX(3px);
-
-    box-shadow: 0 5px 15px rgba(34, 211, 238, 0.25);
-}
-
-
-/* ================= TABLET ================= */
-
-@media (max-width: 1050px) {
-
-    .container {
-        width: calc(100% - 48px);
-    }
-
-
-    .card-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .topic-card:hover {
-        transform: translateY(-12px) scale(1.05);
-    }
-}
-
-
-/* ================= MOBILE ================= */
-
-@media (max-width: 650px) {
-
-    .navbar {
-        padding: 18px 24px;
-    }
-
-    .logo {
-        height: 48px;
-    }
-
-    .nav-links {
-        gap: 15px;
-    }
-
-    .nav-link {
-        font-size: 13px;
-    }
-
-    .container {
-        width: calc(100% - 30px);
-        padding: 45px 0 70px;
-    }
-
-    .introduction h1 {
-        font-size: 36px;
-    }
+@media screen and (max-width: 800px) {
 
     .card-grid {
         grid-template-columns: 1fr;
-        padding-right: 0;
-        padding-left: 0;
     }
 
-    .topic-card:hover {
-        transform: translateY(-8px) scale(1.02);
+    .topics-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .topics-heading > p {
+        text-align: left;
+    }
+
+    .topic-card {
+        min-height: 400px;
+    }
+}
+
+@media screen and (max-width: 500px) {
+
+    .container {
+        width: min(100% - 24px, 1160px);
+        padding-top: 45px;
+    }
+
+    .introduction h1 {
+        font-size: 43px;
+        letter-spacing: -2px;
+    }
+
+    .introduction-text {
+        font-size: 16px;
+    }
+
+    .topic-card {
+        min-height: 430px;
+        padding: 23px;
+    }
+
+    .queue-icon {
+        flex-wrap: wrap;
     }
 }

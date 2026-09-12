@@ -1,354 +1,124 @@
-// Initial array
-let numbers = [10, 20, 30, 40];
+document.addEventListener("DOMContentLoaded", function () {
 
-// Select elements from the visualization section
-const visualization = document.querySelector(".visualization");
-const arrayContainer = visualization.querySelector(".array-example");
-const resultText = visualization.querySelector(".visualization-result");
-const operationButtons = visualization.querySelectorAll(
-    ".operation-buttons button"
-);
+    /* ================= Authentication ================= */
 
-// Select each operation button
-const accessButton = operationButtons[0];
-const updateButton = operationButtons[1];
-const insertButton = operationButtons[2];
-const deleteButton = operationButtons[3];
-const searchButton = operationButtons[4];
-const traversalButton = operationButtons[5];
+    const authButton = document.getElementById("authButton");
+    const loggedInUser = localStorage.getItem("loggedInUser");
 
+    if (authButton) {
+        if (loggedInUser) {
+            authButton.textContent = "Logout";
+            authButton.href = "#";
 
-/* ================= Display Array ================= */
+            authButton.addEventListener("click", function (event) {
+                event.preventDefault();
 
-function displayArray(highlightIndex = -1) {
-    // Remove the old array display
-    arrayContainer.innerHTML = "";
-
-    // Display every array element
-    numbers.forEach(function (value, index) {
-        const arrayItem = document.createElement("div");
-        arrayItem.classList.add("array-item");
-
-        // Highlight the selected element
-        if (index === highlightIndex) {
-            arrayItem.classList.add("selected");
+                localStorage.removeItem("loggedInUser");
+                window.location.href = "../../index.html";
+            });
+        } else {
+            authButton.textContent = "Log in";
+            authButton.href = "../login.html";
         }
-
-        const arrayValue = document.createElement("div");
-        arrayValue.classList.add("array-value");
-        arrayValue.textContent = value;
-
-        const arrayIndex = document.createElement("span");
-        arrayIndex.classList.add("array-index");
-        arrayIndex.textContent = index;
-
-        arrayItem.appendChild(arrayValue);
-        arrayItem.appendChild(arrayIndex);
-        arrayContainer.appendChild(arrayItem);
-    });
-
-    // Show a message when the array is empty
-    if (numbers.length === 0) {
-        arrayContainer.innerHTML =
-            '<p class="empty-message">The array is empty.</p>';
-    }
-}
-
-
-/* ================= Show Result ================= */
-
-function showResult(message, type = "normal") {
-    resultText.textContent = message;
-
-    resultText.classList.remove(
-        "result-success",
-        "result-error"
-    );
-
-    if (type === "success") {
-        resultText.classList.add("result-success");
     }
 
-    if (type === "error") {
-        resultText.classList.add("result-error");
-    }
-}
+
+    /* ================= Array Settings ================= */
+
+    const initialNumbers = [10, 20, 30, 40];
+    let numbers = [...initialNumbers];
+
+    const arrayContainer =
+        document.getElementById("interactiveArray");
+
+    const resultText =
+        document.getElementById("visualizationResult");
+
+    const indexInput =
+        document.getElementById("indexInput");
+
+    const valueInput =
+        document.getElementById("valueInput");
+
+    const operationButtons =
+        document.querySelectorAll(".operation-buttons button");
 
 
-/* ================= Check Index ================= */
+    /* ================= Display Array ================= */
 
-function isValidIndex(index) {
-    return (
-        Number.isInteger(index) &&
-        index >= 0 &&
-        index < numbers.length
-    );
-}
+    function displayArray(highlightIndex = -1) {
+        arrayContainer.innerHTML = "";
 
+        if (numbers.length === 0) {
+            arrayContainer.innerHTML =
+                '<p class="empty-message">The array is empty.</p>';
 
-/* ================= Access ================= */
-
-function accessElement() {
-    if (numbers.length === 0) {
-        showResult("The array is empty.", "error");
-        return;
-    }
-
-    const index = askForIndex(
-        `Enter an index from 0 to ${numbers.length - 1}:`
-    );
-
-    if (index === null) {
-        showResult("Access operation was cancelled.");
-        return;
-    }
-
-    displayArray(index);
-
-    showResult(
-        `Access: The element at index ${index} is ${numbers[index]}.`,
-        "success"
-    );
-}
-
-
-/* ================= Update ================= */
-
-function updateElement() {
-    if (numbers.length === 0) {
-        showResult("The array is empty.", "error");
-        return;
-    }
-
-    const index = askForIndex(
-        `Enter an index from 0 to ${numbers.length - 1}:`
-    );
-
-    if (index === null) {
-        showResult("Update operation was cancelled.");
-        return;
-    }
-
-    let newValue;
-
-    while (true) {
-        const valueInput = prompt("Enter the new value:");
-
-        if (valueInput === null) {
-            showResult("Update operation was cancelled.");
             return;
         }
 
-        newValue = Number(valueInput);
+        numbers.forEach(function (value, index) {
+            const arrayItem =
+                document.createElement("div");
 
-        if (
-            valueInput.trim() !== "" &&
-            !Number.isNaN(newValue)
-        ) {
-            break;
-        }
+            arrayItem.classList.add("array-item");
 
-        alert("Invalid value! Please enter a number.");
+            if (index === highlightIndex) {
+                arrayItem.classList.add("selected");
+            }
+
+            const arrayValue =
+                document.createElement("div");
+
+            arrayValue.classList.add("array-value");
+            arrayValue.textContent = value;
+
+            const arrayIndex =
+                document.createElement("span");
+
+            arrayIndex.classList.add("array-index");
+            arrayIndex.textContent = index;
+
+            arrayItem.appendChild(arrayValue);
+            arrayItem.appendChild(arrayIndex);
+
+            arrayContainer.appendChild(arrayItem);
+        });
     }
 
-    const oldValue = numbers[index];
-    numbers[index] = newValue;
 
-    displayArray(index);
+    /* ================= Result Message ================= */
 
-    showResult(
-        `Update: The value at index ${index} changed from ` +
-        `${oldValue} to ${newValue}.`,
-        "success"
-    );
-}
+    function showResult(message, type = "normal") {
+        resultText.textContent = message;
 
-
-/* ================= Insert ================= */
-
-function insertElement() {
-    let newValue;
-
-    while (true) {
-        const valueInput = prompt("Enter a value to insert:");
-
-        if (valueInput === null) {
-            showResult("Insert operation was cancelled.");
-            return;
-        }
-
-        newValue = Number(valueInput);
-
-        if (
-            valueInput.trim() !== "" &&
-            !Number.isNaN(newValue)
-        ) {
-            break;
-        }
-
-        alert("Invalid value! Please enter a number.");
-    }
-
-    const index = askForIndex(
-        `Enter an insertion index from 0 to ${numbers.length}:`,
-        true
-    );
-
-    if (index === null) {
-        showResult("Insert operation was cancelled.");
-        return;
-    }
-
-    numbers.splice(index, 0, newValue);
-
-    displayArray(index);
-
-    showResult(
-        `Insert: ${newValue} was inserted at index ${index}.`,
-        "success"
-    );
-}
-
-
-/* ================= Delete ================= */
-
-function deleteElement() {
-    if (numbers.length === 0) {
-        showResult("The array is already empty.", "error");
-        return;
-    }
-
-    const index = askForIndex(
-        `Enter an index to delete from 0 to ${numbers.length - 1}:`
-    );
-
-    if (index === null) {
-        showResult("Delete operation was cancelled.");
-        return;
-    }
-
-    const deletedValue = numbers.splice(index, 1)[0];
-
-    displayArray();
-
-    showResult(
-        `Delete: ${deletedValue} was removed from index ${index}.`,
-        "success"
-    );
-}
-
-
-/* ================= Search ================= */
-
-async function searchElement() {
-    if (numbers.length === 0) {
-        showResult("The array is empty.", "error");
-        return;
-    }
-
-    const input = prompt("Enter a value to search for:");
-
-    if (input === null) {
-        return;
-    }
-
-    const searchValue = Number(input);
-
-    if (input.trim() === "" || Number.isNaN(searchValue)) {
-        showResult("Please enter a valid number.", "error");
-        return;
-    }
-
-    disableButtons(true);
-
-    // Linear search: check each element one by one
-    for (let index = 0; index < numbers.length; index++) {
-        displayArray(index);
-
-        showResult(
-            `Searching: Checking index ${index}...`
+        resultText.classList.remove(
+            "result-success",
+            "result-error"
         );
 
-        await wait(500);
+        if (type === "success") {
+            resultText.classList.add("result-success");
+        }
 
-        if (numbers[index] === searchValue) {
-            displayArray(index);
+        if (type === "error") {
+            resultText.classList.add("result-error");
+        }
+    }
 
+
+    /* ================= Input Validation ================= */
+
+    function getIndex(allowEndIndex = false) {
+        const input = indexInput.value.trim();
+
+        if (input === "") {
             showResult(
-                `Search: ${searchValue} was found at index ${index}.`,
-                "success"
+                "Please enter an index.",
+                "error"
             );
 
-            disableButtons(false);
-            return;
-        }
-    }
-
-    displayArray();
-
-    showResult(
-        `Search: ${searchValue} was not found in the array.`,
-        "error"
-    );
-
-    disableButtons(false);
-}
-
-/* ================= Traversal ================= */
-
-async function traverseArray() {
-    if (numbers.length === 0) {
-        showResult("The array is empty.", "error");
-        return;
-    }
-
-    disableButtons(true);
-
-    const visitedValues = [];
-
-    // Visit each array element from beginning to end
-    for (let index = 0; index < numbers.length; index++) {
-        visitedValues.push(numbers[index]);
-
-        // Highlight the current element
-        displayArray(index);
-
-        showResult(
-            `Traversal: Visiting index ${index}, value ${numbers[index]}.`
-        );
-
-        // Wait before visiting the next element
-        await wait(500);
-    }
-
-    // Remove the final highlight
-    displayArray();
-
-    showResult(
-        `Traversal completed: ${visitedValues.join(" → ")}`,
-        "success"
-    );
-
-    disableButtons(false);
-}
-
-
-
-/* ================= Helper Functions ================= */
-
-function askForIndex(message, allowEndIndex = false) {
-    while (true) {
-        const input = prompt(message);
-
-        // กด Cancel เพื่อยกเลิก operation
-        if (input === null) {
+            indexInput.focus();
             return null;
-        }
-
-        // ป้องกันช่องว่างและเลขทศนิยม
-        if (input.trim() === "") {
-            alert("Invalid index. Please enter a valid index.");
-            continue;
         }
 
         const index = Number(input);
@@ -362,43 +132,328 @@ function askForIndex(message, allowEndIndex = false) {
             index >= 0 &&
             index <= maximumIndex;
 
-        if (validIndex) {
-            return index;
+        if (!validIndex) {
+            showResult(
+                `Invalid index. Enter an index from 0 to ${maximumIndex}.`,
+                "error"
+            );
+
+            indexInput.focus();
+            indexInput.select();
+
+            return null;
         }
 
-        alert(
-            `Invalid index! Please enter an index from 0 to ${maximumIndex}.`
+        return index;
+    }
+
+
+    function getValue() {
+        const input = valueInput.value.trim();
+
+        if (input === "") {
+            showResult(
+                "Please enter a value.",
+                "error"
+            );
+
+            valueInput.focus();
+            return null;
+        }
+
+        const value = Number(input);
+
+        if (Number.isNaN(value)) {
+            showResult(
+                "Please enter a valid number.",
+                "error"
+            );
+
+            valueInput.focus();
+            valueInput.select();
+
+            return null;
+        }
+
+        return value;
+    }
+
+
+    /* ================= Access ================= */
+
+    function accessElement() {
+        if (numbers.length === 0) {
+            showResult(
+                "The array is empty.",
+                "error"
+            );
+
+            return;
+        }
+
+        const index = getIndex();
+
+        if (index === null) {
+            return;
+        }
+
+        displayArray(index);
+
+        showResult(
+            `Access: The element at index ${index} is ${numbers[index]}.`,
+            "success"
         );
     }
-}
-
-function wait(milliseconds) {
-    return new Promise(function (resolve) {
-        setTimeout(resolve, milliseconds);
-    });
-}
-
-function disableButtons(disabled) {
-    operationButtons.forEach(function (button) {
-        button.disabled = disabled;
-    });
-}
 
 
-/* ================= Button Events ================= */
+    /* ================= Update ================= */
 
-accessButton.addEventListener("click", accessElement);
-updateButton.addEventListener("click", updateElement);
-insertButton.addEventListener("click", insertElement);
-deleteButton.addEventListener("click", deleteElement);
-searchButton.addEventListener("click", searchElement);
-traversalButton.addEventListener("click", traverseArray);
+    function updateElement() {
+        if (numbers.length === 0) {
+            showResult(
+                "The array is empty.",
+                "error"
+            );
+
+            return;
+        }
+
+        const index = getIndex();
+        const newValue = getValue();
+
+        if (index === null || newValue === null) {
+            return;
+        }
+
+        const oldValue = numbers[index];
+
+        numbers[index] = newValue;
+
+        displayArray(index);
+
+        showResult(
+            `Update: Index ${index} changed from ${oldValue} to ${newValue}.`,
+            "success"
+        );
+    }
 
 
-/* ================= Initial Display ================= */
+    /* ================= Insert ================= */
 
-displayArray();
+    function insertElement() {
+        const index = getIndex(true);
+        const newValue = getValue();
 
-showResult(
-    "Select an operation to interact with the array."
-);
+        if (index === null || newValue === null) {
+            return;
+        }
+
+        numbers.splice(index, 0, newValue);
+
+        displayArray(index);
+
+        showResult(
+            `Insert: ${newValue} was inserted at index ${index}.`,
+            "success"
+        );
+    }
+
+
+    /* ================= Delete ================= */
+
+    function deleteElement() {
+        if (numbers.length === 0) {
+            showResult(
+                "The array is already empty.",
+                "error"
+            );
+
+            return;
+        }
+
+        const index = getIndex();
+
+        if (index === null) {
+            return;
+        }
+
+        const deletedValue = numbers.splice(index, 1)[0];
+
+        displayArray();
+
+        showResult(
+            `Delete: ${deletedValue} was removed from index ${index}.`,
+            "success"
+        );
+    }
+
+
+    /* ================= Search ================= */
+
+    async function searchElement() {
+        if (numbers.length === 0) {
+            showResult(
+                "The array is empty.",
+                "error"
+            );
+
+            return;
+        }
+
+        const searchValue = getValue();
+
+        if (searchValue === null) {
+            return;
+        }
+
+        disableButtons(true);
+
+        for (
+            let index = 0;
+            index < numbers.length;
+            index++
+        ) {
+            displayArray(index);
+
+            showResult(
+                `Search: Checking index ${index}...`
+            );
+
+            await wait(500);
+
+            if (numbers[index] === searchValue) {
+                displayArray(index);
+
+                showResult(
+                    `${searchValue} was found at index ${index}.`,
+                    "success"
+                );
+
+                disableButtons(false);
+                return;
+            }
+        }
+
+        displayArray();
+
+        showResult(
+            `${searchValue} was not found in the array.`,
+            "error"
+        );
+
+        disableButtons(false);
+    }
+
+
+    /* ================= Traversal ================= */
+
+    async function traverseArray() {
+        if (numbers.length === 0) {
+            showResult(
+                "The array is empty.",
+                "error"
+            );
+
+            return;
+        }
+
+        disableButtons(true);
+
+        const visitedValues = [];
+
+        for (
+            let index = 0;
+            index < numbers.length;
+            index++
+        ) {
+            visitedValues.push(numbers[index]);
+
+            displayArray(index);
+
+            showResult(
+                `Traversal: Visiting index ${index}, value ${numbers[index]}.`
+            );
+
+            await wait(500);
+        }
+
+        displayArray();
+
+        showResult(
+            `Traversal completed: ${visitedValues.join(" → ")}`,
+            "success"
+        );
+
+        disableButtons(false);
+    }
+
+
+    /* ================= Reset ================= */
+
+    function resetArray() {
+        numbers = [...initialNumbers];
+
+        indexInput.value = "";
+        valueInput.value = "";
+
+        displayArray();
+
+        showResult(
+            "The array has been reset.",
+            "success"
+        );
+    }
+
+
+    /* ================= Helper Functions ================= */
+
+    function wait(milliseconds) {
+        return new Promise(function (resolve) {
+            setTimeout(resolve, milliseconds);
+        });
+    }
+
+
+    function disableButtons(disabled) {
+        operationButtons.forEach(function (button) {
+            button.disabled = disabled;
+        });
+    }
+
+
+    /* ================= Button Events ================= */
+
+    document
+        .getElementById("accessButton")
+        .addEventListener("click", accessElement);
+
+    document
+        .getElementById("updateButton")
+        .addEventListener("click", updateElement);
+
+    document
+        .getElementById("insertButton")
+        .addEventListener("click", insertElement);
+
+    document
+        .getElementById("deleteButton")
+        .addEventListener("click", deleteElement);
+
+    document
+        .getElementById("searchButton")
+        .addEventListener("click", searchElement);
+
+    document
+        .getElementById("traversalButton")
+        .addEventListener("click", traverseArray);
+
+    document
+        .getElementById("resetButton")
+        .addEventListener("click", resetArray);
+
+
+    /* ================= Initial Display ================= */
+
+    displayArray();
+
+});

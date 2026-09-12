@@ -9,19 +9,24 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>Learn Data Structures | DataLab</title>
+    <title>Lessons | DataLab</title>
 
-    <!-- Lessons CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Shared navigation styles -->
+    <link rel="stylesheet" href="../css/navbar.css">
+
+    <!-- Lessons page styles -->
     <link rel="stylesheet" href="../css/lessons.css">
 </head>
 
 <body>
 
-    <!-- HEADER -->
+    <!-- ================= Navigation Bar ================= -->
+
     <header class="navbar">
 
-        <!-- Logo -->
-        <a href="../index.html">
+        <a href="../index.html" class="logo-link">
             <img
                 src="../images/Logo.png"
                 alt="DataLab Logo"
@@ -29,135 +34,275 @@
             >
         </a>
 
-        <!-- Navigation -->
         <nav class="nav-links">
 
             <a href="../index.html" class="nav-link">
-                Back
+                Home
             </a>
 
-            <a href="learn.html" class="nav-link active">
-                Learn
+            <a href="lessons.html" class="nav-link active">
+                Lessons
             </a>
 
-            <a href="revision.html" class="nav-link">
-                Revision
+            <a href="games.html" class="nav-link">
+                Games
+            </a>
+
+            <a href="team.html" class="nav-link">
+                Team
             </a>
 
         </nav>
 
+        <a
+            href="login.html"
+            id="authButton"
+            class="login-button"
+        >
+            Log in
+        </a>
+
     </header>
 
-    <!-- MAIN CONTENT -->
+
+    <!-- ================= Main Content ================= -->
+
     <main class="lessons-container">
 
-        <!-- Data Structure explanation -->
-        <section class="introduction">
+        <!-- Page Header -->
 
-            <p class="eyebrow">
-                LEARNING PATH
+        <section class="lessons-header">
+
+            <p class="section-label">
+                DATA STRUCTURE LEARNING
             </p>
 
-            <h1 class="page-title">
-                What is a Data Structure?
-            </h1>
+            <h1>Choose Your Learning Path</h1>
 
-            <p class="intro-text">
-                A data structure is a way of organizing and storing
-                data in a computer so that it can be accessed and used
-                efficiently. It refers to the logical or mathematical
-                representation of data, as well as the implementation
-                in a computer program.
-            </p>
-
-            <p class="intro-text second-paragraph">
-                Data structures can be divided into two main groups:
-                linear data structures and non-linear data structures.
+            <p class="lessons-description">
+                Select a category to learn its structure, basic operations,
+                time complexity, applications, advantages and disadvantages.
+                Each lesson also includes an interactive visualization.
             </p>
 
         </section>
 
-        <!-- CATEGORY SECTION -->
-        <section>
 
-            <h2 class="category-title">
-                Choose a category
-            </h2>
+        <!-- ================= Categories ================= -->
 
-            <!-- Category cards -->
-            <div class="category-grid">
+        <section class="category-grid">
 
-                <!-- LINEAR CARD -->
-                <article class="category-card">
+            <!-- Linear Data Structures -->
 
-                    <p class="card-number">
-                        01
+            <article
+                class="category-card"
+                data-page="linearHTML/linear.html"
+                tabindex="0"
+            >
+
+                <div class="card-number">01</div>
+
+                <div class="linear-icon">
+                    <span>10</span>
+                    <span>20</span>
+                    <span>30</span>
+                    <span>40</span>
+                </div>
+
+                <div class="card-content">
+
+                    <p class="card-category">
+                        CATEGORY ONE
                     </p>
 
-                    <h3 class="card-title">
-                        Linear Data Structures
-                    </h3>
+                    <h2>Linear Data Structures</h2>
 
-                    <p class="card-description">
-                        A data structure in which data elements are
-                        arranged sequentially or linearly, where each
-                        element is attached to its previous and next
-                        adjacent elements, is called a linear data
-                        structure.
+                    <p>
+                        Elements are arranged sequentially, with each element
+                        connected to the element before or after it.
                     </p>
 
-                    <p class="topic-list">
+                    <div class="topic-list">
                         <span>Array</span>
-                        |
                         <span>Linked List</span>
-                        |
                         <span>Stack</span>
-                        |
                         <span>Queue</span>
+                    </div>
+
+                </div>
+
+                <button
+                    type="button"
+                    class="explore-button"
+                    data-page="linearHTML/linear.html"
+                >
+                    Explore Linear
+                    <span>→</span>
+                </button>
+
+            </article>
+
+
+            <!-- Non-linear Data Structures -->
+
+            <article
+                class="category-card"
+                data-page="nonlinearHTML/nonlinear.html"
+                tabindex="0"
+            >
+
+                <div class="card-number">02</div>
+
+                <div class="tree-icon">
+
+                    <div class="tree-node root-node"></div>
+
+                    <div class="tree-line line-left"></div>
+                    <div class="tree-line line-right"></div>
+
+                    <div class="tree-node left-node"></div>
+                    <div class="tree-node right-node"></div>
+
+                </div>
+
+                <div class="card-content">
+
+                    <p class="card-category">
+                        CATEGORY TWO
                     </p>
 
-                    <!-- Go to Linear lesson -->
-                    <a
-                        href="linearHTML/linear.html"
-                        class="explore-button"
-                    >
-                        Explore Linear →
-                    </a>
+                    <h2>Non-linear Data Structures</h2>
 
-                </article>
-
-                <!-- NON-LINEAR CARD -->
-                <article class="category-card">
-
-                    <p class="card-number">
-                        02
+                    <p>
+                        Elements are organized through hierarchical or network
+                        relationships rather than one sequential path.
                     </p>
 
-                    <h3 class="card-title">
-                        Non-linear Data Structures
-                    </h3>
-
-                    <p class="card-description">
-                        Data structures where data elements are not
-                        placed sequentially or linearly are called
-                        non-linear data structures.
-                    </p>
-
-                    <p class="topic-list non-linear-topics">
+                    <div class="topic-list">
                         <span>Tree</span>
-                        |
                         <span>Graph</span>
+                    </div>
+
+                </div>
+
+                <button
+                    type="button"
+                    class="explore-button"
+                    data-page="nonlinearHTML/nonlinear.html"
+                >
+                    Explore Non-linear
+                    <span>→</span>
+                </button>
+
+            </article>
+
+
+            <!-- Hash-based Data Structures -->
+
+            <article
+                class="category-card"
+                data-page="hashmap.html"
+                tabindex="0"
+            >
+
+                <div class="card-number">03</div>
+
+                <div class="hash-icon">
+
+                    <div class="hash-key">Key</div>
+
+                    <div class="hash-arrow">→</div>
+
+                    <div class="hash-value">Value</div>
+
+                </div>
+
+                <div class="card-content">
+
+                    <p class="card-category">
+                        CATEGORY THREE
                     </p>
 
-                    <!-- Go to Non-linear lesson -->
-                    <a
-                        href="html/non-linear.html"
-                        class="explore-button push-bottom"
-                    >
-                        Explore Non-linear →
-                    </a>
+                    <h2>Hash-based Data Structures</h2>
 
-                </article>
+                    <p>
+                        Data is stored as key-value pairs. A hash function
+                        converts each key into a bucket index.
+                    </p>
+
+                    <div class="topic-list">
+                        <span>HashMap</span>
+                        <span>Hash Function</span>
+                        <span>Collision</span>
+                    </div>
+
+                </div>
+
+                <button
+                    type="button"
+                    class="explore-button"
+                    data-page="hashmap.html"
+                >
+                    Explore HashMap
+                    <span>→</span>
+                </button>
+
+            </article>
+
+        </section>
+
+
+        <!-- ================= Learning Information ================= -->
+
+        <section class="learning-information">
+
+            <div>
+                <p class="section-label">
+                    WHAT YOU WILL LEARN
+                </p>
+
+                <h2>
+                    Learn the concept and try it yourself
+                </h2>
+            </div>
+
+            <div class="information-grid">
+
+                <div class="information-item">
+                    <span>01</span>
+
+                    <div>
+                        <h3>Understand</h3>
+
+                        <p>
+                            Learn the structure and important terminology.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="information-item">
+                    <span>02</span>
+
+                    <div>
+                        <h3>Compare</h3>
+
+                        <p>
+                            Compare operations and time complexity.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="information-item">
+                    <span>03</span>
+
+                    <div>
+                        <h3>Interact</h3>
+
+                        <p>
+                            Test operations using interactive visualization.
+                        </p>
+                    </div>
+                </div>
 
             </div>
 
@@ -165,8 +310,17 @@
 
     </main>
 
-    <!-- JavaScript -->
-    <script src="js/script.js"></script>
+
+    <!-- ================= Footer ================= -->
+
+    <footer>
+        <p>
+            DataLab — Learn Data Structures Interactively
+        </p>
+    </footer>
+
+
+    <script src="../js/lessons.js"></script>
 
 </body>
 

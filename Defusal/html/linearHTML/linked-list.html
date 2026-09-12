@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Linked List | DataLab</title>
+
+    <!-- Shared Navigation CSS -->
+    <link rel="stylesheet" href="../../css/navbar.css">
+
+    <!-- Linked List CSS -->
+    <link
+        rel="stylesheet"
+        href="../../css/linearCSS/linked-list.css"
+    >
+</head>
+
+<body>
+
+    <!-- ================= Navigation Bar ================= -->
+
+    <header class="navbar">
+
+        <a href="../../index.html" class="logo-link">
+            <img
+                src="../../images/Logo.png"
+                alt="DataLab Logo"
+                class="logo"
+            >
+        </a>
+
+        <nav class="nav-links">
+
+            <a href="../../index.html" class="nav-link">
+                Home
+            </a>
+
+            <a href="../lessons.html" class="nav-link active">
+                Lessons
+            </a>
+
+            <a href="../games.html" class="nav-link">
+                Games
+            </a>
+
+            <a href="../team.html" class="nav-link">
+                Team
+            </a>
+
+        </nav>
+
+        <a
+            href="../login.html"
+            id="authButton"
+            class="login-button"
+        >
+            Log in
+        </a>
+
+    </header>
+
+
+    <!-- ================= Main Content ================= -->
+
+    <main class="container">
+
+        <!-- Page Header -->
+
+        <section class="page-header">
+
+            <a href="linear.html" class="back-link">
+                ← Back to Linear Structures
+            </a>
+
+            <p class="category">
+                LINEAR DATA STRUCTURE
+            </p>
+
+            <h1>Linked List</h1>
+
+            <p>
+                Learn how linked lists store data using nodes and pointers,
+                and compare singly and doubly linked lists.
+            </p>
+
+        </section>
+
+
+        <!-- ================= Introduction ================= -->
+
+        <section class="lesson-card">
+
+            <h2>Introduction</h2>
+
+            <p>
+                A linked list is a linear data structure where elements
+                are stored as nodes connected using pointers. Unlike an
+                array, linked list nodes do not need to be stored in
+                contiguous memory locations.
+            </p>
+
+            <p>
+                A linked list can grow or shrink during runtime, making
+                it suitable for data whose size changes frequently.
+            </p>
+
+        </section>
+
+
+        <!-- ================= Singly Linked List ================= -->
+
+        <section class="lesson-card">
+
+            <p class="small-heading">
+                TYPE ONE
+            </p>
+
+            <h2>Singly Linked List</h2>
+
+            <p>
+                In a singly linked list, each node stores a value and a
+                pointer to the next node. Movement is possible in one
+                direction only.
+            </p>
+
+
+            <div class="structure-grid">
+
+                <article class="structure-item">
+                    <h3>Node</h3>
+
+                    <p>
+                        An element containing a value and a next pointer.
+                    </p>
+                </article>
+
+                <article class="structure-item">
+                    <h3>Head</h3>
+
+                    <p>
+                        A reference pointing to the first node.
+                    </p>
+                </article>
+
+                <article class="structure-item">
+                    <h3>Next Pointer</h3>
+
+                    <p>
+                        Stores a reference to the following node.
+                    </p>
+                </article>
+
+                <article class="structure-item">
+                    <h3>Tail</h3>
+
+                    <p>
+                        The final node. Its next pointer contains null.
+                    </p>
+                </article>
+
+            </div>
+
+
+            <!-- Singly Linked List Example -->
+
+            <div class="list-example">
+
+                <span class="list-label">Head</span>
+
+                <div class="example-node">
+                    <span>10</span>
+                    <small>next</small>
+                </div>
+
+                <span class="example-arrow">→</span>
+
+                <div class="example-node">
+                    <span>20</span>
+                    <small>next</small>
+                </div>
+
+                <span class="example-arrow">→</span>
+
+                <div class="example-node">
+                    <span>30</span>
+                    <small>next</small>
+                </div>
+
+                <span class="example-arrow">→</span>
+
+                <span class="null-value">null</span>
+
+            </div>
+
+            <p class="example-caption">
+                Traversal starts at the head and follows each next pointer.
+            </p>
+
+        </section>
+
+
+        <!-- ================= Circular Singly Linked List ================= -->
+
+        <section class="lesson-card">
+
+            <h2>Circular Singly Linked List</h2>
+
+            <p>
+                In a circular singly linked list, the tail node points
+                back to the head instead of pointing to null. Storing the
+                tail gives direct access to both the last node and the
+                first node.
+            </p>
+
+            <div class="circular-note">
+
+                <span class="note-symbol">↻</span>
+
+                <p>
+                    Tail.next points to Head, forming a continuous loop.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= Doubly Linked List ================= -->
+
+        <section class="lesson-card">
+
+            <p class="small-heading">
+                TYPE TWO
+            </p>
+
+            <h2>Doubly Linked List</h2>
+
+            <p>
+                A doubly linked list is similar to a singly linked list,
+                but every node also stores a previous pointer. This enables
+                traversal in both directions.
+            </p>
+
+
+            <div class="structure-grid">
+
+                <article class="structure-item">
+                    <h3>Value</h3>
+
+                    <p>The data stored inside the node.</p>
+                </article>
+
+                <article class="structure-item">
+                    <h3>Next Pointer</h3>
+
+                    <p>Points to the next node.</p>
+                </article>
+
+                <article class="structure-item">
+                    <h3>Previous Pointer</h3>
+
+                    <p>Points to the previous node.</p>
+                </article>
+
+                <article class="structure-item">
+                    <h3>Two-way Traversal</h3>
+
+                    <p>
+                        The list can be traversed forward and backward.
+                    </p>
+                </article>
+
+            </div>
+
+
+            <!-- Doubly Linked List Example -->
+
+            <div class="list-example">
+
+                <span class="null-value">null</span>
+
+                <span class="example-arrow">←</span>
+
+                <div class="example-node double-node">
+                    <small>prev</small>
+                    <span>10</span>
+                    <small>next</small>
+                </div>
+
+                <span class="double-arrow">⇄</span>
+
+                <div class="example-node double-node">
+                    <small>prev</small>
+                    <span>20</span>
+                    <small>next</small>
+                </div>
+
+                <span class="double-arrow">⇄</span>
+
+                <div class="example-node double-node">
+                    <small>prev</small>
+                    <span>30</span>
+                    <small>next</small>
+                </div>
+
+                <span class="example-arrow">→</span>
+
+                <span class="null-value">null</span>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= Operations ================= -->
+
+        <section class="lesson-card">
+
+            <h2>Basic Operations and Time Complexity</h2>
+
+            <div class="operation-table-container">
+
+                <table class="operation-table">
+
+                    <thead>
+                        <tr>
+                            <th>Operation</th>
+                            <th>Description</th>
+                            <th>Complexity</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td>Insert Front</td>
+                            <td>Add a new node before the head.</td>
+                            <td><span>O(1)</span></td>
+                        </tr>
+
+                        <tr>
+                            <td>Insert Back</td>
+                            <td>
+                                Add a node after the tail when a tail
+                                reference is available.
+                            </td>
+                            <td><span>O(1)</span></td>
+                        </tr>
+
+                        <tr>
+                            <td>Delete Front</td>
+                            <td>Move the head to the next node.</td>
+                            <td><span>O(1)</span></td>
+                        </tr>
+
+                        <tr>
+                            <td>Delete Back</td>
+                            <td>
+                                Remove the tail using the previous pointer
+                                in a doubly linked list.
+                            </td>
+                            <td><span>O(1)</span></td>
+                        </tr>
+
+                        <tr>
+                            <td>Access / Traversal</td>
+                            <td>
+                                Follow pointers until the target is reached.
+                            </td>
+                            <td><span>O(n)</span></td>
+                        </tr>
+
+                        <tr>
+                            <td>Search</td>
+                            <td>Check nodes one by one.</td>
+                            <td><span>O(n)</span></td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <p class="table-note">
+                Insertion or deletion around a known node in a doubly
+                linked list can be performed in O(1).
+            </p>
+
+        </section>
+
+
+        <!-- ================= Interactive Visualization ================= -->
+
+        <section class="lesson-card">
+
+            <div class="visualization-heading">
+
+                <div>
+                    <p class="small-heading">
+                        INTERACTIVE LEARNING
+                    </p>
+
+                    <h2>Linked List Visualization</h2>
+                </div>
+
+                <select id="listType">
+
+                    <option value="singly">
+                        Singly Linked List
+                    </option>
+
+                    <option value="doubly">
+                        Doubly Linked List
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div
+                id="linkedListContainer"
+                class="interactive-list"
+            ></div>
+
+
+            <p
+                id="visualizationResult"
+                class="visualization-result"
+            >
+                Select an operation to interact with the linked list.
+            </p>
+
+
+            <div class="input-controls">
+
+                <div class="input-group">
+
+                    <label for="valueInput">
+                        Value
+                    </label>
+
+                    <input
+                        type="number"
+                        id="valueInput"
+                        placeholder="Example: 25"
+                    >
+
+                </div>
+
+                <div class="input-group">
+
+                    <label for="positionInput">
+                        Position
+                    </label>
+
+                    <input
+                        type="number"
+                        id="positionInput"
+                        placeholder="Example: 1"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="operation-buttons">
+
+                <button type="button" id="insertFrontButton">
+                    Insert Front
+                </button>
+
+                <button type="button" id="insertBackButton">
+                    Insert Back
+                </button>
+
+                <button type="button" id="insertPositionButton">
+                    Insert at Position
+                </button>
+
+                <button type="button" id="deleteFrontButton">
+                    Delete Front
+                </button>
+
+                <button type="button" id="deleteBackButton">
+                    Delete Back
+                </button>
+
+                <button type="button" id="searchButton">
+                    Search
+                </button>
+
+                <button type="button" id="traversalButton">
+                    Traversal
+                </button>
+
+                <button
+                    type="button"
+                    id="resetButton"
+                    class="secondary-button"
+                >
+                    Reset
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= Applications ================= -->
+
+        <section class="lesson-card">
+
+            <h2>Applications</h2>
+
+            <div class="application-grid">
+
+                <article class="small-card">
+                    <h3>Dynamic Memory</h3>
+
+                    <p>
+                        Stores data whose size can grow or shrink during
+                        runtime.
+                    </p>
+                </article>
+
+                <article class="small-card">
+                    <h3>Stacks</h3>
+
+                    <p>
+                        A stack can use the head as its top for O(1)
+                        push and pop.
+                    </p>
+                </article>
+
+                <article class="small-card">
+                    <h3>Queues</h3>
+
+                    <p>
+                        A queue can use head and tail pointers for O(1)
+                        enqueue and dequeue.
+                    </p>
+                </article>
+
+                <article class="small-card">
+                    <h3>Music Player</h3>
+
+                    <p>
+                        A doubly linked list supports moving to the next
+                        and previous songs.
+                    </p>
+                </article>
+
+                <article class="small-card">
+                    <h3>Browser History</h3>
+
+                    <p>
+                        Previous and next pointers support backward and
+                        forward navigation.
+                    </p>
+                </article>
+
+                <article class="small-card">
+                    <h3>LRU Cache</h3>
+
+                    <p>
+                        Recently used items can be moved or removed
+                        efficiently.
+                    </p>
+                </article>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= Comparison ================= -->
+
+        <section class="comparison-grid">
+
+            <article class="lesson-card advantage-card">
+
+                <h2>Advantages</h2>
+
+                <ul class="information-list">
+
+                    <li>
+                        The list can grow or shrink during runtime.
+                    </li>
+
+                    <li>
+                        Front insertion and deletion can be performed
+                        in O(1).
+                    </li>
+
+                    <li>
+                        Nodes do not require contiguous memory.
+                    </li>
+
+                    <li>
+                        Doubly linked lists support two-way traversal.
+                    </li>
+
+                </ul>
+
+            </article>
+
+
+            <article class="lesson-card disadvantage-card">
+
+                <h2>Disadvantages</h2>
+
+                <ul class="information-list">
+
+                    <li>
+                        Elements cannot be accessed directly using an index.
+                    </li>
+
+                    <li>
+                        Access and search normally require O(n).
+                    </li>
+
+                    <li>
+                        Every node requires additional memory for pointers.
+                    </li>
+
+                    <li>
+                        Pointer updates make the implementation more complex.
+                    </li>
+
+                </ul>
+
+            </article>
+
+        </section>
+
+
+        <!-- ================= Bottom Navigation ================= -->
+
+        <div class="bottom-navigation">
+
+            <a href="array.html" class="back-button">
+                ← Previous: Array
+            </a>
+
+            <a href="stack.html" class="next-button">
+                Next: Stack →
+            </a>
+
+        </div>
+
+    </main>
+
+
+    <!-- ================= Footer ================= -->
+
+    <footer>
+        <p>
+            DataLab — Learn Data Structures Interactively
+        </p>
+    </footer>
+
+
+    <script src="../../js/linearJS/linked-list.js"></script>
+
+</body>
+
+</html>

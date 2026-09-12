@@ -11,16 +11,20 @@
 
     <title>Array | DataLab</title>
 
-    <!-- External CSS -->
+    <!-- Shared Navigation CSS -->
+    <link rel="stylesheet" href="../../css/navbar.css">
+
+    <!-- Array Page CSS -->
     <link rel="stylesheet" href="../../css/linearCSS/array.css">
 </head>
 
 <body>
 
     <!-- ================= Navigation Bar ================= -->
+
     <header class="navbar">
 
-        <a href="../index.html">
+        <a href="../../index.html" class="logo-link">
             <img
                 src="../../images/Logo.png"
                 alt="DataLab Logo"
@@ -29,29 +33,64 @@
         </a>
 
         <nav class="nav-links">
-            <a href="../index.html" class="nav-link">Home</a>
-            <a href="lessons.html" class="nav-link active">Lessons</a>
-            <a href="games.html" class="nav-link">Games</a>
-            <a href="team.html" class="nav-link">Team</a>
+
+            <a href="../../index.html" class="nav-link">
+                Home
+            </a>
+
+            <a href="../lessons.html" class="nav-link active">
+                Lessons
+            </a>
+
+            <a href="../games.html" class="nav-link">
+                Games
+            </a>
+
+            <a href="../team.html" class="nav-link">
+                Team
+            </a>
+
         </nav>
+
+        <a
+            href="../login.html"
+            id="authButton"
+            class="login-button"
+        >
+            Log in
+        </a>
 
     </header>
 
+
     <!-- ================= Main Content ================= -->
+
     <main class="container">
 
         <!-- Page Header -->
+
         <section class="page-header">
-            <p class="category">Linear Data Structure</p>
+
+            <a href="linear.html" class="back-link">
+                ← Back to Linear Structures
+            </a>
+
+            <p class="category">
+                LINEAR DATA STRUCTURE
+            </p>
+
             <h1>Array</h1>
 
             <p>
-                Learn how arrays store data, how array indexes work,
-                and how basic array operations are performed.
+                Learn how arrays store elements, how indexes work and
+                how basic array operations are performed.
             </p>
+
         </section>
 
+
         <!-- ================= Introduction ================= -->
+
         <section class="lesson-card">
 
             <h2>Introduction</h2>
@@ -59,36 +98,42 @@
             <p>
                 An array is a collection of elements of the same data type
                 stored in contiguous memory locations. It is one of the
-                simplest and most commonly used data structures in programming.
+                simplest and most commonly used data structures in
+                programming.
             </p>
 
         </section>
 
-        <!-- ================= Array Structure ================= -->
+
+        <!-- ================= Structure ================= -->
+
         <section class="lesson-card">
 
             <h2>Array Structure</h2>
 
             <ul class="information-list">
+
                 <li>
                     <strong>Array Element:</strong>
-                    An individual value stored in an array.
+                    An individual value stored in the array.
                 </li>
 
                 <li>
                     <strong>Array Index:</strong>
                     A number representing the position of an element.
-                    In most programming languages, indexes start from 0.
+                    Indexes normally begin at 0.
                 </li>
 
                 <li>
-                    <strong>Array Length:</strong>
-                    The total number of elements stored in an array.
+                    <strong>Contiguous Memory:</strong>
+                    Array elements are stored next to one another in
+                    memory.
                 </li>
+
             </ul>
 
-            <!-- Simple Array Visualization -->
-            <div class="array-example">
+
+            <div class="static-array">
 
                 <div class="array-item">
                     <div class="array-value">10</div>
@@ -118,155 +163,248 @@
             </div>
 
             <p class="example-caption">
-                The values are array elements, while the numbers below
-                them represent their indexes.
+                The values are array elements and the numbers below
+                are their indexes.
             </p>
 
         </section>
 
-        <!-- ================= Basic Operations ================= -->
+
+        <!-- ================= Operations ================= -->
+
         <section class="lesson-card">
 
             <h2>Basic Operations and Time Complexity</h2>
 
-            <!-- Operation Cards -->
             <div class="operation-grid">
 
                 <article class="operation-card">
                     <h3>Access</h3>
-                    <p>Retrieves an element using its index.</p>
+
+                    <p>
+                        Retrieve an element directly using its index.
+                    </p>
+
                     <span class="complexity">O(1)</span>
                 </article>
 
                 <article class="operation-card">
                     <h3>Update</h3>
-                    <p>Changes the value stored at a specified index.</p>
+
+                    <p>
+                        Change the value stored at a specified index.
+                    </p>
+
                     <span class="complexity">O(1)</span>
                 </article>
 
                 <article class="operation-card">
                     <h3>Insert</h3>
+
                     <p>
-                        Adds a new element and may require shifting
-                        other elements.
+                        Add a new element and shift the following
+                        elements when necessary.
                     </p>
+
                     <span class="complexity">O(n)</span>
                 </article>
 
                 <article class="operation-card">
                     <h3>Delete</h3>
+
                     <p>
-                        Removes an element and may require shifting
-                        the remaining elements.
+                        Remove an element and shift the remaining
+                        elements.
                     </p>
+
                     <span class="complexity">O(n)</span>
                 </article>
 
                 <article class="operation-card">
                     <h3>Search</h3>
-                    <p>Finds an element by checking the array values.</p>
+
+                    <p>
+                        Find an element by checking values one by one.
+                    </p>
+
                     <span class="complexity">O(n)</span>
                 </article>
 
                 <article class="operation-card">
                     <h3>Traversal</h3>
-                    <p>Visits every element in the array one by one.</p>
+
+                    <p>
+                        Visit every element in the array from beginning
+                        to end.
+                    </p>
+
                     <span class="complexity">O(n)</span>
                 </article>
 
             </div>
 
-            <!-- Visualization Area -->
-            <div class="visualization">
+        </section>
 
-                <div class="visualization-heading">
-                    <div>
-                        <p class="small-heading">Interactive Learning</p>
-                        <h3>Array Visualization</h3>
-                    </div>
 
-                    <span class="coming-soon">Visualization Area</span>
+        <!-- ================= Interactive Visualization ================= -->
+
+        <section class="lesson-card">
+
+            <div class="visualization-heading">
+
+                <div>
+                    <p class="small-heading">
+                        INTERACTIVE LEARNING
+                    </p>
+
+                    <h2>Array Visualization</h2>
                 </div>
 
-                <div class="array-example">
+                <span class="visualization-label">
+                    Try it yourself
+                </span>
 
-                    <div class="array-item">
-                        <div class="array-value">10</div>
-                        <span class="array-index">0</span>
-                    </div>
+            </div>
 
-                    <div class="array-item selected">
-                        <div class="array-value">20</div>
-                        <span class="array-index">1</span>
-                    </div>
 
-                    <div class="array-item">
-                        <div class="array-value">30</div>
-                        <span class="array-index">2</span>
-                    </div>
+            <!-- Interactive Array -->
 
-                    <div class="array-item">
-                        <div class="array-value">40</div>
-                        <span class="array-index">3</span>
-                    </div>
+            <div
+                id="interactiveArray"
+                class="interactive-array"
+            ></div>
 
+
+            <!-- Result Message -->
+
+            <p
+                id="visualizationResult"
+                class="visualization-result"
+            >
+                Select an operation to interact with the array.
+            </p>
+
+
+            <!-- Input Controls -->
+
+            <div class="input-controls">
+
+                <div class="input-group">
+                    <label for="indexInput">
+                        Index
+                    </label>
+
+                    <input
+                        type="number"
+                        id="indexInput"
+                        placeholder="Example: 1"
+                    >
                 </div>
 
-                <p class="visualization-result">
-                    Access operation: The element at index 1 is
-                    <strong>20</strong>.
-                </p>
+                <div class="input-group">
+                    <label for="valueInput">
+                        Value
+                    </label>
 
-                <div class="operation-buttons">
-                    <button type="button">Access</button>
-                    <button type="button">Update</button>
-                    <button type="button">Insert</button>
-                    <button type="button">Delete</button>
-                    <button type="button">Search</button>
-                     <button type="button">Traversal</button>
+                    <input
+                        type="number"
+                        id="valueInput"
+                        placeholder="Example: 25"
+                    >
                 </div>
+
+            </div>
+
+
+            <!-- Operation Buttons -->
+
+            <div class="operation-buttons">
+
+                <button type="button" id="accessButton">
+                    Access
+                </button>
+
+                <button type="button" id="updateButton">
+                    Update
+                </button>
+
+                <button type="button" id="insertButton">
+                    Insert
+                </button>
+
+                <button type="button" id="deleteButton">
+                    Delete
+                </button>
+
+                <button type="button" id="searchButton">
+                    Search
+                </button>
+
+                <button type="button" id="traversalButton">
+                    Traversal
+                </button>
+
+                <button
+                    type="button"
+                    id="resetButton"
+                    class="secondary-button"
+                >
+                    Reset
+                </button>
 
             </div>
 
         </section>
 
+
         <!-- ================= Applications ================= -->
+
         <section class="lesson-card">
 
             <h2>Applications</h2>
 
-            <p>
-                Arrays provide fast random access and good cache performance.
-                They are commonly used in many programs and algorithms.
-            </p>
-
             <div class="application-grid">
 
-                <div class="small-card">
-                    <h3>Store Information</h3>
-                    <p>Store student scores, names, prices, or temperatures.</p>
-                </div>
+                <article class="small-card">
 
-                <div class="small-card">
                     <h3>Matrices</h3>
-                    <p>Represent tables, grids, and mathematical matrices.</p>
-                </div>
 
-                <div class="small-card">
-                    <h3>Algorithms</h3>
-                    <p>Support searching, sorting, and data-processing algorithms.</p>
-                </div>
+                    <p>
+                        Arrays can represent tables, grids and
+                        mathematical matrices.
+                    </p>
 
-                <div class="small-card">
-                    <h3>Other Structures</h3>
-                    <p>Arrays can be used to implement stacks and queues.</p>
-                </div>
+                </article>
+
+                <article class="small-card">
+
+                    <h3>Stacks</h3>
+
+                    <p>
+                        Arrays can implement stacks by using the final
+                        index as the top.
+                    </p>
+
+                </article>
+
+                <article class="small-card">
+
+                    <h3>Queues</h3>
+
+                    <p>
+                        Arrays can implement queues, although a simple
+                        implementation may require shifting elements.
+                    </p>
+
+                </article>
 
             </div>
 
         </section>
 
+
         <!-- ================= Advantages and Disadvantages ================= -->
+
         <section class="comparison-grid">
 
             <article class="lesson-card advantage-card">
@@ -274,61 +412,60 @@
                 <h2>Advantages</h2>
 
                 <ul class="information-list">
+
                     <li>
-                        <strong>Efficient and Fast Access:</strong>
                         Elements can be accessed directly using an index.
                     </li>
 
                     <li>
-                        <strong>Memory Efficiency:</strong>
                         Elements are stored next to one another in memory.
                     </li>
 
                     <li>
-                        <strong>Versatility:</strong>
-                        Arrays can represent lists, tables, and matrices.
+                        Arrays can represent lists, tables and matrices.
                     </li>
 
                     <li>
-                        <strong>Hardware Compatibility:</strong>
-                        Arrays work efficiently with low-level memory operations.
+                        Arrays work efficiently with low-level memory
+                        operations.
                     </li>
+
                 </ul>
 
             </article>
+
 
             <article class="lesson-card disadvantage-card">
 
                 <h2>Disadvantages</h2>
 
                 <ul class="information-list">
+
                     <li>
-                        <strong>Fixed Size:</strong>
-                        A normal array cannot easily change its size.
+                        A fixed-size array cannot change its size after
+                        initialization.
                     </li>
 
                     <li>
-                        <strong>Memory Allocation Issues:</strong>
-                        An oversized array may waste memory.
+                        Insertion and deletion may require other elements
+                        to be shifted.
                     </li>
 
                     <li>
-                        <strong>Insertion and Deletion:</strong>
-                        Other elements may need to be shifted.
-                    </li>
-
-                    <li>
-                        <strong>Same Data Type:</strong>
                         Elements normally need to have the same data type.
                     </li>
+
                 </ul>
 
             </article>
 
         </section>
 
-        <!-- Bottom Navigation -->
+
+        <!-- ================= Bottom Navigation ================= -->
+
         <div class="bottom-navigation">
+
             <a href="linear.html" class="back-button">
                 ← Back to Linear Structures
             </a>
@@ -336,17 +473,25 @@
             <a href="linked-list.html" class="next-button">
                 Next: Linked List →
             </a>
+
         </div>
 
     </main>
 
+
     <!-- ================= Footer ================= -->
+
     <footer>
-        <p>DataLab — Learn Data Structures Interactively</p>
+        <p>
+            DataLab — Learn Data Structures Interactively
+        </p>
     </footer>
 
 
+    <!-- Array JavaScript -->
+
     <script src="../../js/linearJS/array.js"></script>
+
 </body>
 
 </html>

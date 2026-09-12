@@ -37,7 +37,7 @@ input {
 }
 
 
-/* ================= Main Container ================= */
+/* ================= Main Layout ================= */
 
 .container {
     width: min(1100px, calc(100% - 40px));
@@ -45,11 +45,8 @@ input {
     padding: 70px 0;
 }
 
-
-/* ================= Page Header ================= */
-
 .page-header {
-    max-width: 780px;
+    max-width: 800px;
     margin-bottom: 48px;
 }
 
@@ -95,7 +92,7 @@ input {
 }
 
 
-/* ================= Lesson Card ================= */
+/* ================= Lesson Cards ================= */
 
 .lesson-card {
     margin-bottom: 28px;
@@ -129,6 +126,7 @@ input {
 }
 
 .lesson-card p {
+    margin-bottom: 10px;
     color: #94a3b8;
 }
 
@@ -150,88 +148,83 @@ input {
     color: #22d3ee;
 }
 
-.information-list strong {
-    color: #e2e8f0;
+
+/* ================= LIFO Principle ================= */
+
+.principle-layout {
+    display: grid;
+    grid-template-columns: 1fr 250px;
+    gap: 40px;
+    align-items: center;
 }
 
-
-/* ================= Array Display ================= */
-
-.static-array,
-.interactive-array {
+.static-stack,
+.stack-stage {
     display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 10px;
-
-    min-height: 105px;
-    margin: 34px 0 20px;
+    align-items: center;
+    flex-direction: column;
 }
 
-.array-item {
-    text-align: center;
+.stack-label,
+.stage-label {
+    margin: 6px 0;
 
-    transition:
-        opacity 0.25s ease,
-        transform 0.25s ease;
+    color: #94a3b8;
+    font-family: monospace;
+    font-size: 12px;
 }
 
-.array-value {
+.stack-element {
     display: grid;
     place-items: center;
 
-    width: 78px;
-    height: 70px;
+    width: 150px;
+    height: 48px;
 
-    color: #f8fafc;
-    font-size: 19px;
+    color: #e2e8f0;
     font-weight: 700;
 
     background-color: #0f172a;
-    border: 2px solid #22d3ee;
-    border-radius: 10px;
-
-    transition:
-        color 0.25s ease,
-        background-color 0.25s ease,
-        transform 0.25s ease;
+    border: 1px solid #22d3ee;
 }
 
-.array-value:hover {
-    background-color: #164e63;
-    transform: translateY(-5px);
-}
-
-.array-index {
-    display: block;
-
-    margin-top: 8px;
-
-    color: #64748b;
-    font-size: 13px;
-}
-
-.array-item.selected .array-value {
+.stack-element.newest {
     color: #082f49;
-
     background-color: #22d3ee;
-
-    box-shadow:
-        0 0 25px rgba(34, 211, 238, 0.35);
-
-    transform: translateY(-6px);
 }
 
-.example-caption {
-    text-align: center;
+.stack-element:first-of-type {
+    border-radius: 9px 9px 0 0;
+}
+
+.stack-element:last-of-type {
+    border-radius: 0 0 9px 9px;
+}
+
+
+/* ================= Structure ================= */
+
+.structure-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+}
+
+.structure-item {
+    padding: 18px;
+
+    background-color: rgba(2, 6, 23, 0.6);
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    border-radius: 12px;
+}
+
+.structure-item h3 {
+    margin-bottom: 5px;
+    font-size: 16px;
+}
+
+.structure-item p {
     font-size: 14px;
-}
-
-.empty-message {
-    width: 100%;
-    padding: 30px;
-
-    text-align: center;
 }
 
 
@@ -239,7 +232,7 @@ input {
 
 .operation-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 16px;
 
     margin-top: 24px;
@@ -248,7 +241,7 @@ input {
 .operation-card {
     position: relative;
 
-    min-height: 175px;
+    min-height: 155px;
     padding: 22px;
 
     background-color: rgba(2, 6, 23, 0.65);
@@ -261,9 +254,8 @@ input {
 }
 
 .operation-card p {
-    padding-bottom: 34px;
-
-    color: #94a3b8;
+    padding-right: 60px;
+    padding-bottom: 25px;
     font-size: 14px;
 }
 
@@ -279,8 +271,40 @@ input {
     font-weight: 700;
 
     background-color: rgba(8, 145, 178, 0.15);
-    border: 1px solid rgba(34, 211, 238, 0.25);
     border-radius: 20px;
+}
+
+
+/* ================= Implementation and Applications ================= */
+
+.implementation-grid,
+.application-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+
+    margin-top: 24px;
+}
+
+.application-grid {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.small-card {
+    padding: 20px;
+
+    background-color: rgba(2, 6, 23, 0.6);
+    border-left: 3px solid #22d3ee;
+    border-radius: 10px;
+}
+
+.small-card h3 {
+    margin-bottom: 7px;
+    font-size: 16px;
+}
+
+.small-card p {
+    font-size: 14px;
 }
 
 
@@ -305,6 +329,66 @@ input {
 
     background-color: rgba(34, 211, 238, 0.1);
     border-radius: 20px;
+}
+
+.stack-stage {
+    min-height: 280px;
+    margin: 28px 0 18px;
+    padding: 22px;
+
+    background-color: rgba(2, 6, 23, 0.55);
+    border: 1px dashed rgba(34, 211, 238, 0.25);
+    border-radius: 14px;
+}
+
+.interactive-stack {
+    display: flex;
+    flex-direction: column;
+
+    width: min(250px, 100%);
+}
+
+.interactive-stack .stack-node {
+    display: grid;
+    place-items: center;
+
+    height: 48px;
+
+    color: #f8fafc;
+    font-weight: 700;
+
+    background-color: #0f172a;
+    border: 1px solid #22d3ee;
+
+    transition:
+        color 0.25s ease,
+        background-color 0.25s ease,
+        transform 0.25s ease;
+}
+
+.interactive-stack .stack-node:first-child {
+    border-radius: 9px 9px 0 0;
+}
+
+.interactive-stack .stack-node:last-child {
+    border-radius: 0 0 9px 9px;
+}
+
+.interactive-stack .stack-node.selected {
+    color: #082f49;
+    background-color: #22d3ee;
+
+    box-shadow:
+        0 0 24px rgba(34, 211, 238, 0.35);
+
+    transform: translateY(-3px);
+}
+
+.empty-stack {
+    padding: 30px;
+
+    color: #64748b;
+    text-align: center;
 }
 
 .visualization-result {
@@ -334,13 +418,11 @@ input {
 }
 
 
-/* ================= Inputs ================= */
+/* ================= Input ================= */
 
 .input-controls {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 220px));
+    display: flex;
     justify-content: center;
-    gap: 14px;
 
     margin-top: 22px;
 }
@@ -348,6 +430,8 @@ input {
 .input-group {
     display: grid;
     gap: 7px;
+
+    width: min(220px, 100%);
 }
 
 .input-group label {
@@ -367,19 +451,17 @@ input {
     border-radius: 8px;
 
     outline: none;
-
-    transition:
-        border-color 0.25s ease,
-        box-shadow 0.25s ease;
 }
 
 .input-group input:focus {
     border-color: #22d3ee;
-    box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.1);
+
+    box-shadow:
+        0 0 0 3px rgba(34, 211, 238, 0.1);
 }
 
 
-/* ================= Operation Buttons ================= */
+/* ================= Buttons ================= */
 
 .operation-buttons {
     display: flex;
@@ -403,16 +485,12 @@ input {
     transition:
         color 0.25s ease,
         background-color 0.25s ease,
-        border-color 0.25s ease,
         transform 0.25s ease;
 }
 
 .operation-buttons button:hover {
     color: #082f49;
-
     background-color: #22d3ee;
-    border-color: #22d3ee;
-
     transform: translateY(-2px);
 }
 
@@ -423,43 +501,13 @@ input {
 
 .operation-buttons .secondary-button:hover {
     color: #ffffff;
-
     background-color: #e11d48;
-    border-color: #e11d48;
 }
 
 .operation-buttons button:disabled {
     opacity: 0.45;
     cursor: not-allowed;
     transform: none;
-}
-
-
-/* ================= Applications ================= */
-
-.application-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-
-    margin-top: 24px;
-}
-
-.small-card {
-    padding: 20px;
-
-    background-color: rgba(2, 6, 23, 0.6);
-    border-left: 3px solid #22d3ee;
-    border-radius: 10px;
-}
-
-.small-card h3 {
-    margin-bottom: 7px;
-    font-size: 16px;
-}
-
-.small-card p {
-    font-size: 14px;
 }
 
 
@@ -525,11 +573,12 @@ footer {
 
 @media screen and (max-width: 800px) {
 
-    .operation-grid,
+    .principle-layout,
     .comparison-grid {
         grid-template-columns: 1fr;
     }
 
+    .implementation-grid,
     .application-grid {
         grid-template-columns: 1fr;
     }
@@ -546,19 +595,15 @@ footer {
         padding: 24px 18px;
     }
 
-    .array-value {
-        width: 58px;
-        height: 58px;
+    .structure-grid,
+    .operation-grid {
+        grid-template-columns: 1fr;
     }
 
     .visualization-heading,
     .bottom-navigation {
         align-items: stretch;
         flex-direction: column;
-    }
-
-    .input-controls {
-        grid-template-columns: 1fr;
     }
 
     .back-button,
