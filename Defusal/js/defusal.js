@@ -1,22 +1,29 @@
 // ===================================================================
-// Bomb Defusal - Module 1 (Multiple Choice)
+// Bomb Defusal - shared shell + Module 1 (Multiple Choice)
+//                                + Module 2 (Fill in the Blanks)
+//                                + Module 4 (True or False)
 //
-// Loads the question bank from data/module1-questions.json, runs the
-// timer/strikes/scoring shell, and handles the 4-shape-button
-// multiple choice interaction.
+// Question data comes from data/moduleX-questions.js (loaded first,
+// as plain <script> tags), so this file's job is the timer/strikes/
+// scoring shell, plus each module's own answer-checking UI.
+//
+// Only one module can be zoomed into at a time, so there is a single
+// `runState` that gets rebuilt fresh every time a module cell on the
+// overview screen is tapped. Adding a future module (connect-the-
+// dots, choose-the-answer) means: give it a data file + its own
+// screen in the HTML, then add one more entry to MODULE_REGISTRY
+// below with the same shape as module1/module2/module4.
 // ===================================================================
 
 // ------------------- Screens -------------------
 const overviewScreen = document.getElementById("overviewScreen");
 const setupScreen = document.getElementById("setupScreen");
-const gameScreen = document.getElementById("gameScreen");
 const resultScreen = document.getElementById("resultScreen");
 
 // ------------------- Overview screen elements -------------------
-const module1Slot = document.getElementById("module1Slot");
-const backToOverviewFromGame = document.getElementById("backToOverviewFromGame");
 const overviewTimerDisplay = document.getElementById("overviewTimerDisplay");
 const overviewDifficultyLabel = document.getElementById("overviewDifficultyLabel");
+const overviewModulesSolvedLabel = document.getElementById("overviewModulesSolvedLabel");
 
 // ------------------- Setup screen elements -------------------
 const difficultySelect = document.getElementById("difficultySelect");
@@ -24,15 +31,22 @@ const difficultyPreview = document.getElementById("difficultyPreview");
 const practiceModeToggle = document.getElementById("practiceModeToggle");
 const startButton = document.getElementById("startButton");
 
-// ------------------- Game screen elements -------------------
-const bombShell = document.getElementById("bombShell");
-const timerDisplay = document.getElementById("timerDisplay");
-const strikesDisplay = document.getElementById("strikesDisplay");
-const progressDisplay = document.getElementById("progressDisplay");
+// ------------------- Module 1 (Multiple Choice) elements -------------------
 const shapeButtons = document.querySelectorAll(".shape-button");
 const questionTopic = document.getElementById("questionTopic");
 const questionPrompt = document.getElementById("questionPrompt");
 const optionList = document.getElementById("optionList");
+
+// ------------------- Module 2 (Fill in the Blanks) elements -------------------
+const keypadKeys = document.querySelectorAll(".keypad-key");
+const module2QuestionTopic = document.getElementById("module2QuestionTopic");
+const module2QuestionPrompt = document.getElementById("module2QuestionPrompt");
+const module2AnswerDisplay = document.getElementById("module2AnswerDisplay");
+
+// ------------------- Module 4 (True/False) elements -------------------
+const truefalseButtons = document.querySelectorAll(".truefalse-button");
+const module4QuestionTopic = document.getElementById("module4QuestionTopic");
+const module4QuestionPrompt = document.getElementById("module4QuestionPrompt");
 
 // ------------------- Result screen elements -------------------
 const resultTitle = document.getElementById("resultTitle");
@@ -44,14 +58,8 @@ const resultScore = document.getElementById("resultScore");
 const retryButton = document.getElementById("retryButton");
 const changeDifficultyButton = document.getElementById("changeDifficultyButton");
 
-// ------------------- Question bank (filled in after fetch) -------------------
-let questionBank = null;
-
-// ------------------- Run state -------------------
-let runState = null;
-
 // shape order fixed to the sketch layout: circle (a), triangle (b),
-// square (c), diamond (d)
+// square (c), diamond (d) - only used by Module 1's option list
 const SHAPE_BY_OPTION_ID = {
     a: "circle",
     b: "triangle",
@@ -59,31 +67,78 @@ const SHAPE_BY_OPTION_ID = {
     d: "diamond"
 };
 
-// ------------------- Load the question bank -------------------
-fetch("../data/module1-questions.json")
-    .then(function (response) {
-        return response.json();
-    })
-    .then(function (data) {
-        questionBank = data;
-        populateDifficultyOptions();
-    })
-    .catch(function (error) {
-        console.error("Could not load the question bank:", error);
-        alert(
-            "Could not load the question bank. If you're opening this " +
-            "file directly, run it through a local server instead " +
-            "(e.g. VS Code Live Server), since fetch() needs http:// " +
-            "to read local JSON files."
-        );
-    });
+// ------------------- Module registry -------------------
+// Every playable module plugs in here: its own screen/DOM elements,
+// its own question bank, and the two functions that know how to draw
+// a question and reset its answer buttons. Everything else (timer,
+// strikes, progress, scoring, screen switching) is shared.
+const MODULE_REGISTRY = {
+    module1: {
+        moduleName: "module1-multipleChoice",
+        label: "Module 1: Multiple Choice",
+        slot: document.getElementById("module1Slot"),
+        screen: document.getElementById("gameScreen"),
+        bombShell: document.getElementById("bombShell"),
+        timerDisplay: document.getElementById("timerDisplay"),
+        strikesDisplay: document.getElementById("strikesDisplay"),
+        progressDisplay: document.getElementById("progressDisplay"),
+        backButton: document.getElementById("backToOverviewFromGame"),
+        questionBank: MODULE1_QUESTION_BANK,
+        renderQuestion: renderMultipleChoiceQuestion,
+        resetInputs: resetMultipleChoiceButtons
+    },
+    module2: {
+        moduleName: "module2-fillInTheBlank",
+        label: "Module 2: Fill in the Blanks",
+        slot: document.getElementById("module2Slot"),
+        screen: document.getElementById("module2GameScreen"),
+        bombShell: document.getElementById("module2BombShell"),
+        timerDisplay: document.getElementById("module2TimerDisplay"),
+        strikesDisplay: document.getElementById("module2StrikesDisplay"),
+        progressDisplay: document.getElementById("module2ProgressDisplay"),
+        backButton: document.getElementById("backToOverviewFromModule2"),
+        questionBank: MODULE2_QUESTION_BANK,
+        renderQuestion: renderFillBlankQuestion,
+        resetInputs: resetFillBlankInputs
+    },
+    module4: {
+        moduleName: "module4-trueFalse",
+        label: "Module 4: True or False",
+        slot: document.getElementById("module4Slot"),
+        screen: document.getElementById("module4GameScreen"),
+        bombShell: document.getElementById("module4BombShell"),
+        timerDisplay: document.getElementById("module4TimerDisplay"),
+        strikesDisplay: document.getElementById("module4StrikesDisplay"),
+        progressDisplay: document.getElementById("module4ProgressDisplay"),
+        backButton: document.getElementById("backToOverviewFromModule4"),
+        questionBank: MODULE4_QUESTION_BANK,
+        renderQuestion: renderTrueFalseQuestion,
+        resetInputs: resetTrueFalseButtons
+    }
+};
 
-// fill the difficulty <select> from the JSON config
+// ------------------- Run state -------------------
+// Rebuilt every time a module cell is tapped - there is only ever one
+// active run, since only one module screen can be showing at once.
+let runState = null;
+
+// The difficulty + practice-mode choice made on the setup screen.
+// This is bomb-wide; each module's own question bank then supplies
+// its own concrete numbers (time, mistakes, score) for that
+// difficulty id once you actually zoom into that module.
+let armedConfig = null;
+
+// ------------------- Set up the difficulty dropdown -------------------
+// Difficulty ids/labels are the same set across every module bank
+// (easy/intermediate/hard/expert), just with different numbers behind
+// them, so Module 1's bank is as good a source as any for the list.
+populateDifficultyOptions();
+
 function populateDifficultyOptions() {
-    const difficultyIds = Object.keys(questionBank.difficulties);
+    const difficultyIds = Object.keys(MODULE1_QUESTION_BANK.difficulties);
 
     difficultyIds.forEach(function (difficultyId) {
-        const difficulty = questionBank.difficulties[difficultyId];
+        const difficulty = MODULE1_QUESTION_BANK.difficulties[difficultyId];
 
         const option = document.createElement("option");
         option.value = difficultyId;
@@ -97,8 +152,10 @@ function populateDifficultyOptions() {
 
 // small "10:00 on the clock, 3 mistakes allowed" line under the select,
 // so it's clear the timer length depends on the difficulty chosen
+// (numbers shown here are Module 1's - the module you actually zoom
+// into may use slightly different numbers for the same difficulty id)
 function renderDifficultyPreview() {
-    const difficulty = questionBank.difficulties[difficultySelect.value];
+    const difficulty = MODULE1_QUESTION_BANK.difficulties[difficultySelect.value];
 
     if (!difficulty) {
         return;
@@ -116,23 +173,88 @@ function renderDifficultyPreview() {
 
 difficultySelect.addEventListener("change", renderDifficultyPreview);
 
-// ------------------- Starting a run -------------------
+// ------------------- Arming the bomb -------------------
 startButton.addEventListener("click", function () {
-    if (!questionBank) {
-        return;
-    }
-
     const difficultyId = difficultySelect.value;
     const isPracticeMode = practiceModeToggle.checked;
 
-    startRun(difficultyId, isPracticeMode);
+    armBomb(difficultyId, isPracticeMode);
 });
 
-function startRun(difficultyId, isPracticeMode) {
-    const difficulty = questionBank.difficulties[difficultyId];
+function armBomb(difficultyId, isPracticeMode) {
+    const bombDifficulty = MODULE1_QUESTION_BANK.difficulties[difficultyId];
 
-    const questionPool = questionBank.questions.filter(function (question) {
-        return question.difficulty === difficultyId;
+    // The countdown itself lives here, on armedConfig, not on the
+    // per-module runState - that's what lets it keep running (or
+    // stay paused at the same value) as the player moves between
+    // modules, instead of resetting to a fresh 10:00 every time a
+    // module cell is tapped.
+    //
+    // moduleResults is what the bomb-wide win condition is checked
+    // against: it only gets an entry once a module's question set is
+    // actually finished, and the bomb is only defused once every
+    // module in MODULE_REGISTRY has one.
+    armedConfig = {
+        difficultyId: difficultyId,
+        isPracticeMode: isPracticeMode,
+        startingTimeSeconds: bombDifficulty.startingTimeSeconds,
+        timeRemaining: bombDifficulty.startingTimeSeconds,
+        timerId: null,
+        moduleResults: {}
+    };
+    runState = null;
+
+    resetModuleCellsVisual();
+
+    overviewDifficultyLabel.textContent = bombDifficulty.label;
+    renderTimer();
+    renderModulesSolvedLabel();
+
+    showScreen(overviewScreen);
+}
+
+// Clears the "solved" mark on every module cell, so a fresh arm (or a
+// Retry) starts with all of them tappable again.
+function resetModuleCellsVisual() {
+    Object.keys(MODULE_REGISTRY).forEach(function (moduleId) {
+        const moduleConfig = MODULE_REGISTRY[moduleId];
+
+        moduleConfig.slot.disabled = false;
+        moduleConfig.slot.classList.remove("solved");
+
+        const hint = moduleConfig.slot.querySelector(".cell-hint");
+        if (hint) {
+            hint.textContent = "Tap to defuse";
+        }
+    });
+}
+
+function renderModulesSolvedLabel() {
+    if (!armedConfig) {
+        return;
+    }
+
+    const totalModules = Object.keys(MODULE_REGISTRY).length;
+    const solvedModules = Object.keys(armedConfig.moduleResults).length;
+
+    overviewModulesSolvedLabel.textContent =
+        solvedModules + " / " + totalModules + " modules solved";
+}
+
+// ------------------- Entering a module -------------------
+// This is what actually builds the run (random questions, starting
+// time/strikes for THIS module's version of the chosen difficulty)
+// and starts the clock ticking.
+function enterModule(moduleId) {
+    if (!armedConfig || armedConfig.moduleResults[moduleId]) {
+        return;
+    }
+
+    const moduleConfig = MODULE_REGISTRY[moduleId];
+    const difficulty = moduleConfig.questionBank.difficulties[armedConfig.difficultyId];
+
+    const questionPool = moduleConfig.questionBank.questions.filter(function (question) {
+        return question.difficulty === armedConfig.difficultyId;
     });
 
     const selectedQuestions = pickRandomQuestions(
@@ -141,49 +263,24 @@ function startRun(difficultyId, isPracticeMode) {
     );
 
     runState = {
-        difficultyId: difficultyId,
+        moduleId: moduleId,
+        difficultyId: armedConfig.difficultyId,
         difficulty: difficulty,
-        isPracticeMode: isPracticeMode,
+        isPracticeMode: armedConfig.isPracticeMode,
         questions: selectedQuestions,
         currentIndex: 0,
         correctCount: 0,
         strikesUsed: 0,
-        timeRemaining: difficulty.startingTimeSeconds,
-        timerId: null,
         isAnswerLocked: false
     };
-
-    // Arm the bomb and show the whole thing, zoomed out. The clock
-    // stays paused until the player actually zooms into a module.
-    overviewDifficultyLabel.textContent = difficulty.label;
 
     renderStrikes();
     renderProgress();
     renderTimer();
-    renderQuestion();
+    renderCurrentQuestion();
 
-    showScreen(overviewScreen);
-}
-
-// ------------------- Timer start/stop (zoom in/out) -------------------
-
-// Only counts down while the player is zoomed into a module; paused
-// on the overview screen, and never runs at all in practice mode.
-function resumeTimerIfNeeded() {
-    if (runState.isPracticeMode || runState.timerId) {
-        return;
-    }
-
-    runState.timerId = setInterval(tickTimer, 1000);
-    renderTimer();
-}
-
-function pauseTimer() {
-    if (runState && runState.timerId) {
-        clearInterval(runState.timerId);
-        runState.timerId = null;
-        renderTimer();
-    }
+    showScreen(moduleConfig.screen);
+    resumeTimerIfNeeded();
 }
 
 // pick N random, non-repeating questions from a pool
@@ -195,31 +292,64 @@ function pickRandomQuestions(pool, count) {
     return shuffled.slice(0, Math.min(count, shuffled.length));
 }
 
+// ------------------- Timer start/stop (zoom in/out) -------------------
+
+// Only counts down while the player is zoomed into a module; paused
+// on the overview screen, and never runs at all in practice mode.
+// Lives on armedConfig (not runState) so it's the same clock no
+// matter which module is currently zoomed in.
+function resumeTimerIfNeeded() {
+    if (!armedConfig || armedConfig.isPracticeMode || armedConfig.timerId) {
+        return;
+    }
+
+    armedConfig.timerId = setInterval(tickTimer, 1000);
+    renderTimer();
+}
+
+function pauseTimer() {
+    if (armedConfig && armedConfig.timerId) {
+        clearInterval(armedConfig.timerId);
+        armedConfig.timerId = null;
+        renderTimer();
+    }
+}
+
 // ------------------- Timer -------------------
 function tickTimer() {
-    runState.timeRemaining -= 1;
+    armedConfig.timeRemaining -= 1;
 
     renderTimer();
 
-    if (runState.timeRemaining <= 0) {
-        runState.timeRemaining = 0;
-        endRun(false); // ran out of time
+    if (armedConfig.timeRemaining <= 0) {
+        armedConfig.timeRemaining = 0;
+        finishBomb(false); // ran out of time
     }
 }
 
 function renderTimer() {
-    const minutes = Math.floor(runState.timeRemaining / 60);
-    const seconds = runState.timeRemaining % 60;
+    if (!armedConfig) {
+        return;
+    }
+
+    const minutes = Math.floor(armedConfig.timeRemaining / 60);
+    const seconds = armedConfig.timeRemaining % 60;
     const paddedSeconds = seconds < 10 ? "0" + seconds : String(seconds);
     const text = minutes + ":" + paddedSeconds;
 
-    const isRunning = !!runState.timerId;
-    const isWarning = runState.timeRemaining <= 30 && !runState.isPracticeMode;
+    const isRunning = !!armedConfig.timerId;
+    const isWarning = armedConfig.timeRemaining <= 30 && !armedConfig.isPracticeMode;
 
-    // Both LCDs (the small one in-game, the big one on the overview
-    // screen) always show the same value, so switching screens never
-    // shows a stale time.
-    [timerDisplay, overviewTimerDisplay].forEach(function (el) {
+    // The overview LCD always reflects the shared clock. The
+    // in-module LCD only needs updating when a module is actually
+    // active (e.g. right after arming, no module screen exists yet).
+    const displaysToUpdate = [overviewTimerDisplay];
+
+    if (runState) {
+        displaysToUpdate.push(MODULE_REGISTRY[runState.moduleId].timerDisplay);
+    }
+
+    displaysToUpdate.forEach(function (el) {
         el.textContent = text;
         el.classList.toggle("timer-running", isRunning);
         el.classList.toggle("timer-warning", isWarning);
@@ -228,7 +358,10 @@ function renderTimer() {
 
 // ------------------- Strikes -------------------
 function renderStrikes() {
-    strikesDisplay.innerHTML = "";
+    const moduleConfig = MODULE_REGISTRY[runState.moduleId];
+    const strikesDisplayEl = moduleConfig.strikesDisplay;
+
+    strikesDisplayEl.innerHTML = "";
 
     for (let i = 0; i < runState.difficulty.mistakesAllowed; i++) {
         const light = document.createElement("span");
@@ -238,20 +371,31 @@ function renderStrikes() {
             light.classList.add("used");
         }
 
-        strikesDisplay.appendChild(light);
+        strikesDisplayEl.appendChild(light);
     }
 }
 
 // ------------------- Progress -------------------
 function renderProgress() {
-    progressDisplay.textContent =
+    const moduleConfig = MODULE_REGISTRY[runState.moduleId];
+
+    moduleConfig.progressDisplay.textContent =
         runState.correctCount + " / " + runState.questions.length;
 }
 
 // ------------------- Rendering a question -------------------
-function renderQuestion() {
+function renderCurrentQuestion() {
+    const moduleConfig = MODULE_REGISTRY[runState.moduleId];
     const question = runState.questions[runState.currentIndex];
 
+    moduleConfig.renderQuestion(question);
+    moduleConfig.resetInputs();
+
+    runState.isAnswerLocked = false;
+}
+
+// ----- Module 1 (Multiple Choice) rendering -----
+function renderMultipleChoiceQuestion(question) {
     questionTopic.textContent = question.topic;
     questionPrompt.textContent = question.prompt;
 
@@ -288,65 +432,254 @@ function renderQuestion() {
         row.appendChild(label);
         optionList.appendChild(row);
     });
+}
 
-    // reset the shape buttons for the new question
+function resetMultipleChoiceButtons() {
     shapeButtons.forEach(function (button) {
         button.disabled = false;
         button.classList.remove("correct", "wrong");
     });
+}
 
-    runState.isAnswerLocked = false;
+// ----- Module 2 (Fill in the Blanks) rendering -----
+// Unlike the button-based modules, this one builds up an answer
+// letter by letter as the keypad is clicked, so it needs its own bit
+// of state for "what has the player typed so far".
+let module2TypedAnswer = "";
+
+function renderFillBlankQuestion(question) {
+    module2QuestionTopic.textContent = question.topic;
+    module2QuestionPrompt.textContent = question.prompt;
+}
+
+function resetFillBlankInputs() {
+    module2TypedAnswer = "";
+    renderModule2AnswerDisplay();
+
+    keypadKeys.forEach(function (key) {
+        key.disabled = false;
+    });
+
+    module2AnswerDisplay.classList.remove("correct", "wrong");
+}
+
+function renderModule2AnswerDisplay() {
+    const hasTyped = module2TypedAnswer.length > 0;
+
+    module2AnswerDisplay.textContent = hasTyped
+        ? module2TypedAnswer
+        : "type your answer...";
+
+    module2AnswerDisplay.classList.toggle("answer-display-placeholder", !hasTyped);
+}
+
+// ----- Module 4 (True/False) rendering -----
+function renderTrueFalseQuestion(question) {
+    module4QuestionTopic.textContent = question.topic;
+    module4QuestionPrompt.textContent = question.prompt;
+}
+
+function resetTrueFalseButtons() {
+    truefalseButtons.forEach(function (button) {
+        button.disabled = false;
+        button.classList.remove("correct", "wrong");
+    });
 }
 
 // ------------------- Answering -------------------
 shapeButtons.forEach(function (button) {
     button.addEventListener("click", function () {
-        if (!runState || runState.isAnswerLocked) {
+        if (!runState || runState.moduleId !== "module1" || runState.isAnswerLocked) {
             return;
         }
 
-        submitAnswer(button.dataset.optionId, button);
+        const question = runState.questions[runState.currentIndex];
+        const isCorrect = button.dataset.optionId === question.correctOptionId;
+
+        submitAnswer(isCorrect, button, shapeButtons);
     });
 });
 
-function submitAnswer(selectedOptionId, buttonElement) {
-    runState.isAnswerLocked = true;
+truefalseButtons.forEach(function (button) {
+    button.addEventListener("click", function () {
+        if (!runState || runState.moduleId !== "module4" || runState.isAnswerLocked) {
+            return;
+        }
 
+        const question = runState.questions[runState.currentIndex];
+        const selectedAnswer = button.dataset.answer === "true";
+        const isCorrect = selectedAnswer === question.correctAnswer;
+
+        submitAnswer(isCorrect, button, truefalseButtons);
+    });
+});
+
+keypadKeys.forEach(function (key) {
+    key.addEventListener("click", function () {
+        if (!runState || runState.moduleId !== "module2" || runState.isAnswerLocked) {
+            return;
+        }
+
+        const action = key.dataset.action;
+
+        if (action === "backspace") {
+            backspaceModule2Answer();
+            return;
+        }
+
+        if (action === "space") {
+            typeModule2Character(" ");
+            return;
+        }
+
+        if (action === "submit") {
+            submitFillBlankAnswer();
+            return;
+        }
+
+        // a regular letter key
+        typeModule2Character(key.dataset.letter);
+    });
+});
+
+// A physical keyboard works the same as clicking the on-screen keys -
+// same character set (letters + space), same Backspace/Enter actions.
+document.addEventListener("keydown", function (event) {
+    if (!runState || runState.moduleId !== "module2" || runState.isAnswerLocked) {
+        return;
+    }
+
+    if (event.key === "Enter") {
+        event.preventDefault();
+        submitFillBlankAnswer();
+        return;
+    }
+
+    if (event.key === "Backspace") {
+        event.preventDefault();
+        backspaceModule2Answer();
+        return;
+    }
+
+    if (event.key === " ") {
+        event.preventDefault(); // stop the page from scrolling
+        typeModule2Character(" ");
+        return;
+    }
+
+    if (/^[a-zA-Z]$/.test(event.key)) {
+        typeModule2Character(event.key);
+    }
+});
+
+function typeModule2Character(character) {
+    module2TypedAnswer += character.toLowerCase();
+    renderModule2AnswerDisplay();
+}
+
+function backspaceModule2Answer() {
+    module2TypedAnswer = module2TypedAnswer.slice(0, -1);
+    renderModule2AnswerDisplay();
+}
+
+function submitFillBlankAnswer() {
     const question = runState.questions[runState.currentIndex];
-    const isCorrect = selectedOptionId === question.correctOptionId;
+    const isCorrect =
+        module2TypedAnswer.trim().toLowerCase() === question.answer.toLowerCase();
 
-    shapeButtons.forEach(function (button) {
+    keypadKeys.forEach(function (key) {
+        key.disabled = true;
+    });
+
+    module2AnswerDisplay.classList.add(isCorrect ? "correct" : "wrong");
+
+    if (!module2TypedAnswer.trim().length) {
+        module2AnswerDisplay.textContent = "(no answer)";
+        module2AnswerDisplay.classList.remove("answer-display-placeholder");
+    }
+
+    commitAnswer(isCorrect);
+}
+
+// shared by every module: flash the button that was pressed, count
+// the answer, then move on
+function submitAnswer(isCorrect, buttonElement, allButtonsForThisModule) {
+    allButtonsForThisModule.forEach(function (button) {
         button.disabled = true;
     });
 
+    buttonElement.classList.add(isCorrect ? "correct" : "wrong");
+
+    commitAnswer(isCorrect);
+}
+
+// the part every module's submit function shares once its own answer
+// UI has been locked/flashed: lock out further input, count the
+// answer, wait for the flash to be visible, then move to the next
+// question (or end the run)
+function commitAnswer(isCorrect) {
+    runState.isAnswerLocked = true;
+
     if (isCorrect) {
-        buttonElement.classList.add("correct");
         runState.correctCount += 1;
         renderProgress();
     } else {
-        buttonElement.classList.add("wrong");
         registerStrike();
     }
 
-    // small pause so the player can see the correct/wrong flash,
-    // then move on
     setTimeout(function () {
         advanceAfterAnswer();
     }, 700);
 }
 
-function registerStrike() {
-    bombShell.classList.remove("shake");
-    // restart the animation
-    void bombShell.offsetWidth;
-    bombShell.classList.add("shake");
+// Wrong answers cost time off the shared clock, on top of the strike
+// itself - bigger bite on harder difficulties. Expert isn't listed
+// here (penalty of 0): with only 1 mistake allowed on Expert, a
+// wrong answer already ends the run via the strikes check, so a time
+// penalty would never actually get the chance to apply.
+const TIME_PENALTY_SECONDS_BY_DIFFICULTY = {
+    easy: 30,
+    intermediate: 60,
+    hard: 90,
+    expert: 0
+};
 
-    if (runState.isPracticeMode) {
+function registerStrike() {
+    const moduleConfig = MODULE_REGISTRY[runState.moduleId];
+
+    moduleConfig.bombShell.classList.remove("shake");
+    // restart the animation
+    void moduleConfig.bombShell.offsetWidth;
+    moduleConfig.bombShell.classList.add("shake");
+
+    // Strikes are tracked per module (not shared) - runState is
+    // rebuilt fresh every time a module is entered, so this only
+    // ever counts mistakes made in the module you're currently in.
+    runState.strikesUsed += 1;
+    renderStrikes();
+
+    applyWrongAnswerTimePenalty();
+}
+
+// The clock, on the other hand, IS shared - so this docks time off
+// armedConfig regardless of which module the mistake happened in.
+function applyWrongAnswerTimePenalty() {
+    if (armedConfig.isPracticeMode) {
         return;
     }
 
-    runState.strikesUsed += 1;
-    renderStrikes();
+    const penaltySeconds = TIME_PENALTY_SECONDS_BY_DIFFICULTY[armedConfig.difficultyId] || 0;
+
+    if (penaltySeconds <= 0) {
+        return;
+    }
+
+    armedConfig.timeRemaining = Math.max(0, armedConfig.timeRemaining - penaltySeconds);
+    renderTimer();
+
+    if (armedConfig.timeRemaining <= 0) {
+        finishBomb(false); // the penalty burned through what was left
+    }
 }
 
 function advanceAfterAnswer() {
@@ -355,7 +688,7 @@ function advanceAfterAnswer() {
         runState.strikesUsed >= runState.difficulty.mistakesAllowed;
 
     if (isOutOfStrikes) {
-        endRun(false); // exploded
+        finishBomb(false); // this module's mistakes blew the whole bomb
         return;
     }
 
@@ -363,23 +696,87 @@ function advanceAfterAnswer() {
         runState.currentIndex >= runState.questions.length - 1;
 
     if (isLastQuestion) {
-        const isDefused = runState.correctCount === runState.questions.length;
-        endRun(isDefused);
+        // Reaching the last question without tripping the
+        // isOutOfStrikes check above means every mistake so far was
+        // within the allowed limit - that's a successful defusal of
+        // THIS module. Same as "Keep Talking and Nobody Explodes",
+        // it doesn't require a perfect run, just staying under the
+        // strike limit.
+        completeModule(runState.moduleId);
         return;
     }
 
     runState.currentIndex += 1;
-    renderQuestion();
+    renderCurrentQuestion();
 }
 
-// ------------------- Ending a run -------------------
-function endRun(isDefused) {
-    if (runState.timerId) {
-        clearInterval(runState.timerId);
-        runState.timerId = null;
+// Records this module as solved and checks whether that was the last
+// one - the bomb as a whole only counts as defused once every module
+// in MODULE_REGISTRY has been solved this same arm.
+function completeModule(moduleId) {
+    armedConfig.moduleResults[moduleId] = {
+        correctCount: runState.correctCount,
+        totalQuestions: runState.questions.length,
+        strikesUsed: runState.strikesUsed,
+        baseScore: runState.difficulty.baseScore,
+        timeBonusCap: runState.difficulty.timeBonusCap
+    };
+
+    markModuleSolved(moduleId);
+    pauseTimer();
+    runState = null;
+
+    renderModulesSolvedLabel();
+
+    if (isBombFullyDefused()) {
+        finishBomb(true);
+        return;
     }
 
-    const score = calculateScore(isDefused);
+    // Still more modules to go - drop back to the overview so the
+    // player can pick the next one, same as tapping "Back".
+    showScreen(overviewScreen);
+}
+
+function isBombFullyDefused() {
+    return Object.keys(MODULE_REGISTRY).every(function (moduleId) {
+        return !!armedConfig.moduleResults[moduleId];
+    });
+}
+
+function markModuleSolved(moduleId) {
+    const moduleConfig = MODULE_REGISTRY[moduleId];
+
+    moduleConfig.slot.disabled = true;
+    moduleConfig.slot.classList.add("solved");
+
+    const hint = moduleConfig.slot.querySelector(".cell-hint");
+    if (hint) {
+        hint.textContent = "Solved";
+    }
+}
+
+// ------------------- Ending the bomb (defused or exploded) -------------------
+function finishBomb(isDefused) {
+    if (armedConfig.timerId) {
+        clearInterval(armedConfig.timerId);
+        armedConfig.timerId = null;
+    }
+
+    // If a module was mid-question when the bomb exploded, fold its
+    // partial progress into the totals too, so the result screen
+    // still reflects the work done in it.
+    if (runState && !armedConfig.moduleResults[runState.moduleId]) {
+        armedConfig.moduleResults[runState.moduleId] = {
+            correctCount: runState.correctCount,
+            totalQuestions: runState.questions.length,
+            strikesUsed: runState.strikesUsed,
+            baseScore: runState.difficulty.baseScore,
+            timeBonusCap: runState.difficulty.timeBonusCap
+        };
+    }
+
+    const score = calculateOverallScore();
 
     renderResultScreen(isDefused, score);
     saveRunToHistory(isDefused, score);
@@ -387,21 +784,50 @@ function endRun(isDefused) {
     showScreen(resultScreen);
 }
 
-function calculateScore(isDefused) {
-    const difficulty = runState.difficulty;
+// Adds up correctCount/totalQuestions/strikesUsed across every module
+// that was played this arm (solved or, if the bomb exploded,
+// in-progress at the time).
+function getAggregatedResults() {
+    let correctCount = 0;
+    let totalQuestions = 0;
+    let strikesUsed = 0;
 
-    const accuracyMultiplier =
-        runState.correctCount / runState.questions.length;
+    Object.keys(armedConfig.moduleResults).forEach(function (moduleId) {
+        const result = armedConfig.moduleResults[moduleId];
+        correctCount += result.correctCount;
+        totalQuestions += result.totalQuestions;
+        strikesUsed += result.strikesUsed;
+    });
 
-    const timeBonus = runState.isPracticeMode
-        ? 0
-        : (runState.timeRemaining / difficulty.startingTimeSeconds) *
-          difficulty.timeBonusCap;
+    return {
+        correctCount: correctCount,
+        totalQuestions: totalQuestions,
+        strikesUsed: strikesUsed
+    };
+}
 
-    const rawScore =
-        difficulty.baseScore * accuracyMultiplier + timeBonus;
+// One combined score across every module played, each contributing
+// its own baseScore*accuracy plus a share of the time bonus (using
+// the same left-over-time fraction for all of them, since the clock
+// itself is shared).
+function calculateOverallScore() {
+    if (armedConfig.isPracticeMode) {
+        return 0;
+    }
 
-    return Math.round(rawScore);
+    const timeFraction = armedConfig.timeRemaining / armedConfig.startingTimeSeconds;
+    let total = 0;
+
+    Object.keys(armedConfig.moduleResults).forEach(function (moduleId) {
+        const result = armedConfig.moduleResults[moduleId];
+        const accuracy = result.totalQuestions > 0
+            ? result.correctCount / result.totalQuestions
+            : 0;
+
+        total += result.baseScore * accuracy + timeFraction * result.timeBonusCap;
+    });
+
+    return Math.round(total);
 }
 
 function renderResultScreen(isDefused, score) {
@@ -410,31 +836,32 @@ function renderResultScreen(isDefused, score) {
     resultTitle.classList.toggle("exploded", !isDefused);
 
     resultSubtitle.textContent = isDefused
-        ? "Nice work, agent."
+        ? "Nice work, agent - every module is clear."
         : "The bomb got the better of you this time.";
 
-    resultAccuracy.textContent =
-        runState.correctCount + " / " + runState.questions.length;
+    const totals = getAggregatedResults();
 
-    const minutes = Math.floor(runState.timeRemaining / 60);
-    const seconds = runState.timeRemaining % 60;
+    resultAccuracy.textContent = totals.correctCount + " / " + totals.totalQuestions;
+
+    const minutes = Math.floor(armedConfig.timeRemaining / 60);
+    const seconds = armedConfig.timeRemaining % 60;
     const paddedSeconds = seconds < 10 ? "0" + seconds : String(seconds);
-    resultTime.textContent = runState.isPracticeMode
+    resultTime.textContent = armedConfig.isPracticeMode
         ? "N/A (practice)"
         : minutes + ":" + paddedSeconds;
 
-    resultStrikes.textContent = runState.isPracticeMode
+    resultStrikes.textContent = armedConfig.isPracticeMode
         ? "N/A (practice)"
-        : runState.strikesUsed + " / " + runState.difficulty.mistakesAllowed;
+        : String(totals.strikesUsed);
 
-    resultScore.textContent = runState.isPracticeMode ? "N/A (practice)" : score;
+    resultScore.textContent = armedConfig.isPracticeMode ? "N/A (practice)" : score;
 }
 
 // ------------------- Saving progress -------------------
 function saveRunToHistory(isDefused, score) {
     // practice runs are not saved, per the "practice mode" idea of
     // going at your own pace without pressure
-    if (runState.isPracticeMode) {
+    if (armedConfig.isPracticeMode) {
         return;
     }
 
@@ -448,14 +875,26 @@ function saveRunToHistory(isDefused, score) {
 
     const history = JSON.parse(localStorage.getItem(historyKey)) || [];
 
+    const totals = getAggregatedResults();
+
+    const moduleBreakdown = {};
+    Object.keys(armedConfig.moduleResults).forEach(function (moduleId) {
+        const result = armedConfig.moduleResults[moduleId];
+        moduleBreakdown[MODULE_REGISTRY[moduleId].moduleName] = {
+            correctAnswers: result.correctCount,
+            totalQuestions: result.totalQuestions,
+            strikesUsed: result.strikesUsed
+        };
+    });
+
     history.push({
-        module: "module1-multipleChoice",
-        difficulty: runState.difficultyId,
+        difficulty: armedConfig.difficultyId,
         score: score,
-        correctAnswers: runState.correctCount,
-        totalQuestions: runState.questions.length,
-        timeRemainingSeconds: runState.timeRemaining,
-        strikesUsed: runState.strikesUsed,
+        correctAnswers: totals.correctCount,
+        totalQuestions: totals.totalQuestions,
+        timeRemainingSeconds: armedConfig.timeRemaining,
+        strikesUsed: totals.strikesUsed,
+        modules: moduleBreakdown,
         passed: isDefused,
         timestamp: new Date().toISOString()
     });
@@ -464,8 +903,11 @@ function saveRunToHistory(isDefused, score) {
 }
 
 // ------------------- Screen switching -------------------
+// Grabs every element with class "screen" (overview, setup, result,
+// and every module's own game screen), so a future module's screen
+// is handled automatically as long as it has that class.
 function showScreen(screenToShow) {
-    [overviewScreen, setupScreen, gameScreen, resultScreen].forEach(function (screen) {
+    document.querySelectorAll(".screen").forEach(function (screen) {
         screen.classList.add("hidden");
     });
 
@@ -474,8 +916,9 @@ function showScreen(screenToShow) {
 
 retryButton.addEventListener("click", function () {
     // Re-arms the bomb at the same difficulty and drops back to the
-    // overview screen, paused, same as a fresh "Arm Bomb" would.
-    startRun(runState.difficultyId, runState.isPracticeMode);
+    // overview screen, paused, with every module unsolved again -
+    // same as a fresh "Arm Bomb" would give you.
+    armBomb(armedConfig.difficultyId, armedConfig.isPracticeMode);
 });
 
 changeDifficultyButton.addEventListener("click", function () {
@@ -483,22 +926,23 @@ changeDifficultyButton.addEventListener("click", function () {
 });
 
 // ------------------- Bomb overview navigation -------------------
+// Wire up every registered module's slot + back button the same way,
+// so adding a new module to MODULE_REGISTRY is all that's needed.
+Object.keys(MODULE_REGISTRY).forEach(function (moduleId) {
+    const moduleConfig = MODULE_REGISTRY[moduleId];
 
-// Zoom into Module 1 (the only module that's wired up so far) -
-// this is what actually starts the clock ticking
-module1Slot.addEventListener("click", function () {
-    if (!runState) {
-        return;
-    }
+    moduleConfig.slot.addEventListener("click", function () {
+        enterModule(moduleId);
+    });
 
-    showScreen(gameScreen);
-    resumeTimerIfNeeded();
-});
-
-// "Back to Bomb Overview" from mid-run - pause the clock while
-// zoomed out, per the "Keep Talking" rule that only zoomed-in time
-// counts against you
-backToOverviewFromGame.addEventListener("click", function () {
-    pauseTimer();
-    showScreen(overviewScreen);
+    moduleConfig.backButton.addEventListener("click", function () {
+        // "Back to Bomb Overview" mid-run - pause the clock while
+        // zoomed out, per the "Keep Talking" rule that only zoomed-in
+        // time counts against you. This module isn't solved, so its
+        // progress (current question, strikes so far) is simply
+        // dropped - re-entering it later starts that module over.
+        pauseTimer();
+        runState = null;
+        showScreen(overviewScreen);
+    });
 });
