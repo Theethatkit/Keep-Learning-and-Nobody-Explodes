@@ -11,187 +11,304 @@
 
     <title>Linear Data Structures | DataLab</title>
 
-    <!-- CSS -->
-    <link
-        rel="stylesheet"
-        href="../../css/linearCSS/linear.css"
-    >
+    <!-- Shared Navigation CSS -->
+    <link rel="stylesheet" href="../../css/navbar.css">
+
+    <!-- Linear Page CSS -->
+    <link rel="stylesheet" href="../../css/linearCSS/linear.css">
 </head>
 
 <body>
 
-    <!-- ================= NAVIGATION BAR ================= -->
-<header class="navbar">
+    <!-- ================= Navigation Bar ================= -->
 
-    <!-- Logo -->
-    <a href="../../index.html">
-        <img
-            src="../../images/Logo.png"
-            alt="DataLab Logo"
-            class="logo"
-        >
-    </a>
+    <header class="navbar">
 
-    <!-- Navigation links -->
-    <nav class="nav-links">
-
-        <a
-            href="../lessons.html"
-            class="nav-link"
-        >
-            Back
+        <a href="../../index.html" class="logo-link">
+            <img
+                src="../../images/Logo.png"
+                alt="DataLab Logo"
+                class="logo"
+            >
         </a>
 
-        <a
-            href="../lessons.html"
-            class="nav-link active"
-        >
-            Lessons
-        </a>
+        <nav class="nav-links">
+
+            <a href="../../index.html" class="nav-link">
+                Home
+            </a>
+
+            <a href="../lessons.html" class="nav-link active">
+                Lessons
+            </a>
+
+            <a href="../games.html" class="nav-link">
+                Games
+            </a>
+
+            <a href="../team.html" class="nav-link">
+                Team
+            </a>
+
+        </nav>
 
         <a
-            href="../games.html"
-            class="nav-link"
+            href="../login.html"
+            id="authButton"
+            class="login-button"
         >
-            Revision
+            Log in
         </a>
 
-    </nav>
-
-</header>
+    </header>
 
 
-    <!-- ================= MAIN CONTENT ================= -->
+    <!-- ================= Main Content ================= -->
+
     <main class="container">
 
-        <!-- Linear explanation -->
+        <!-- Page Introduction -->
+
         <section class="introduction">
 
+            <a href="../lessons.html" class="back-link">
+                ← Back to Learning Paths
+            </a>
+
             <p class="section-label">
-                LEARNING PATH
+                LINEAR DATA STRUCTURES
             </p>
 
             <h1>
-                What is a Linear Data Structure?
+                Learn Linear Data Structures
             </h1>
 
             <p class="introduction-text">
-                A linear data structure is a type of data structure in which
-                elements are arranged sequentially. Each element is connected
-                to the element before it and the element after it.
+                A linear data structure organizes elements sequentially.
+                Each element normally has one element before it and one
+                element after it, except the first and last elements.
             </p>
 
             <p class="introduction-text">
                 Linear data structures are easy to traverse because their
-                elements can be accessed one by one, starting from the
-                beginning and continuing until the end.
+                elements can be visited one by one from the beginning to
+                the end.
             </p>
 
         </section>
 
 
-        <!-- ================= TOPICS ================= -->
+        <!-- ================= Topic Selection ================= -->
+
         <section class="topics">
 
-            <h2>Choose a topic</h2>
+            <div class="topics-heading">
+
+                <div>
+                    <p class="section-label">
+                        SELECT A LESSON
+                    </p>
+
+                    <h2>Choose a topic</h2>
+                </div>
+
+                <p>
+                    Start with Array or select any topic you want to study.
+                </p>
+
+            </div>
+
 
             <div class="card-grid">
 
                 <!-- Array -->
-                <article class="topic-card">
 
-                    <p class="card-number">
-                        01
-                    </p>
+                <article
+                    class="topic-card"
+                    data-page="array.html"
+                    tabindex="0"
+                >
+
+                    <div class="card-top">
+
+                        <p class="card-number">01</p>
+
+                        <span class="difficulty">
+                            Beginner
+                        </span>
+
+                    </div>
+
+                    <div class="array-icon">
+                        <span>10</span>
+                        <span>20</span>
+                        <span>30</span>
+                    </div>
 
                     <h3>Array</h3>
 
                     <p class="card-description">
-                        An array stores elements in continuous memory
-                        locations. Each element can be accessed using
-                        its index.
+                        An array stores elements of the same type in
+                        contiguous memory locations. Elements can be
+                        accessed directly using their indexes.
                     </p>
 
-                    <a
-                        href="array.html"
-                        class="topic-button"
-                    >
-                        Explore Array →
+                    <div class="topic-details">
+                        <span>Index</span>
+                        <span>O(1) Access</span>
+                        <span>Traversal</span>
+                    </div>
+
+                    <a href="array.html" class="topic-button">
+                        Explore Array
+                        <span>→</span>
                     </a>
 
                 </article>
 
 
                 <!-- Linked List -->
-                <article class="topic-card">
 
-                    <p class="card-number">
-                        02
-                    </p>
+                <article
+                    class="topic-card"
+                    data-page="linked-list.html"
+                    tabindex="0"
+                >
+
+                    <div class="card-top">
+
+                        <p class="card-number">02</p>
+
+                        <span class="difficulty">
+                            Beginner
+                        </span>
+
+                    </div>
+
+                    <div class="linked-list-icon">
+
+                        <span class="list-node">10</span>
+                        <span class="list-arrow">→</span>
+                        <span class="list-node">20</span>
+                        <span class="list-arrow">→</span>
+                        <span class="list-node">30</span>
+
+                    </div>
 
                     <h3>Linked List</h3>
 
                     <p class="card-description">
-                        A linked list stores elements inside nodes.
-                        Each node contains data and a link to the
-                        next node.
+                        A linked list stores elements as nodes connected
+                        using pointers. Nodes do not need to be stored next
+                        to each other in memory.
                     </p>
 
-                    <a
-                        href="linked-list.html"
-                        class="topic-button"
-                    >
-                        Explore Linked List →
+                    <div class="topic-details">
+                        <span>Node</span>
+                        <span>Pointer</span>
+                        <span>Singly</span>
+                        <span>Doubly</span>
+                    </div>
+
+                    <a href="linked-list.html" class="topic-button">
+                        Explore Linked List
+                        <span>→</span>
                     </a>
 
                 </article>
 
 
                 <!-- Stack -->
-                <article class="topic-card">
 
-                    <p class="card-number">
-                        03
-                    </p>
+                <article
+                    class="topic-card"
+                    data-page="stack.html"
+                    tabindex="0"
+                >
+
+                    <div class="card-top">
+
+                        <p class="card-number">03</p>
+
+                        <span class="difficulty">
+                            Beginner
+                        </span>
+
+                    </div>
+
+                    <div class="stack-icon">
+                        <span>30</span>
+                        <span>20</span>
+                        <span>10</span>
+                    </div>
 
                     <h3>Stack</h3>
 
                     <p class="card-description">
-                        A stack follows the Last In, First Out
-                        principle. The newest element added to the
-                        stack is removed first.
+                        A stack follows LIFO: Last In, First Out.
+                        Elements are inserted and removed from the same
+                        side, called the top.
                     </p>
 
-                    <a
-                        href="stack.html"
-                        class="topic-button"
-                    >
-                        Explore Stack →
+                    <div class="topic-details">
+                        <span>LIFO</span>
+                        <span>Push</span>
+                        <span>Pop</span>
+                        <span>Peek</span>
+                    </div>
+
+                    <a href="stack.html" class="topic-button">
+                        Explore Stack
+                        <span>→</span>
                     </a>
 
                 </article>
 
 
                 <!-- Queue -->
-                <article class="topic-card">
 
-                    <p class="card-number">
-                        04
-                    </p>
+                <article
+                    class="topic-card"
+                    data-page="queue.html"
+                    tabindex="0"
+                >
+
+                    <div class="card-top">
+
+                        <p class="card-number">04</p>
+
+                        <span class="difficulty">
+                            Beginner
+                        </span>
+
+                    </div>
+
+                    <div class="queue-icon">
+                        <span class="queue-label">Front</span>
+                        <span class="queue-node">10</span>
+                        <span class="queue-node">20</span>
+                        <span class="queue-node">30</span>
+                        <span class="queue-label">Rear</span>
+                    </div>
 
                     <h3>Queue</h3>
 
                     <p class="card-description">
-                        A queue follows the First In, First Out
-                        principle. The oldest element in the queue
-                        is removed first.
+                        A queue follows FIFO: First In, First Out.
+                        Elements enter from the rear and leave from
+                        the front.
                     </p>
 
-                    <a
-                        href="queue.html"
-                        class="topic-button"
-                    >
-                        Explore Queue →
+                    <div class="topic-details">
+                        <span>FIFO</span>
+                        <span>Enqueue</span>
+                        <span>Dequeue</span>
+                        <span>Front</span>
+                    </div>
+
+                    <a href="queue.html" class="topic-button">
+                        Explore Queue
+                        <span>→</span>
                     </a>
 
                 </article>
@@ -201,6 +318,20 @@
         </section>
 
     </main>
+
+
+    <!-- ================= Footer ================= -->
+
+    <footer>
+        <p>
+            DataLab — Learn Data Structures Interactively
+        </p>
+    </footer>
+
+
+    <!-- Linear Page JavaScript -->
+
+    <script src="../../js/linearJS/linear.js"></script>
 
 </body>
 

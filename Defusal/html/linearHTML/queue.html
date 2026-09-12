@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Queue | DataLab</title>
+
+    <!-- Shared Navigation CSS -->
+    <link rel="stylesheet" href="../../css/navbar.css">
+
+    <!-- Queue Page CSS -->
+    <link rel="stylesheet" href="../../css/linearCSS/queue.css">
+</head>
+
+<body>
+
+    <!-- ================= Navigation Bar ================= -->
+
+    <header class="navbar">
+
+        <a href="../../index.html" class="logo-link">
+            <img
+                src="../../images/Logo.png"
+                alt="DataLab Logo"
+                class="logo"
+            >
+        </a>
+
+        <nav class="nav-links">
+
+            <a href="../../index.html" class="nav-link">
+                Home
+            </a>
+
+            <a href="../lessons.html" class="nav-link active">
+                Lessons
+            </a>
+
+            <a href="../games.html" class="nav-link">
+                Games
+            </a>
+
+            <a href="../team.html" class="nav-link">
+                Team
+            </a>
+
+        </nav>
+
+        <a
+            href="../login.html"
+            id="authButton"
+            class="login-button"
+        >
+            Log in
+        </a>
+
+    </header>
+
+
+    <!-- ================= Main Content ================= -->
+
+    <main class="container">
+
+        <!-- Page Header -->
+
+        <section class="page-header">
+
+            <a href="linear.html" class="back-link">
+                ← Back to Linear Structures
+            </a>
+
+            <p class="category">
+                LINEAR DATA STRUCTURE
+            </p>
+
+            <h1>Queue</h1>
+
+            <p>
+                Learn how a queue processes elements using the
+                First In, First Out principle.
+            </p>
+
+        </section>
+
+
+        <!-- ================= Introduction ================= -->
+
+        <section class="lesson-card">
+
+            <h2>Introduction</h2>
+
+            <p>
+                A queue is a linear data structure that processes
+                elements in the order they are received. It follows
+                FIFO: First In, First Out.
+            </p>
+
+            <p>
+                The first element added to the queue is the first
+                element to be removed.
+            </p>
+
+        </section>
+
+
+        <!-- ================= FIFO Principle ================= -->
+
+        <section class="lesson-card">
+
+            <h2>FIFO Principle</h2>
+
+            <p>
+                A queue works like a line of people waiting for service.
+                The first person to enter the line is the first person
+                to leave the line.
+            </p>
+
+            <div class="static-queue">
+
+                <div class="queue-end">
+                    <span>Remove</span>
+                    <strong>Front</strong>
+                </div>
+
+                <span class="flow-arrow">←</span>
+
+                <div class="queue-element first-element">
+                    10
+                </div>
+
+                <div class="queue-element">
+                    20
+                </div>
+
+                <div class="queue-element">
+                    30
+                </div>
+
+                <div class="queue-element newest-element">
+                    40
+                </div>
+
+                <span class="flow-arrow">←</span>
+
+                <div class="queue-end">
+                    <span>Insert</span>
+                    <strong>Rear</strong>
+                </div>
+
+            </div>
+
+            <p class="example-caption">
+                Elements enter at the rear and leave from the front.
+            </p>
+
+        </section>
+
+
+        <!-- ================= Structure ================= -->
+
+        <section class="lesson-card">
+
+            <h2>Queue Structure</h2>
+
+            <div class="structure-grid">
+
+                <article class="structure-item">
+
+                    <h3>Front</h3>
+
+                    <p>
+                        The position of the next element to be removed.
+                    </p>
+
+                </article>
+
+                <article class="structure-item">
+
+                    <h3>Rear</h3>
+
+                    <p>
+                        The position where a new element is inserted.
+                    </p>
+
+                </article>
+
+                <article class="structure-item">
+
+                    <h3>FIFO</h3>
+
+                    <p>
+                        The first element inserted is removed first.
+                    </p>
+
+                </article>
+
+                <article class="structure-item">
+
+                    <h3>Flow</h3>
+
+                    <p>
+                        Insert at Rear → Queue → Remove from Front.
+                    </p>
+
+                </article>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= Operations ================= -->
+
+        <section class="lesson-card">
+
+            <h2>Basic Operations and Time Complexity</h2>
+
+            <div class="operation-grid">
+
+                <article class="operation-card">
+
+                    <h3>Enqueue</h3>
+
+                    <p>
+                        Add a new element to the rear of the queue.
+                    </p>
+
+                    <span class="complexity">O(1)</span>
+
+                </article>
+
+                <article class="operation-card">
+
+                    <h3>Dequeue</h3>
+
+                    <p>
+                        Remove the element at the front of the queue.
+                    </p>
+
+                    <span class="complexity">O(1)</span>
+
+                </article>
+
+                <article class="operation-card">
+
+                    <h3>Peek / Front</h3>
+
+                    <p>
+                        Access the front element without removing it.
+                    </p>
+
+                    <span class="complexity">O(1)</span>
+
+                </article>
+
+                <article class="operation-card">
+
+                    <h3>isEmpty</h3>
+
+                    <p>
+                        Check whether the queue contains no elements.
+                    </p>
+
+                    <span class="complexity">O(1)</span>
+
+                </article>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= Implementation ================= -->
+
+        <section class="lesson-card">
+
+            <h2>Implementation</h2>
+
+            <div class="implementation-table-container">
+
+                <table class="implementation-table">
+
+                    <thead>
+                        <tr>
+                            <th>Implementation</th>
+                            <th>Enqueue</th>
+                            <th>Dequeue</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td>Array: rear at the end</td>
+                            <td><span>O(1)</span></td>
+                            <td><span>O(n)</span></td>
+                            <td>
+                                Dequeue requires the remaining elements
+                                to be shifted.
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>Array: rear at the beginning</td>
+                            <td><span>O(n)</span></td>
+                            <td><span>O(1)</span></td>
+                            <td>
+                                Enqueue requires the existing elements
+                                to be shifted.
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>Singly Linked List</td>
+                            <td><span>O(1)</span></td>
+                            <td><span>O(1)</span></td>
+                            <td>
+                                Use the head as the front and the tail
+                                as the rear.
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <p class="table-note">
+                With a simple array, one operation normally requires
+                O(n) shifting. A linked list with head and tail pointers
+                supports both operations in O(1).
+            </p>
+
+        </section>
+
+
+        <!-- ================= Interactive Visualization ================= -->
+
+        <section class="lesson-card">
+
+            <div class="visualization-heading">
+
+                <div>
+                    <p class="small-heading">
+                        INTERACTIVE LEARNING
+                    </p>
+
+                    <h2>Queue Visualization</h2>
+                </div>
+
+                <span class="visualization-label">
+                    FIFO
+                </span>
+
+            </div>
+
+
+            <div class="queue-stage">
+
+                <div class="stage-end">
+                    <span>Remove</span>
+                    <strong>Front</strong>
+                </div>
+
+                <span class="stage-arrow">←</span>
+
+                <div
+                    id="queueContainer"
+                    class="interactive-queue"
+                ></div>
+
+                <span class="stage-arrow">←</span>
+
+                <div class="stage-end">
+                    <span>Insert</span>
+                    <strong>Rear</strong>
+                </div>
+
+            </div>
+
+
+            <p
+                id="visualizationResult"
+                class="visualization-result"
+            >
+                Select an operation to interact with the queue.
+            </p>
+
+
+            <div class="input-controls">
+
+                <div class="input-group">
+
+                    <label for="valueInput">
+                        Value
+                    </label>
+
+                    <input
+                        type="number"
+                        id="valueInput"
+                        placeholder="Example: 40"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="operation-buttons">
+
+                <button type="button" id="enqueueButton">
+                    Enqueue
+                </button>
+
+                <button type="button" id="dequeueButton">
+                    Dequeue
+                </button>
+
+                <button type="button" id="peekButton">
+                    Peek
+                </button>
+
+                <button type="button" id="isEmptyButton">
+                    isEmpty
+                </button>
+
+                <button
+                    type="button"
+                    id="resetButton"
+                    class="secondary-button"
+                >
+                    Reset
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= Applications ================= -->
+
+        <section class="lesson-card">
+
+            <h2>Applications</h2>
+
+            <div class="application-grid">
+
+                <article class="small-card">
+
+                    <h3>Server Requests</h3>
+
+                    <p>
+                        Requests can be processed one by one in their
+                        order of arrival.
+                    </p>
+
+                </article>
+
+                <article class="small-card">
+
+                    <h3>Music Player</h3>
+
+                    <p>
+                        Songs can be played according to their order
+                        in the queue.
+                    </p>
+
+                </article>
+
+                <article class="small-card">
+
+                    <h3>Waiting Lines</h3>
+
+                    <p>
+                        The first person to enter the line is served
+                        first.
+                    </p>
+
+                </article>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= Advantages and Disadvantages ================= -->
+
+        <section class="comparison-grid">
+
+            <article class="lesson-card advantage-card">
+
+                <h2>Advantages</h2>
+
+                <ul class="information-list">
+
+                    <li>
+                        Maintains the order in which elements arrive.
+                    </li>
+
+                    <li>
+                        Enqueue and dequeue can take O(1) with a linked
+                        list implementation.
+                    </li>
+
+                    <li>
+                        Suitable for scheduling and sequential processing.
+                    </li>
+
+                </ul>
+
+            </article>
+
+
+            <article class="lesson-card disadvantage-card">
+
+                <h2>Disadvantages</h2>
+
+                <ul class="information-list">
+
+                    <li>
+                        A simple array implementation may require O(n)
+                        shifting.
+                    </li>
+
+                    <li>
+                        A fixed-size array queue can overflow.
+                    </li>
+
+                    <li>
+                        Elements in the middle cannot be accessed directly.
+                    </li>
+
+                </ul>
+
+            </article>
+
+        </section>
+
+
+        <!-- ================= Bottom Navigation ================= -->
+
+        <div class="bottom-navigation">
+
+            <a href="stack.html" class="back-button">
+                ← Previous: Stack
+            </a>
+
+            <a href="linear.html" class="next-button">
+                Back to Linear Structures →
+            </a>
+
+        </div>
+
+    </main>
+
+
+    <!-- ================= Footer ================= -->
+
+    <footer>
+        <p>
+            DataLab — Learn Data Structures Interactively
+        </p>
+    </footer>
+
+
+    <script src="../../js/linearJS/queue.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Stack | DataLab</title>
+
+    <!-- Shared Navigation CSS -->
+    <link rel="stylesheet" href="../../css/navbar.css">
+
+    <!-- Stack Page CSS -->
+    <link rel="stylesheet" href="../../css/linearCSS/stack.css">
+</head>
+
+<body>
+
+    <!-- ================= Navigation Bar ================= -->
+
+    <header class="navbar">
+
+        <a href="../../index.html" class="logo-link">
+            <img
+                src="../../images/Logo.png"
+                alt="DataLab Logo"
+                class="logo"
+            >
+        </a>
+
+        <nav class="nav-links">
+
+            <a href="../../index.html" class="nav-link">
+                Home
+            </a>
+
+            <a href="../lessons.html" class="nav-link active">
+                Lessons
+            </a>
+
+            <a href="../games.html" class="nav-link">
+                Games
+            </a>
+
+            <a href="../team.html" class="nav-link">
+                Team
+            </a>
+
+        </nav>
+
+        <a
+            href="../login.html"
+            id="authButton"
+            class="login-button"
+        >
+            Log in
+        </a>
+
+    </header>
+
+
+    <!-- ================= Main Content ================= -->
+
+    <main class="container">
+
+        <!-- Page Header -->
+
+        <section class="page-header">
+
+            <a href="linear.html" class="back-link">
+                ← Back to Linear Structures
+            </a>
+
+            <p class="category">
+                LINEAR DATA STRUCTURE
+            </p>
+
+            <h1>Stack</h1>
+
+            <p>
+                Learn how a stack follows the Last In, First Out
+                principle and performs all operations from the top.
+            </p>
+
+        </section>
+
+
+        <!-- ================= Introduction ================= -->
+
+        <section class="lesson-card">
+
+            <h2>Introduction</h2>
+
+            <p>
+                A stack is a linear data structure where elements are
+                inserted and removed from the same side. It follows the
+                LIFO principle: Last In, First Out.
+            </p>
+
+            <p>
+                This means that the most recently added element is the
+                first element to be removed.
+            </p>
+
+        </section>
+
+
+        <!-- ================= LIFO Principle ================= -->
+
+        <section class="lesson-card">
+
+            <h2>LIFO Principle</h2>
+
+            <div class="principle-layout">
+
+                <div class="principle-text">
+
+                    <ul class="information-list">
+
+                        <li>
+                            New elements are pushed onto the top.
+                        </li>
+
+                        <li>
+                            Elements are also removed from the top.
+                        </li>
+
+                        <li>
+                            The latest element added is removed first.
+                        </li>
+
+                        <li>
+                            The oldest element remains at the bottom.
+                        </li>
+
+                    </ul>
+
+                </div>
+
+
+                <div class="static-stack">
+
+                    <span class="stack-label">Top</span>
+
+                    <div class="stack-element newest">
+                        40
+                    </div>
+
+                    <div class="stack-element">
+                        30
+                    </div>
+
+                    <div class="stack-element">
+                        20
+                    </div>
+
+                    <div class="stack-element">
+                        10
+                    </div>
+
+                    <span class="stack-label">Bottom</span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= Structure ================= -->
+
+        <section class="lesson-card">
+
+            <h2>Stack Structure</h2>
+
+            <div class="structure-grid">
+
+                <article class="structure-item">
+
+                    <h3>Top</h3>
+
+                    <p>
+                        The side where push, pop and peek operations
+                        are performed.
+                    </p>
+
+                </article>
+
+                <article class="structure-item">
+
+                    <h3>Bottom</h3>
+
+                    <p>
+                        The oldest element stored inside the stack.
+                    </p>
+
+                </article>
+
+                <article class="structure-item">
+
+                    <h3>LIFO</h3>
+
+                    <p>
+                        The last element inserted is the first one
+                        removed.
+                    </p>
+
+                </article>
+
+                <article class="structure-item">
+
+                    <h3>One Open End</h3>
+
+                    <p>
+                        Insertion and deletion occur at the same end.
+                    </p>
+
+                </article>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= Operations ================= -->
+
+        <section class="lesson-card">
+
+            <h2>Basic Operations and Time Complexity</h2>
+
+            <div class="operation-grid">
+
+                <article class="operation-card">
+
+                    <h3>Push</h3>
+
+                    <p>
+                        Add a new element to the top of the stack.
+                    </p>
+
+                    <span class="complexity">O(1)</span>
+
+                </article>
+
+                <article class="operation-card">
+
+                    <h3>Pop</h3>
+
+                    <p>
+                        Remove the element currently at the top.
+                    </p>
+
+                    <span class="complexity">O(1)</span>
+
+                </article>
+
+                <article class="operation-card">
+
+                    <h3>Peek / Top</h3>
+
+                    <p>
+                        Read the top element without removing it.
+                    </p>
+
+                    <span class="complexity">O(1)</span>
+
+                </article>
+
+                <article class="operation-card">
+
+                    <h3>isEmpty</h3>
+
+                    <p>
+                        Check whether the stack contains no elements.
+                    </p>
+
+                    <span class="complexity">O(1)</span>
+
+                </article>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= Implementation ================= -->
+
+        <section class="lesson-card">
+
+            <h2>Implementation</h2>
+
+            <div class="implementation-grid">
+
+                <article class="small-card">
+
+                    <h3>Array</h3>
+
+                    <p>
+                        An array can implement a stack by using its final
+                        index as the top. Push and pop at the end normally
+                        take O(1).
+                    </p>
+
+                </article>
+
+                <article class="small-card">
+
+                    <h3>Dynamic Array</h3>
+
+                    <p>
+                        Push takes O(1) amortized time. Resizing occasionally
+                        takes O(n), but most push operations take O(1).
+                    </p>
+
+                </article>
+
+                <article class="small-card">
+
+                    <h3>Linked List</h3>
+
+                    <p>
+                        A linked list can use its head as the top, allowing
+                        push and pop operations in O(1).
+                    </p>
+
+                </article>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= Interactive Visualization ================= -->
+
+        <section class="lesson-card">
+
+            <div class="visualization-heading">
+
+                <div>
+                    <p class="small-heading">
+                        INTERACTIVE LEARNING
+                    </p>
+
+                    <h2>Stack Visualization</h2>
+                </div>
+
+                <span class="visualization-label">
+                    LIFO
+                </span>
+
+            </div>
+
+
+            <div class="stack-stage">
+
+                <span class="stage-label">Top</span>
+
+                <div
+                    id="stackContainer"
+                    class="interactive-stack"
+                ></div>
+
+                <span class="stage-label">Bottom</span>
+
+            </div>
+
+
+            <p
+                id="visualizationResult"
+                class="visualization-result"
+            >
+                Select an operation to interact with the stack.
+            </p>
+
+
+            <div class="input-controls">
+
+                <div class="input-group">
+
+                    <label for="valueInput">
+                        Value
+                    </label>
+
+                    <input
+                        type="number"
+                        id="valueInput"
+                        placeholder="Example: 40"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="operation-buttons">
+
+                <button type="button" id="pushButton">
+                    Push
+                </button>
+
+                <button type="button" id="popButton">
+                    Pop
+                </button>
+
+                <button type="button" id="peekButton">
+                    Peek
+                </button>
+
+                <button type="button" id="isEmptyButton">
+                    isEmpty
+                </button>
+
+                <button
+                    type="button"
+                    id="resetButton"
+                    class="secondary-button"
+                >
+                    Reset
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= Applications ================= -->
+
+        <section class="lesson-card">
+
+            <h2>Applications</h2>
+
+            <div class="application-grid">
+
+                <article class="small-card">
+
+                    <h3>Browser Back Button</h3>
+
+                    <p>
+                        Visited pages are pushed onto a stack. Pressing
+                        Back pops the current page and returns to the
+                        previous page.
+                    </p>
+
+                </article>
+
+                <article class="small-card">
+
+                    <h3>Function Call Stack</h3>
+
+                    <p>
+                        The most recently called function finishes before
+                        execution returns to the previous function.
+                    </p>
+
+                </article>
+
+                <article class="small-card">
+
+                    <h3>Undo and Redo</h3>
+
+                    <p>
+                        Recent actions can be stored and removed in
+                        reverse order.
+                    </p>
+
+                </article>
+
+                <article class="small-card">
+
+                    <h3>Expression Evaluation</h3>
+
+                    <p>
+                        Stacks help process brackets, operators and
+                        mathematical expressions.
+                    </p>
+
+                </article>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= Advantages and Disadvantages ================= -->
+
+        <section class="comparison-grid">
+
+            <article class="lesson-card advantage-card">
+
+                <h2>Advantages</h2>
+
+                <ul class="information-list">
+
+                    <li>
+                        Push, pop and peek take O(1).
+                    </li>
+
+                    <li>
+                        It can be implemented easily using an array.
+                    </li>
+
+                    <li>
+                        It naturally supports undo, browser history and
+                        nested function calls.
+                    </li>
+
+                </ul>
+
+            </article>
+
+
+            <article class="lesson-card disadvantage-card">
+
+                <h2>Disadvantages</h2>
+
+                <ul class="information-list">
+
+                    <li>
+                        A static array implementation has a fixed size.
+                    </li>
+
+                    <li>
+                        Dynamic array resizing occasionally takes O(n).
+                    </li>
+
+                    <li>
+                        Random access is not supported because only the
+                        top element is directly available.
+                    </li>
+
+                </ul>
+
+            </article>
+
+        </section>
+
+
+        <!-- ================= Bottom Navigation ================= -->
+
+        <div class="bottom-navigation">
+
+            <a href="linked-list.html" class="back-button">
+                ← Previous: Linked List
+            </a>
+
+            <a href="queue.html" class="next-button">
+                Next: Queue →
+            </a>
+
+        </div>
+
+    </main>
+
+
+    <!-- ================= Footer ================= -->
+
+    <footer>
+        <p>
+            DataLab — Learn Data Structures Interactively
+        </p>
+    </footer>
+
+
+    <script src="../../js/linearJS/stack.js"></script>
+
+</body>
+
+</html>

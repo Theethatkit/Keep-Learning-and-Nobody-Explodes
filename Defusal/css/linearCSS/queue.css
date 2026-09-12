@@ -1,0 +1,1003 @@
+/* ================= General Settings ================= */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    min-height: 100vh;
+
+    color: #cbd5e1;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    line-height: 1.7;
+
+    background:
+        radial-gradient(
+            circle at top,
+            rgba(8, 145, 178, 0.15),
+            transparent 35%
+        ),
+        #020617;
+}
+
+button,
+input {
+    font: inherit;
+}
+
+
+/* ================= Main Layout ================= */
+
+.container {
+    width: min(1100px, calc(100% - 40px));
+    margin: 0 auto;
+    padding: 70px 0;
+}
+
+.page-header {
+    max-width: 800px;
+    margin-bottom: 48px;
+}
+
+.back-link {
+    display: inline-block;
+
+    margin-bottom: 36px;
+
+    color: #94a3b8;
+    font-size: 14px;
+
+    transition:
+        color 0.25s ease,
+        transform 0.25s ease;
+}
+
+.back-link:hover {
+    color: #22d3ee;
+    transform: translateX(-4px);
+}
+
+.category,
+.small-heading {
+    margin-bottom: 7px;
+
+    color: #22d3ee;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+.page-header h1 {
+    margin-bottom: 18px;
+
+    color: #f8fafc;
+    font-size: clamp(52px, 8vw, 82px);
+    line-height: 1;
+}
+
+.page-header > p:last-child {
+    color: #94a3b8;
+    font-size: 18px;
+}
+
+
+/* ================= Lesson Cards ================= */
+
+.lesson-card {
+    margin-bottom: 28px;
+    padding: 34px;
+
+    background-color: rgba(15, 23, 42, 0.82);
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    border-radius: 20px;
+
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+
+    transition:
+        transform 0.3s ease,
+        border-color 0.3s ease;
+}
+
+.lesson-card:hover {
+    border-color: rgba(34, 211, 238, 0.35);
+    transform: translateY(-4px);
+}
+
+.lesson-card h2 {
+    margin-bottom: 16px;
+
+    color: #f8fafc;
+    font-size: 27px;
+}
+
+.lesson-card h3 {
+    color: #f8fafc;
+}
+
+.lesson-card p {
+    margin-bottom: 10px;
+    color: #94a3b8;
+}
+
+
+/* ================= Static Queue ================= */
+
+.static-queue {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+
+    margin: 30px 0 18px;
+    padding: 28px;
+
+    background-color: rgba(2, 6, 23, 0.55);
+    border: 1px dashed rgba(34, 211, 238, 0.25);
+    border-radius: 14px;
+}
+
+.queue-element {
+    display: grid;
+    place-items: center;
+
+    width: 72px;
+    height: 62px;
+
+    color: #f8fafc;
+    font-weight: 700;
+
+    background-color: #0f172a;
+    border-top: 2px solid #22d3ee;
+    border-bottom: 2px solid #22d3ee;
+    border-left: 1px solid #22d3ee;
+}
+
+.queue-element:last-of-type {
+    border-right: 1px solid #22d3ee;
+}
+
+.first-element {
+    color: #082f49;
+    background-color: #22d3ee;
+}
+
+.newest-element {
+    border-right: 2px solid #22d3ee;
+}
+
+.queue-end,
+.stage-end {
+    display: grid;
+
+    color: #94a3b8;
+    text-align: center;
+    font-size: 11px;
+}
+
+.queue-end strong,
+.stage-end strong {
+    color: #67e8f9;
+    font-size: 13px;
+}
+
+.flow-arrow,
+.stage-arrow {
+    margin: 0 12px;
+
+    color: #22d3ee;
+    font-size: 24px;
+}
+
+.example-caption {
+    text-align: center;
+    font-size: 14px;
+}
+
+
+/* ================= Structure ================= */
+
+.structure-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+}
+
+.structure-item {
+    padding: 18px;
+
+    background-color: rgba(2, 6, 23, 0.6);
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    border-radius: 12px;
+}
+
+.structure-item h3 {
+    margin-bottom: 5px;
+    font-size: 16px;
+}
+
+.structure-item p {
+    font-size: 14px;
+}
+
+
+/* ================= Operation Cards ================= */
+
+.operation-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+
+    margin-top: 24px;
+}
+
+.operation-card {
+    position: relative;
+
+    min-height: 155px;
+    padding: 22px;
+
+    background-color: rgba(2, 6, 23, 0.65);
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    border-radius: 14px;
+}
+
+.operation-card h3 {
+    margin-bottom: 8px;
+}
+
+.operation-card p {
+    padding-right: 60px;
+    padding-bottom: 25px;
+    font-size: 14px;
+}
+
+.complexity {
+    position: absolute;
+    right: 18px;
+    bottom: 16px;
+
+    padding: 4px 12px;
+
+    color: #67e8f9;
+    font-family: monospace;
+    font-weight: 700;
+
+    background-color: rgba(8, 145, 178, 0.15);
+    border-radius: 20px;
+}
+
+
+/* ================= Implementation Table ================= */
+
+.implementation-table-container {
+    margin-top: 24px;
+    overflow-x: auto;
+}
+
+.implementation-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.implementation-table th,
+.implementation-table td {
+    padding: 15px;
+
+    text-align: left;
+
+    border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+}
+
+.implementation-table th {
+    color: #22d3ee;
+    font-size: 12px;
+    letter-spacing: 1px;
+}
+
+.implementation-table td {
+    color: #94a3b8;
+}
+
+.implementation-table td:first-child {
+    color: #e2e8f0;
+    font-weight: 700;
+}
+
+.implementation-table td span {
+    display: inline-block;
+
+    padding: 3px 10px;
+
+    color: #67e8f9;
+    font-family: monospace;
+    font-weight: 700;
+
+    background-color: rgba(8, 145, 178, 0.15);
+    border-radius: 999px;
+}
+
+.table-note {
+    margin-top: 18px;
+    font-size: 14px;
+}
+
+
+/* ================= Interactive Queue ================= */
+
+.visualization-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.visualization-heading h2 {
+    margin-bottom: 0;
+}
+
+.visualization-label {
+    padding: 6px 13px;
+
+    color: #67e8f9;
+    font-size: 12px;
+
+    background-color: rgba(34, 211, 238, 0.1);
+    border-radius: 20px;
+}
+
+.queue-stage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 200px;
+    margin: 28px 0 18px;
+    padding: 22px;
+
+    overflow-x: auto;
+
+    background-color: rgba(2, 6, 23, 0.55);
+    border: 1px dashed rgba(34, 211, 238, 0.25);
+    border-radius: 14px;
+}
+
+.interactive-queue {
+    display: flex;
+    align-items: center;
+}
+
+.queue-node {
+    display: grid;
+    place-items: center;
+
+    width: 72px;
+    height: 62px;
+
+    color: #f8fafc;
+    font-weight: 700;
+
+    background-color: #0f172a;
+    border-top: 2px solid #22d3ee;
+    border-bottom: 2px solid #22d3ee;
+    border-left: 1px solid #22d3ee;
+
+    transition:
+        color 0.25s ease,
+        background-color 0.25s ease,
+        transform 0.25s ease;
+}
+
+.queue-node:first-child {
+    border-left: 2px solid #22d3ee;
+    border-radius: 9px 0 0 9px;
+}
+
+.queue-node:last-child {
+    border-right: 2px solid #22d3ee;
+    border-radius: 0 9px 9px 0;
+}
+
+.queue-node.selected {
+    color: #082f49;
+
+    background-color: #22d3ee;
+
+    box-shadow:
+        0 0 24px rgba(34, 211, 238, 0.35);
+}
+
+.empty-queue {
+    min-width: 250px;
+    padding: 30px;
+
+    color: #64748b;
+    text-align: center;
+}
+
+
+/* ================= Result Message ================= */
+
+.visualization-result {
+    min-height: 56px;
+    padding: 14px;
+
+    color: #94a3b8;
+    text-align: center;
+
+    background-color: rgba(2, 6, 23, 0.65);
+    border: 1px solid transparent;
+    border-radius: 10px;
+}
+
+.visualization-result.result-success {
+    color: #a7f3d0;
+
+    background-color: rgba(16, 185, 129, 0.1);
+    border-color: rgba(52, 211, 153, 0.25);
+}
+
+.visualization-result.result-error {
+    color: #fecaca;
+
+    background-color: rgba(239, 68, 68, 0.1);
+    border-color: rgba(248, 113, 113, 0.25);
+}
+
+
+/* ================= Input ================= */
+
+.input-controls {
+    display: flex;
+    justify-content: center;
+
+    margin-top: 22px;
+}
+
+.input-group {
+    display: grid;
+    gap: 7px;
+
+    width: min(220px, 100%);
+}
+
+.input-group label {
+    color: #cbd5e1;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 11px 13px;
+
+    color: #f8fafc;
+
+    background-color: #020617;
+    border: 120px;
+    flex-shrink: 0;
+}
+
+.queue-end strong,
+.stage-end strong {
+    color: #67e8f9;
+    font-size: 13px;
+}
+
+.flow-arrow,
+.stage-arrow {
+    margin: 0 12px;
+
+    color: #22d3ee;
+    font-size: 24px;
+
+    flex-shrink: 0;
+}
+
+.example-caption {
+    text-align: center;
+    font-size: 14px;
+}
+
+
+/* ================= Structure ================= */
+
+.structure-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+}
+
+.structure-item {
+    padding: 18px;
+
+    background-color: rgba(2, 6, 23, 0.6);
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    border-radius: 12px;
+}
+
+.structure-item h3 {
+    margin-bottom: 5px;
+    font-size: 16px;
+}
+
+.structure-item p {
+    font-size: 14px;
+}
+
+
+/* ================= Operation Cards ================= */
+
+.operation-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+
+    margin-top: 24px;
+}
+
+.operation-card {
+    position: relative;
+
+    min-height: 155px;
+    padding: 22px;
+
+    background-color: rgba(2, 6, 23, 0.65);
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    border-radius: 14px;
+}
+
+.operation-card h3 {
+    margin-bottom: 8px;
+}
+
+.operation-card p {
+    padding-right: 60px;
+    padding-bottom: 25px;
+    font-size: 14px;
+}
+
+.complexity {
+    position: absolute;
+    right: 18px;
+    bottom: 16px;
+
+    padding: 4px 12px;
+
+    color: #67e8f9;
+    font-family: monospace;
+    font-weight: 700;
+
+    background-color: rgba(8, 145, 178, 0.15);
+    border-radius: 20px;
+}
+
+
+/* ================= Implementation Table ================= */
+
+.implementation-table-container {
+    margin-top: 24px;
+    overflow-x: auto;
+}
+
+.implementation-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.implementation-table th,
+.implementation-table td {
+    padding: 15px;
+
+    text-align: left;
+
+    border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+}
+
+.implementation-table th {
+    color: #22d3ee;
+    font-size: 12px;
+    letter-spacing: 1px;
+}
+
+.implementation-table td {
+    color: #94a3b8;
+}
+
+.implementation-table td:first-child {
+    color: #e2e8f0;
+    font-weight: 700;
+}
+
+.implementation-table td span {
+    display: inline-block;
+
+    padding: 3px 10px;
+
+    color: #67e8f9;
+    font-family: monospace;
+    font-weight: 700;
+
+    background-color: rgba(8, 145, 178, 0.15);
+    border-radius: 999px;
+}
+
+.table-note {
+    margin-top: 18px;
+    font-size: 14px;
+}
+
+
+/* ================= Interactive Queue ================= */
+
+.visualization-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.visualization-heading h2 {
+    margin-bottom: 0;
+}
+
+.visualization-label {
+    padding: 6px 13px;
+
+    color: #67e8f9;
+    font-size: 12px;
+
+    background-color: rgba(34, 211, 238, 0.1);
+    border-radius: 20px;
+}
+
+.queue-stage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 200px;
+    margin: 28px 0 18px;
+    padding: 22px;
+
+    overflow-x: auto;
+
+    background-color: rgba(2, 6, 23, 0.55);
+    border: 1px dashed rgba(34, 211, 238, 0.25);
+    border-radius: 14px;
+}
+
+.interactive-queue {
+    display: flex;
+    align-items: center;
+
+    flex-shrink: 0;
+}
+
+.queue-node {
+    display: grid;
+    place-items: center;
+
+    width: 72px;
+    height: 62px;
+
+    color: #f8fafc;
+    font-weight: 700;
+
+    background-color: #0f172a;
+    border-top: 2px solid #22d3ee;
+    border-bottom: 2px solid #22d3ee;
+    border-left: 1px solid #22d3ee;
+
+    transition:
+        color 0.25s ease,
+        background-color 0.25s ease;
+}
+
+.queue-node:first-child {
+    border-left: 2px solid #22d3ee;
+    border-radius: 9px 0 0 9px;
+}
+
+.queue-node:last-child {
+    border-right: 2px solid #22d3ee;
+    border-radius: 0 9px 9px 0;
+}
+
+.queue-node.selected {
+    color: #082f49;
+
+    background-color: #22d3ee;
+
+    box-shadow:
+        0 0 24px rgba(34, 211, 238, 0.35);
+}
+
+.empty-queue {
+    min-width: 250px;
+    padding: 30px;
+
+    color: #64748b;
+    text-align: center;
+}
+
+
+/* ================= Result Message ================= */
+
+.visualization-result {
+    min-height: 56px;
+    padding: 14px;
+
+    color: #94a3b8;
+    text-align: center;
+
+    background-color: rgba(2, 6, 23, 0.65);
+    border: 1px solid transparent;
+    border-radius: 10px;
+}
+
+.visualization-result.result-success {
+    color: #a7f3d0;
+
+    background-color: rgba(16, 185, 129, 0.1);
+    border-color: rgba(52, 211, 153, 0.25);
+}
+
+.visualization-result.result-error {
+    color: #fecaca;
+
+    background-color: rgba(239, 68, 68, 0.1);
+    border-color: rgba(248, 113, 113, 0.25);
+}
+
+
+/* ================= Input ================= */
+
+.input-controls {
+    display: flex;
+    justify-content: center;
+
+    margin-top: 22px;
+}
+
+.input-group {
+    display: grid;
+    gap: 7px;
+
+    width: min(220px, 100%);
+}
+
+.input-group label {
+    color: #cbd5e1;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 11px 13px;
+
+    color: #f8fafc;
+
+    background-color: #020617;
+    border: 1px solid #334155;
+    border-radius: 8px;
+
+    outline: none;
+}
+
+.input-group input:focus {
+    border-color: #22d3ee;
+
+    box-shadow:
+        0 0 0 3px rgba(34, 211, 238, 0.1);
+}
+
+
+/* ================= Buttons ================= */
+
+.operation-buttons {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+
+    margin-top: 20px;
+}
+
+.operation-buttons button {
+    padding: 10px 18px;
+
+    color: #cbd5e1;
+    cursor: pointer;
+
+    background-color: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 8px;
+
+    transition:
+        color 0.25s ease,
+        background-color 0.25s ease,
+        transform 0.25s ease;
+}
+
+.operation-buttons button:hover {
+    color: #082f49;
+    background-color: #22d3ee;
+    transform: translateY(-2px);
+}
+
+.operation-buttons .secondary-button {
+    color: #fda4af;
+    border-color: rgba(251, 113, 133, 0.4);
+}
+
+.operation-buttons .secondary-button:hover {
+    color: #ffffff;
+    background-color: #e11d48;
+}
+
+.operation-buttons button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    transform: none;
+}
+
+
+/* ================= Applications ================= */
+
+.application-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+
+    margin-top: 24px;
+}
+
+.small-card {
+    padding: 20px;
+
+    background-color: rgba(2, 6, 23, 0.6);
+    border-left: 3px solid #22d3ee;
+    border-radius: 10px;
+}
+
+.small-card h3 {
+    margin-bottom: 7px;
+    font-size: 16px;
+}
+
+.small-card p {
+    font-size: 14px;
+}
+
+
+/* ================= Comparison ================= */
+
+.comparison-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 28px;
+}
+
+.information-list {
+    display: grid;
+    gap: 14px;
+
+    padding-left: 22px;
+}
+
+.information-list li {
+    color: #94a3b8;
+}
+
+.information-list li::marker {
+    color: #22d3ee;
+}
+
+.advantage-card {
+    border-top: 3px solid #22c55e;
+}
+
+.disadvantage-card {
+    border-top: 3px solid #f97316;
+}
+
+
+/* ================= Bottom Navigation ================= */
+
+.bottom-navigation {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+
+    margin-top: 20px;
+}
+
+.back-button,
+.next-button {
+    padding: 12px 20px;
+
+    border: 1px solid rgba(34, 211, 238, 0.4);
+    border-radius: 10px;
+
+    transition:
+        color 0.25s ease,
+        background-color 0.25s ease;
+}
+
+.back-button:hover,
+.next-button:hover {
+    color: #082f49;
+    background-color: #22d3ee;
+}
+
+
+/* ================= Footer ================= */
+
+footer {
+    padding: 28px;
+
+    color: #64748b;
+    text-align: center;
+
+    border-top: 1px solid rgba(34, 211, 238, 0.15);
+}
+
+
+/* ================= Responsive Design ================= */
+
+@media screen and (max-width: 850px) {
+
+    .comparison-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .application-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .queue-stage,
+    .static-queue {
+        justify-content: flex-start;
+        overflow-x: auto;
+    }
+}
+
+@media screen and (max-width: 600px) {
+
+    .container {
+        width: min(100% - 24px, 1100px);
+        padding: 45px 0;
+    }
+
+    .lesson-card {
+        padding: 24px 18px;
+    }
+
+    .structure-grid,
+    .operation-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .visualization-heading,
+    .bottom-navigation {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .back-button,
+    .next-button {
+        text-align: center;
+    }
+}
