@@ -44,13 +44,37 @@ a {
     font-size: 20px;
 }
 
+/* Each link is a small centered stack: the main label on top, an
+   optional .nav-link-sub underneath in smaller, muted, uppercase
+   text. Links with no subtext (e.g. Team) just render as a single
+   centered line - justify-content: center keeps them vertically
+   lined up with the two-line links next to them. Both lines stay
+   well under the logo's 80px height, so the navbar's overall height
+   (and the "128px" it feeds into the hero-section calc below) is
+   unaffected. */
 .nav-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
     color: white;
+    font-size: 18px;
+    font-weight: 700;
+    text-align: center;
     transition: color 0.3s;
 }
 
 .nav-link:hover {
     color: #22d3ee;
+}
+
+.nav-link-sub {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    opacity: 0.65;
 }
 
 /* Login and logout button */
