@@ -43,10 +43,26 @@ const module2QuestionTopic = document.getElementById("module2QuestionTopic");
 const module2QuestionPrompt = document.getElementById("module2QuestionPrompt");
 const module2AnswerDisplay = document.getElementById("module2AnswerDisplay");
 
+// ------------------- Module 3 (Connect the Dots) elements -------------------
+const module3QuestionTopic = document.getElementById("module3QuestionTopic");
+const module3QuestionPrompt = document.getElementById("module3QuestionPrompt");
+const module3ConnectBoard = document.getElementById("module3ConnectBoard");
+const module3TermsColumn = document.getElementById("module3TermsColumn");
+const module3DefinitionsColumn = document.getElementById("module3DefinitionsColumn");
+const module3ConnectLinesSvg = document.getElementById("module3ConnectLinesSvg");
+const module3CheckButton = document.getElementById("module3CheckButton");
+
 // ------------------- Module 4 (True/False) elements -------------------
 const truefalseButtons = document.querySelectorAll(".truefalse-button");
 const module4QuestionTopic = document.getElementById("module4QuestionTopic");
 const module4QuestionPrompt = document.getElementById("module4QuestionPrompt");
+
+// ------------------- Module 5 (Choose the Correct Answer) elements -------------------
+const statementButtons = document.querySelectorAll(".statement-button");
+const module5QuestionTopic = document.getElementById("module5QuestionTopic");
+const module5QuestionPrompt = document.getElementById("module5QuestionPrompt");
+const module5StatementList = document.getElementById("module5StatementList");
+const module5ConfirmButton = document.getElementById("module5ConfirmButton");
 
 // ------------------- Result screen elements -------------------
 const resultTitle = document.getElementById("resultTitle");
@@ -101,6 +117,20 @@ const MODULE_REGISTRY = {
         renderQuestion: renderFillBlankQuestion,
         resetInputs: resetFillBlankInputs
     },
+    module3: {
+        moduleName: "module3-connectTheDots",
+        label: "Module 3: Connect the Dots",
+        slot: document.getElementById("module3Slot"),
+        screen: document.getElementById("module3GameScreen"),
+        bombShell: document.getElementById("module3BombShell"),
+        timerDisplay: document.getElementById("module3TimerDisplay"),
+        strikesDisplay: document.getElementById("module3StrikesDisplay"),
+        progressDisplay: document.getElementById("module3ProgressDisplay"),
+        backButton: document.getElementById("backToOverviewFromModule3"),
+        questionBank: MODULE3_QUESTION_BANK,
+        renderQuestion: renderConnectQuestion,
+        resetInputs: resetConnectInputs
+    },
     module4: {
         moduleName: "module4-trueFalse",
         label: "Module 4: True or False",
@@ -114,6 +144,20 @@ const MODULE_REGISTRY = {
         questionBank: MODULE4_QUESTION_BANK,
         renderQuestion: renderTrueFalseQuestion,
         resetInputs: resetTrueFalseButtons
+    },
+    module5: {
+        moduleName: "module5-chooseCorrect",
+        label: "Module 5: Choose the Correct Answer",
+        slot: document.getElementById("module5Slot"),
+        screen: document.getElementById("module5GameScreen"),
+        bombShell: document.getElementById("module5BombShell"),
+        timerDisplay: document.getElementById("module5TimerDisplay"),
+        strikesDisplay: document.getElementById("module5StrikesDisplay"),
+        progressDisplay: document.getElementById("module5ProgressDisplay"),
+        backButton: document.getElementById("backToOverviewFromModule5"),
+        questionBank: MODULE5_QUESTION_BANK,
+        renderQuestion: renderChooseCorrectQuestion,
+        resetInputs: resetChooseCorrectInputs
     }
 };
 
@@ -473,6 +517,256 @@ function renderModule2AnswerDisplay() {
     module2AnswerDisplay.classList.toggle("answer-display-placeholder", !hasTyped);
 }
 
+// ----- Module 3 (Connect the Dots) rendering -----
+// Unlike the button-based modules, the "answer buttons" here are
+// rebuilt fresh every question (the number of terms/definitions
+// varies with the round), so clicks are handled with delegated
+// listeners on the two columns rather than a fixed NodeList.
+//
+// module3Pairings maps a term's pair id to whichever definition's
+// pair id it's currently connected to. Since a term and its correct
+// definition share the same underlying pair id, a connection is
+// correct exactly when module3Pairings[pairId] === pairId.
+let module3Pairings = {};
+let module3ActiveTermId = null;
+
+function renderConnectQuestion(question) {
+    module3QuestionTopic.textContent = question.topic;
+    module3QuestionPrompt.textContent = question.prompt;
+
+    const shuffledPairsForDefinitions = question.pairs.slice().sort(function () {
+        return Math.random() - 0.5;
+    });
+
+    module3TermsColumn.innerHTML = "";
+    question.pairs.forEach(function (pair, index) {
+        module3TermsColumn.appendChild(
+            buildConnectNode("term", pair.id, pair.term, String(index + 1))
+        );
+    });
+
+    module3DefinitionsColumn.innerHTML = "";
+    shuffledPairsForDefinitions.forEach(function (pair, index) {
+        const badgeLetter = String.fromCharCode(65 + index); // A, B, C...
+        module3DefinitionsColumn.appendChild(
+            buildConnectNode("definition", pair.id, pair.definition, badgeLetter)
+        );
+    });
+}
+
+function buildConnectNode(kind, pairId, labelText, badgeText) {
+    const node = document.createElement("button");
+    node.type = "button";
+    node.classList.add("connect-node", "connect-" + kind);
+
+    if (kind === "term") {
+        node.dataset.termId = pairId;
+    } else {
+        node.dataset.definitionId = pairId;
+    }
+
+    const badge = document.createElement("span");
+    badge.classList.add("connect-node-badge");
+    badge.textContent = badgeText;
+
+    const label = document.createElement("span");
+    label.classList.add("connect-node-label");
+    label.textContent = labelText;
+
+    const dot = document.createElement("span");
+    dot.classList.add("connect-dot-marker");
+
+    node.appendChild(badge);
+    node.appendChild(label);
+    node.appendChild(dot);
+
+    return node;
+}
+
+function resetConnectInputs() {
+    module3Pairings = {};
+    module3ActiveTermId = null;
+
+    module3ConnectBoard.classList.remove("connect-board-locked");
+    module3CheckButton.disabled = false;
+
+    redrawConnectLines();
+}
+
+// A term click arms/disarms it as "waiting for a definition". A
+// definition click, while a term is armed, connects the two (bumping
+// off any previous connection either one had) and disarms.
+module3TermsColumn.addEventListener("click", function (event) {
+    if (!runState || runState.moduleId !== "module3" || runState.isAnswerLocked) {
+        return;
+    }
+
+    const node = event.target.closest(".connect-term");
+    if (!node) {
+        return;
+    }
+
+    const termId = node.dataset.termId;
+    module3ActiveTermId = module3ActiveTermId === termId ? null : termId;
+
+    updateConnectSelectionVisuals();
+});
+
+module3DefinitionsColumn.addEventListener("click", function (event) {
+    if (!runState || runState.moduleId !== "module3" || runState.isAnswerLocked) {
+        return;
+    }
+
+    const node = event.target.closest(".connect-definition");
+    if (!node || !module3ActiveTermId) {
+        return;
+    }
+
+    const definitionId = node.dataset.definitionId;
+
+    // a definition can only be used once - stealing it from whatever
+    // term it was previously connected to
+    Object.keys(module3Pairings).forEach(function (existingTermId) {
+        if (module3Pairings[existingTermId] === definitionId) {
+            delete module3Pairings[existingTermId];
+        }
+    });
+
+    module3Pairings[module3ActiveTermId] = definitionId;
+    module3ActiveTermId = null;
+
+    updateConnectSelectionVisuals();
+    redrawConnectLines();
+});
+
+module3CheckButton.addEventListener("click", function () {
+    if (!runState || runState.moduleId !== "module3" || runState.isAnswerLocked) {
+        return;
+    }
+
+    runState.isAnswerLocked = true;
+    submitConnectAnswer();
+});
+
+// Reflects "armed" (active) and "already connected" (paired) states -
+// purely cosmetic, no correct/wrong judgement until Check is pressed.
+function updateConnectSelectionVisuals() {
+    module3TermsColumn.querySelectorAll(".connect-term").forEach(function (node) {
+        const termId = node.dataset.termId;
+        node.classList.toggle("active", termId === module3ActiveTermId);
+        node.classList.toggle("paired", !!module3Pairings[termId]);
+    });
+
+    const connectedDefinitionIds = Object.keys(module3Pairings).map(function (termId) {
+        return module3Pairings[termId];
+    });
+
+    module3DefinitionsColumn.querySelectorAll(".connect-definition").forEach(function (node) {
+        node.classList.toggle(
+            "paired",
+            connectedDefinitionIds.indexOf(node.dataset.definitionId) !== -1
+        );
+    });
+}
+
+// Draws one line per current pairing, from the term's dot marker to
+// its connected definition's dot marker, in coordinates relative to
+// the connect-board container (so it still lines up if the board
+// scrolls or the window resizes).
+function redrawConnectLines() {
+    module3ConnectLinesSvg.innerHTML = "";
+
+    if (!runState || runState.moduleId !== "module3") {
+        return;
+    }
+
+    const boardRect = module3ConnectBoard.getBoundingClientRect();
+
+    Object.keys(module3Pairings).forEach(function (termId) {
+        const definitionId = module3Pairings[termId];
+
+        const termDot = module3TermsColumn.querySelector(
+            '.connect-term[data-term-id="' + termId + '"] .connect-dot-marker'
+        );
+        const definitionDot = module3DefinitionsColumn.querySelector(
+            '.connect-definition[data-definition-id="' + definitionId + '"] .connect-dot-marker'
+        );
+
+        if (!termDot || !definitionDot) {
+            return;
+        }
+
+        const line = drawConnectLine(termDot, definitionDot, boardRect);
+        line.dataset.termId = termId;
+        line.dataset.definitionId = definitionId;
+        module3ConnectLinesSvg.appendChild(line);
+    });
+}
+
+function drawConnectLine(fromDotEl, toDotEl, boardRect) {
+    const fromRect = fromDotEl.getBoundingClientRect();
+    const toRect = toDotEl.getBoundingClientRect();
+
+    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    line.classList.add("connect-line");
+    line.setAttribute("x1", fromRect.left + fromRect.width / 2 - boardRect.left);
+    line.setAttribute("y1", fromRect.top + fromRect.height / 2 - boardRect.top);
+    line.setAttribute("x2", toRect.left + toRect.width / 2 - boardRect.left);
+    line.setAttribute("y2", toRect.top + toRect.height / 2 - boardRect.top);
+
+    return line;
+}
+
+// Redraw on resize too, so lines stay anchored to their dots if the
+// layout reflows (e.g. rotating a phone) while a round is active.
+window.addEventListener("resize", function () {
+    redrawConnectLines();
+});
+
+// Checks every pair at once: correct only if the term ended up
+// connected to the definition sharing its own pair id. Colors every
+// node (and line) green/red for feedback, then hands off to the
+// shared commitAnswer() just like every other module.
+function submitConnectAnswer() {
+    const question = runState.questions[runState.currentIndex];
+
+    const isCorrect = question.pairs.every(function (pair) {
+        return module3Pairings[pair.id] === pair.id;
+    });
+
+    module3ConnectBoard.classList.add("connect-board-locked");
+    module3CheckButton.disabled = true;
+
+    question.pairs.forEach(function (pair) {
+        const connectedDefinitionId = module3Pairings[pair.id];
+        const wasConnectedCorrectly = connectedDefinitionId === pair.id;
+        const feedbackClass = wasConnectedCorrectly ? "correct" : "wrong";
+
+        const termNode = module3TermsColumn.querySelector(
+            '.connect-term[data-term-id="' + pair.id + '"]'
+        );
+        if (termNode) {
+            termNode.classList.add(feedbackClass);
+        }
+
+        if (connectedDefinitionId) {
+            const definitionNode = module3DefinitionsColumn.querySelector(
+                '.connect-definition[data-definition-id="' + connectedDefinitionId + '"]'
+            );
+            if (definitionNode) {
+                definitionNode.classList.add(feedbackClass);
+            }
+        }
+    });
+
+    module3ConnectLinesSvg.querySelectorAll(".connect-line").forEach(function (line) {
+        const wasConnectedCorrectly = line.dataset.termId === line.dataset.definitionId;
+        line.classList.add(wasConnectedCorrectly ? "correct" : "wrong");
+    });
+
+    commitAnswer(isCorrect);
+}
+
 // ----- Module 4 (True/False) rendering -----
 function renderTrueFalseQuestion(question) {
     module4QuestionTopic.textContent = question.topic;
@@ -484,6 +778,145 @@ function resetTrueFalseButtons() {
         button.disabled = false;
         button.classList.remove("correct", "wrong");
     });
+}
+
+// ----- Module 5 (Choose the Correct Answer) rendering -----
+// Unlike the other modules, nothing here is "submitted" the moment a
+// button is clicked - the player can toggle statements on and off
+// freely, so this needs its own bit of state for "what's currently
+// selected", cleared fresh every question.
+let module5SelectedIds = [];
+
+function renderChooseCorrectQuestion(question) {
+    module5QuestionTopic.textContent = question.topic;
+    module5QuestionPrompt.textContent = question.prompt;
+
+    module5StatementList.innerHTML = "";
+
+    question.statements.forEach(function (statement) {
+        const row = document.createElement("li");
+        row.classList.add("statement-row");
+        row.dataset.statementId = statement.id;
+
+        const letter = document.createElement("span");
+        letter.classList.add("statement-row-letter");
+        letter.textContent = statement.id.toUpperCase();
+
+        const checkbox = document.createElement("span");
+        checkbox.classList.add("statement-row-checkbox");
+
+        const label = document.createElement("span");
+        label.textContent = statement.text;
+
+        row.appendChild(letter);
+        row.appendChild(checkbox);
+        row.appendChild(label);
+        module5StatementList.appendChild(row);
+    });
+}
+
+function resetChooseCorrectInputs() {
+    module5SelectedIds = [];
+
+    statementButtons.forEach(function (button) {
+        button.disabled = false;
+        button.classList.remove("selected", "correct", "wrong", "missed");
+    });
+
+    module5ConfirmButton.disabled = false;
+
+    module5StatementList.querySelectorAll(".statement-row").forEach(function (row) {
+        row.classList.remove("selected", "correct", "wrong", "missed");
+    });
+}
+
+// Toggling a statement on/off - only allowed before Confirm is
+// pressed (isAnswerLocked stays false the whole time the player is
+// still picking statements).
+function toggleModule5Statement(statementId) {
+    const button = document.querySelector(
+        '.statement-button[data-statement-id="' + statementId + '"]'
+    );
+    const row = module5StatementList.querySelector(
+        '.statement-row[data-statement-id="' + statementId + '"]'
+    );
+
+    const selectedIndex = module5SelectedIds.indexOf(statementId);
+    const isNowSelected = selectedIndex === -1;
+
+    if (isNowSelected) {
+        module5SelectedIds.push(statementId);
+    } else {
+        module5SelectedIds.splice(selectedIndex, 1);
+    }
+
+    if (button) {
+        button.classList.toggle("selected", isNowSelected);
+    }
+
+    if (row) {
+        row.classList.toggle("selected", isNowSelected);
+    }
+}
+
+// Confirm checks the whole selected set at once: correct only if it
+// exactly matches every statement flagged isCorrect - no more, no
+// less.
+function submitChooseCorrectAnswer() {
+    const question = runState.questions[runState.currentIndex];
+
+    const correctIds = question.statements
+        .filter(function (statement) {
+            return statement.isCorrect;
+        })
+        .map(function (statement) {
+            return statement.id;
+        });
+
+    const isCorrect =
+        correctIds.length === module5SelectedIds.length &&
+        correctIds.every(function (id) {
+            return module5SelectedIds.indexOf(id) !== -1;
+        });
+
+    statementButtons.forEach(function (button) {
+        button.disabled = true;
+    });
+    module5ConfirmButton.disabled = true;
+
+    question.statements.forEach(function (statement) {
+        const wasSelected = module5SelectedIds.indexOf(statement.id) !== -1;
+
+        let feedbackClass = null;
+        if (statement.isCorrect && wasSelected) {
+            feedbackClass = "correct"; // true statement, correctly selected
+        } else if (!statement.isCorrect && wasSelected) {
+            feedbackClass = "wrong"; // false statement, wrongly selected
+        } else if (statement.isCorrect && !wasSelected) {
+            feedbackClass = "missed"; // true statement the player left unchecked
+        }
+        // false statement correctly left unchecked - no feedback class needed
+
+        if (!feedbackClass) {
+            return;
+        }
+
+        const button = document.querySelector(
+            '.statement-button[data-statement-id="' + statement.id + '"]'
+        );
+        const row = module5StatementList.querySelector(
+            '.statement-row[data-statement-id="' + statement.id + '"]'
+        );
+
+        if (button) {
+            button.classList.add(feedbackClass);
+        }
+        if (row) {
+            row.classList.add(feedbackClass);
+        }
+    });
+
+    commitAnswer(isCorrect);
 }
 
 // ------------------- Answering -------------------
@@ -512,6 +945,27 @@ truefalseButtons.forEach(function (button) {
 
         submitAnswer(isCorrect, button, truefalseButtons);
     });
+});
+
+statementButtons.forEach(function (button) {
+    button.addEventListener("click", function () {
+        if (!runState || runState.moduleId !== "module5" || runState.isAnswerLocked) {
+            return;
+        }
+
+        toggleModule5Statement(button.dataset.statementId);
+    });
+});
+
+module5ConfirmButton.addEventListener("click", function () {
+    if (!runState || runState.moduleId !== "module5" || runState.isAnswerLocked) {
+        return;
+    }
+
+    // Lock immediately (before the 700ms flash delay in commitAnswer)
+    // so a double-click on Confirm can't submit the answer twice.
+    runState.isAnswerLocked = true;
+    submitChooseCorrectAnswer();
 });
 
 keypadKeys.forEach(function (key) {

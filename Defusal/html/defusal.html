@@ -115,9 +115,9 @@
                             <span class="cell-hint">Tap to defuse</span>
                         </button>
 
-                        <!-- Module 3: Connect the Dots (locked) -->
-                        <div class="bomb-cell locked" title="Coming soon">
-                            <span class="cell-led"></span>
+                        <!-- Module 3: Connect the Dots (active) -->
+                        <button id="module3Slot" class="bomb-cell playable-cell" type="button">
+                            <span class="cell-led active"></span>
                             <div class="cell-content mock-connect">
                                 <span class="connect-dots">
                                     <span class="connect-dot"></span>
@@ -130,8 +130,8 @@
                                     <span class="connect-pill"></span>
                                 </span>
                             </div>
-                            <span class="cell-lock">&#128274;</span>
-                        </div>
+                            <span class="cell-hint">Tap to defuse</span>
+                        </button>
 
                         <!-- Module 2: Fill in the Blanks (active) -->
                         <button id="module2Slot" class="bomb-cell playable-cell" type="button">
@@ -140,9 +140,9 @@
                             <span class="cell-hint">Tap to defuse</span>
                         </button>
 
-                        <!-- Module 5: Choose the Answer (locked) -->
-                        <div class="bomb-cell locked" title="Coming soon">
-                            <span class="cell-led"></span>
+                        <!-- Module 5: Choose the Correct Answer (active) -->
+                        <button id="module5Slot" class="bomb-cell playable-cell" type="button">
+                            <span class="cell-led active"></span>
                             <div class="cell-content mini-shape-grid-6">
                                 <span class="shape shape-circle"></span>
                                 <span class="shape shape-diamond"></span>
@@ -151,8 +151,8 @@
                                 <span class="shape shape-triangle"></span>
                                 <span class="shape shape-star"></span>
                             </div>
-                            <span class="cell-lock">&#128274;</span>
-                        </div>
+                            <span class="cell-hint">Tap to defuse</span>
+                        </button>
 
                         <!-- Timer -->
                         <div class="bomb-cell timer-cell">
@@ -441,6 +441,172 @@
 
         </section>
 
+        <!-- ===================== MODULE 3 GAME SCREEN ===================== -->
+        <!-- Zoomed into Module 3: same shell/timer/strikes pattern as the
+             other modules, but the module face is a two-column matching
+             board instead of "buttons left, question right" - terms on
+             the left, shuffled definitions on the right, connected with
+             lines as the player clicks pairs together. -->
+        <section id="module3GameScreen" class="screen game-screen hidden">
+
+            <button id="backToOverviewFromModule3" class="back-link" type="button">
+                &larr; Back to Bomb Overview
+            </button>
+
+            <div class="bomb-shell" id="module3BombShell">
+
+                <!-- Top display strip -->
+                <div class="bomb-display">
+
+                    <div class="display-block">
+                        <span class="display-label">Time</span>
+                        <span id="module3TimerDisplay" class="timer-lcd timer-lcd-small">10:00</span>
+                    </div>
+
+                    <div class="display-block">
+                        <span class="display-label">Strikes</span>
+                        <div id="module3StrikesDisplay" class="strikes-display"></div>
+                    </div>
+
+                    <div class="display-block">
+                        <span class="display-label">Solved</span>
+                        <span id="module3ProgressDisplay" class="led-text">0 / 0</span>
+                    </div>
+
+                </div>
+
+                <div class="module-face">
+
+                    <p class="module-label">Module 3: Connect the Dots</p>
+
+                    <p class="question-topic" id="module3QuestionTopic">Topic</p>
+                    <p class="question-prompt" id="module3QuestionPrompt">
+                        Connect each term to its correct definition.
+                    </p>
+
+                    <!-- The matching board: terms on the left, shuffled
+                         definitions on the right, an SVG overlay draws
+                         the lines between whatever's currently paired -->
+                    <div class="connect-board" id="module3ConnectBoard">
+
+                        <svg id="module3ConnectLinesSvg" class="connect-lines-svg"></svg>
+
+                        <div class="connect-column connect-terms" id="module3TermsColumn">
+                            <!-- term nodes injected here by JS -->
+                        </div>
+
+                        <div class="connect-column connect-definitions" id="module3DefinitionsColumn">
+                            <!-- definition nodes injected here by JS -->
+                        </div>
+
+                    </div>
+
+                    <button id="module3CheckButton" class="primary-button confirm-button" type="button">
+                        Check Connections
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- ===================== MODULE 5 GAME SCREEN ===================== -->
+        <!-- Zoomed into Module 5: same shell/timer/strikes pattern as the
+             other modules. Left column is a grid of selectable statement
+             buttons (toggle on/off, no immediate answer lock), the right
+             panel lists each statement's full text plus a Confirm button
+             that checks the whole selected set at once. -->
+        <section id="module5GameScreen" class="screen game-screen hidden">
+
+            <button id="backToOverviewFromModule5" class="back-link" type="button">
+                &larr; Back to Bomb Overview
+            </button>
+
+            <div class="bomb-shell" id="module5BombShell">
+
+                <!-- Top display strip -->
+                <div class="bomb-display">
+
+                    <div class="display-block">
+                        <span class="display-label">Time</span>
+                        <span id="module5TimerDisplay" class="timer-lcd timer-lcd-small">10:00</span>
+                    </div>
+
+                    <div class="display-block">
+                        <span class="display-label">Strikes</span>
+                        <div id="module5StrikesDisplay" class="strikes-display"></div>
+                    </div>
+
+                    <div class="display-block">
+                        <span class="display-label">Solved</span>
+                        <span id="module5ProgressDisplay" class="led-text">0 / 0</span>
+                    </div>
+
+                </div>
+
+                <!-- Module 5 face: toggleable statement buttons on the
+                     left, the question + full statement text on the
+                     right -->
+                <div class="module-face">
+
+                    <p class="module-label">Module 5: Choose the Correct Answer</p>
+
+                    <div class="module-face-columns">
+
+                        <div class="statement-column">
+
+                            <div class="statement-grid">
+                                <button class="statement-button" data-statement-id="a">
+                                    <span class="statement-letter">A</span>
+                                    <span class="statement-checkbox"></span>
+                                </button>
+
+                                <button class="statement-button" data-statement-id="b">
+                                    <span class="statement-letter">B</span>
+                                    <span class="statement-checkbox"></span>
+                                </button>
+
+                                <button class="statement-button" data-statement-id="c">
+                                    <span class="statement-letter">C</span>
+                                    <span class="statement-checkbox"></span>
+                                </button>
+
+                                <button class="statement-button" data-statement-id="d">
+                                    <span class="statement-letter">D</span>
+                                    <span class="statement-checkbox"></span>
+                                </button>
+                            </div>
+
+                            <button id="module5ConfirmButton" class="primary-button confirm-button" type="button">
+                                Confirm Selection
+                            </button>
+
+                        </div>
+
+                        <!-- Question popup, shown beside the statement
+                             buttons while a question is active -->
+                        <div id="module5QuestionPopup" class="question-popup">
+
+                            <p class="question-topic" id="module5QuestionTopic">Topic</p>
+                            <p class="question-prompt" id="module5QuestionPrompt">
+                                Question text goes here.
+                            </p>
+
+                            <ul class="statement-list" id="module5StatementList">
+                                <!-- statement rows injected here by JS -->
+                            </ul>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
         <!-- ===================== RESULT SCREEN ===================== -->
         <!-- Shown after the bomb is defused or explodes -->
         <section id="resultScreen" class="screen result-screen hidden">
@@ -484,7 +650,9 @@
 
     <script src="../data/module1-questions.js"></script>
     <script src="../data/module2-questions.js"></script>
+    <script src="../data/module3-questions.js"></script>
     <script src="../data/module4-questions.js"></script>
+    <script src="../data/module5-questions.js"></script>
     <script src="../js/defusal.js"></script>
 
 </body>
