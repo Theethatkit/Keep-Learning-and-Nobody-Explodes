@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Graph | DataLab</title>
+
+    <!-- Shared Navigation CSS -->
+    <link rel="stylesheet" href="../../css/navbar.css">
+
+    <!-- Graph Page CSS -->
+    <link rel="stylesheet" href="../../css/nonLinearCSS/graph.css">
+</head>
+
+<body>
+
+    <!-- ================= Navigation Bar ================= -->
+
+    <header class="navbar">
+
+        <a href="../../index.html" class="logo-link">
+            <img src="../../images/Logo.png"
+                 alt="DataLab Logo"
+                 class="logo">
+        </a>
+
+        <nav class="nav-links">
+
+            <a href="../../index.html" class="nav-link">
+                Home
+            </a>
+
+            <a href="../lessons.html" class="nav-link active">
+                Lessons
+            </a>
+
+            <a href="../defusal.html" class="nav-link">
+                Revision
+            </a>
+
+            <a href="../team.html" class="nav-link">
+                Team
+            </a>
+
+        </nav>
+
+        <a href="../login.html"
+           id="authButton"
+           class="login-button">
+            Log in
+        </a>
+
+    </header>
+
+
+    <!-- ================= Main Content ================= -->
+
+    <main class="container">
+
+        <!-- Page Header -->
+
+        <section class="page-header">
+
+            <a href="nonlinear.html" class="back-link">
+                ← Back to Non-Linear Structures
+            </a>
+
+            <p class="category">
+                NON-LINEAR DATA STRUCTURE
+            </p>
+
+            <h1>Graph</h1>
+
+            <p>
+                Learn how graphs connect vertices with edges to model
+                relationships, how they can be represented in memory,
+                and how traversal algorithms like BFS and DFS explore
+                them.
+            </p>
+
+        </section>
+
+
+        <!-- ================= Introduction ================= -->
+
+        <section class="lesson-card">
+
+            <h2>Introduction to Graph Data Structure</h2>
+
+            <p>
+                A graph is a non-linear data structure made up of
+                vertices (nodes) and edges (connections) that represent
+                relationships between objects. Unlike arrays or linked
+                lists, graphs do not follow a sequential order.
+            </p>
+
+            <p>
+                Example: on a map, each city is a vertex, and each road
+                connecting two cities is an edge. This way, a graph
+                represents how cities are linked.
+            </p>
+
+            <figure class="lesson-figure">
+                <img src="../../images/nonLinear/graphintroduction.png"
+                     alt="Introduction to Graph">
+                <figcaption>
+                    Introduction to Graph
+                </figcaption>
+            </figure>
+
+        </section>
+
+
+        <!-- ================= Components ================= -->
+
+        <section class="lesson-card">
+
+            <h2>Components of Graph Data Structure</h2>
+
+            <ul class="information-list">
+
+                <li>
+                    <strong>Vertices:</strong>
+                    Vertices are the fundamental units of the graph.
+                    Sometimes vertices are also known as nodes. Every
+                    vertex can be labeled or unlabeled.
+                </li>
+
+                <li>
+                    <strong>Edges:</strong>
+                    Edges connect two nodes of the graph, and can be an
+                    ordered pair of nodes in a directed graph. Edges can
+                    connect any two nodes in any possible way, with no
+                    fixed rules, and are sometimes known as arcs. Every
+                    edge can be labeled or unlabeled.
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- ================= Types of Graphs ================= -->
+
+        <section class="lesson-card">
+
+            <h2>Types of Graphs in Data Structure</h2>
+
+            <p>
+                A graph can be divided into multiple categories based on
+                different properties such as edges, direction,
+                connectivity, and many others.
+            </p>
+
+            <h3 class="type-heading">Based on Weight</h3>
+
+            <div class="type-grid two-column">
+
+                <article class="type-card">
+
+                    <h4>Weighted Graph</h4>
+
+                    <p>
+                        A graph where each edge has a number (weight)
+                        that represents distance, cost, or time.
+                    </p>
+
+                    <figure class="lesson-figure">
+                        <img src="../../images/nonLinear/weightedgraph.png"
+                             alt="Weighted Graph">
+                        <figcaption>
+                            Weighted Graph
+                        </figcaption>
+                    </figure>
+
+                </article>
+
+                <article class="type-card">
+
+                    <h4>Unweighted Graph</h4>
+
+                    <p>
+                        A graph where all edges are treated equally,
+                        with no extra values like distance or cost.
+                    </p>
+
+                    <figure class="lesson-figure">
+                        <img src="../../images/nonLinear/unweightedgraph.png"
+                             alt="Unweighted Graph">
+                        <figcaption>
+                            Unweighted Graph
+                        </figcaption>
+                    </figure>
+
+                </article>
+
+            </div>
+
+            <h3 class="type-heading">Based on Edge Direction</h3>
+
+            <div class="type-grid two-column">
+
+                <article class="type-card">
+
+                    <h4>Undirected Graph</h4>
+
+                    <p>
+                        A graph in which edges do not have any
+                        direction, meaning the nodes form an unordered
+                        pair in the definition of every edge.
+                    </p>
+
+                    <figure class="lesson-figure">
+                        <img src="../../images/nonLinear/undirectedgraph.png"
+                             alt="Undirected Graph">
+                        <figcaption>
+                            Undirected Graph
+                        </figcaption>
+                    </figure>
+
+                </article>
+
+                <article class="type-card">
+
+                    <h4>Directed Graph</h4>
+
+                    <p>
+                        A graph in which every edge has a direction,
+                        meaning the nodes form an ordered pair in the
+                        definition of every edge.
+                    </p>
+
+                    <figure class="lesson-figure">
+                        <img src="../../images/nonLinear/directedgraph.png"
+                             alt="Directed Graph">
+                        <figcaption>
+                            Directed Graph
+                        </figcaption>
+                    </figure>
+
+                </article>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= Representation ================= -->
+
+        <section class="lesson-card">
+
+            <h2>Representation of Graph Data Structure</h2>
+
+            <p>
+                There are multiple ways to store a graph. The following
+                are the most common representations.
+            </p>
+
+            <div class="type-grid two-column">
+
+                <article class="type-card">
+
+                    <h4>Adjacency Matrix</h4>
+
+                    <p>
+                        The graph is stored as a 2D matrix where rows
+                        and columns denote vertices. Each entry
+                        represents whether an edge exists between those
+                        vertices: <code>matrix[i][j] = 1</code> if there
+                        is an edge between vertex i and vertex j, and
+                        <code>matrix[i][j] = 0</code> if there is no
+                        edge.
+                    </p>
+
+                    <figure class="lesson-figure">
+                    <img src="../../images/nonLinear/adjacencymatrix.png"
+                         alt="Adjacency Matrix">
+                    <figcaption>
+                        Adjacency Matrix
+                    </figcaption>
+                    </figure>
+
+                </article>
+
+                <article class="type-card">
+
+                    <h4>Adjacency List</h4>
+
+                    <p>
+                        The graph is represented as a collection of
+                        array lists. An array of pointers points to the
+                        edges connected to each vertex.
+                    </p>
+
+                    <figure class="lesson-figure">
+                    <img src="../../images/nonLinear/adjacencylist.png"
+                         alt="Adjacency List">
+                    <figcaption>
+                        Adjacency List
+                    </figcaption>
+                    </figure>
+
+                </article>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= Tree vs Graph ================= -->
+
+        <section class="lesson-card">
+
+            <h2>Difference Between Tree and Graph</h2>
+
+            <p>
+                A tree is a restricted type of graph data structure,
+                just with some more rules. Every tree will always be a
+                graph, but not all graphs will be trees.
+            </p>
+
+        </section>
+
+
+        <!-- ================= Interactive Visualization ================= -->
+
+        <section class="lesson-card">
+
+            <div class="visualization-heading">
+
+                <div>
+                    <p class="small-heading">
+                        INTERACTIVE LEARNING
+                    </p>
+
+                    <h2>Graph Visualization</h2>
+                </div>
+
+                <span class="visualization-label">
+                    Try it yourself
+                </span>
+
+            </div>
+
+            <p class="visualization-intro">
+                Add and remove edges between vertices, then run a
+                Breadth-First or Depth-First traversal from a chosen
+                start vertex to see how each strategy explores the
+                graph. The adjacency list below updates as you go.
+            </p>
+
+
+            <!-- Graph Stats -->
+
+            <div class="tree-stats">
+
+                <div class="stat-box">
+                    <span class="stat-label">Vertices</span>
+                    <span class="stat-value" id="vertexCount">0</span>
+                </div>
+
+                <div class="stat-box">
+                    <span class="stat-label">Edges</span>
+                    <span class="stat-value" id="edgeCount">0</span>
+                </div>
+
+            </div>
+
+
+            <!-- Interactive Graph -->
+
+            <div id="interactiveGraph"
+                 class="interactive-tree"></div>
+
+
+            <!-- Result Message -->
+
+            <p id="visualizationResult"
+               class="visualization-result">
+                Select an operation to interact with the graph.
+            </p>
+
+
+            <!-- Input Controls -->
+
+            <div class="input-controls graph-input-controls">
+
+                <div class="input-group">
+                    <label for="vertexFromInput">
+                        From
+                    </label>
+
+                    <select id="vertexFromInput"></select>
+                </div>
+
+                <div class="input-group">
+                    <label for="vertexToInput">
+                        To
+                    </label>
+
+                    <select id="vertexToInput"></select>
+                </div>
+
+            </div>
+
+            <p class="input-hint">
+                Traversals start from the vertex selected in
+                <strong>From</strong>.
+            </p>
+
+
+            <!-- Operation Buttons -->
+
+            <div class="operation-buttons">
+
+                <button type="button" id="addEdgeButton">
+                    Add Edge
+                </button>
+
+                <button type="button" id="removeEdgeButton">
+                    Remove Edge
+                </button>
+
+                <button type="button" id="bfsButton">
+                    BFS Traversal
+                </button>
+
+                <button type="button" id="dfsButton">
+                    DFS Traversal
+                </button>
+
+                <button type="button"
+                        id="resetButton"
+                        class="secondary-button">
+                    Reset
+                </button>
+
+            </div>
+
+
+            <!-- Adjacency List Panel -->
+
+            <div class="adjacency-panel">
+
+                <p class="small-heading">ADJACENCY LIST</p>
+
+                <div id="adjacencyList" class="adjacency-list"></div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= Advantages ================= -->
+
+        <section class="lesson-card">
+
+            <h2>Advantages of Graph Data Structure</h2>
+
+            <ul class="information-list">
+
+                <li>
+                    <strong>Graphs are flexible:</strong>
+                    Unlike arrays, linked lists, or trees, graphs have
+                    no restrictions and can represent any type of
+                    relationship.
+                </li>
+
+                <li>
+                    <strong>Model real-world problems:</strong>
+                    Useful for pathfinding, data clustering, network
+                    analysis, and machine learning.
+                </li>
+
+                <li>
+                    <strong>Represent items and relationships:</strong>
+                    Any set of items and their connections can be
+                    modeled as a graph.
+                </li>
+
+                <li>
+                    <strong>Simplify complex data:</strong>
+                    Graphs make complex relationships easy to visualize
+                    and understand.
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- ================= Bottom Navigation ================= -->
+
+        <div class="bottom-navigation">
+
+            <a href="tree.html" class="back-button">
+                ← Back to Tree
+            </a>
+
+            <a href="nonlinear.html" class="next-button">
+                Back to Non-Linear Structures →
+            </a>
+
+        </div>
+
+    </main>
+
+
+    <!-- ================= Footer ================= -->
+
+    <footer>
+        <p>
+            DataLab — Learn Data Structures Interactively
+        </p>
+    </footer>
+
+
+    <!-- Graph JavaScript -->
+
+    <script src="../../js/nonLinearJS/graph.js"></script>
+
+</body>
+
+</html>
