@@ -2,29 +2,46 @@ document.addEventListener("DOMContentLoaded", function () {
 
     /* ================= Authentication ================= */
 
-    const authButton = document.getElementById("authButton");
-    const currentUser = localStorage.getItem("loggedInUser");
+    const authButton =
+        document.getElementById("authButton");
+
+    const loggedInUser =
+        localStorage.getItem("loggedInUser");
+
 
     if (authButton) {
 
-        if (currentUser) {
+        if (loggedInUser) {
+
             authButton.textContent = "Logout";
             authButton.href = "#";
 
-            authButton.addEventListener("click", function (event) {
-                event.preventDefault();
+            authButton.addEventListener(
+                "click",
+                function (event) {
 
-                localStorage.removeItem("loggedInUser");
-                window.location.href = "../index.html";
-            });
+                    event.preventDefault();
+
+                    localStorage.removeItem(
+                        "loggedInUser"
+                    );
+
+                    window.location.href =
+                        "../index.html";
+
+                }
+            );
+
         } else {
+
             authButton.textContent = "Log in";
             authButton.href = "login.html";
+
         }
     }
 
 
-    /* ================= Category Cards ================= */
+    /* ================= Category Navigation ================= */
 
     const categoryCards =
         document.querySelectorAll(".category-card");
@@ -35,80 +52,124 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function openCategory(pageName) {
 
-        if (!currentUser) {
-            alert("Please log in before starting a lesson.");
-            window.location.href = "login.html";
+        if (!loggedInUser) {
+
+            alert(
+                "Please log in before starting a lesson."
+            );
+
+            window.location.href =
+                "login.html";
+
             return;
         }
 
+
         if (pageName) {
-            window.location.href = pageName;
+
+            window.location.href =
+                pageName;
+
         }
     }
 
 
-    /* ================= Card Navigation ================= */
+    /* ================= Card Events ================= */
 
     categoryCards.forEach(function (card) {
 
-        card.addEventListener("click", function (event) {
+        card.addEventListener(
+            "click",
+            function (event) {
 
-            if (event.target.closest(".explore-button")) {
-                return;
-            }
+                if (
+                    event.target.closest(
+                        ".explore-button"
+                    )
+                ) {
+                    return;
+                }
 
-            const targetPage =
-                card.getAttribute("data-page");
-
-            openCategory(targetPage);
-        });
-
-
-        card.addEventListener("keydown", function (event) {
-
-            if (
-                event.key === "Enter" ||
-                event.key === " "
-            ) {
-                event.preventDefault();
 
                 const targetPage =
                     card.getAttribute("data-page");
 
                 openCategory(targetPage);
+
             }
-        });
+        );
+
+
+        card.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (
+                    event.key === "Enter" ||
+                    event.key === " "
+                ) {
+
+                    event.preventDefault();
+
+                    const targetPage =
+                        card.getAttribute(
+                            "data-page"
+                        );
+
+                    openCategory(targetPage);
+
+                }
+            }
+        );
 
     });
 
 
-    /* ================= Explore Buttons ================= */
+    /* ================= Button Events ================= */
 
     exploreButtons.forEach(function (button) {
 
-        button.addEventListener("click", function (event) {
-            event.stopPropagation();
+        button.addEventListener(
+            "click",
+            function (event) {
 
-            const targetPage =
-                button.getAttribute("data-page");
+                event.stopPropagation();
 
-            openCategory(targetPage);
-        });
+                const targetPage =
+                    button.getAttribute(
+                        "data-page"
+                    );
+
+                openCategory(targetPage);
+
+            }
+        );
 
     });
 
 
     /* ================= Entrance Animation ================= */
 
-    categoryCards.forEach(function (card, index) {
+    categoryCards.forEach(
+        function (card, index) {
 
-        card.classList.add("card-hidden");
+            card.classList.add(
+                "card-hidden"
+            );
 
-        setTimeout(function () {
-            card.classList.remove("card-hidden");
-            card.classList.add("card-visible");
-        }, 150 * index);
+            setTimeout(function () {
 
-    });
+                card.classList.remove(
+                    "card-hidden"
+                );
+
+                card.classList.add(
+                    "card-visible"
+                );
+
+            }, 150 * index);
+
+        }
+    );
 
 });
