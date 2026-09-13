@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Tree | DataLab</title>
+
+    <!-- Shared Navigation CSS -->
+    <link rel="stylesheet" href="../../css/navbar.css">
+
+    <!-- Tree Page CSS -->
+    <link rel="stylesheet" href="../../css/nonLinearCSS/tree.css">
+</head>
+
+<body>
+
+    <!-- ================= Navigation Bar ================= -->
+
+    <header class="navbar">
+
+        <a href="../../index.html" class="logo-link">
+            <img src="../../images/Logo.png"
+                 alt="DataLab Logo"
+                 class="logo">
+        </a>
+
+        <nav class="nav-links">
+
+            <a href="../../index.html" class="nav-link">
+                Home
+            </a>
+
+            <a href="../lessons.html" class="nav-link active">
+                Lessons
+            </a>
+
+            <a href="../defusal.html" class="nav-link">
+                Revision
+            </a>
+
+            <a href="../team.html" class="nav-link">
+                Team
+            </a>
+
+        </nav>
+
+        <a href="../login.html"
+           id="authButton"
+           class="login-button">
+            Log in
+        </a>
+
+    </header>
+
+
+    <!-- ================= Main Content ================= -->
+
+    <main class="container">
+
+        <!-- Page Header -->
+
+        <section class="page-header">
+
+            <a href="non-linear.html" class="back-link">
+                ← Back to Non-Linear Structures
+            </a>
+
+            <p class="category">
+                NON-LINEAR DATA STRUCTURE
+            </p>
+
+            <h1>Tree</h1>
+
+            <p>
+                Learn how trees organize data into parent–child
+                relationships, how the basic terminology works, and how
+                a Binary Search Tree performs its core operations.
+            </p>
+
+        </section>
+
+
+        <!-- ================= Introduction ================= -->
+
+        <section class="lesson-card">
+
+            <h2>Introduction</h2>
+
+            <p>
+                A tree is a hierarchical data structure used to organize
+                and represent data in a parent–child relationship. It
+                consists of nodes, where the topmost node is called the
+                root, and every other node can have one or more child
+                nodes.
+            </p>
+
+        </section>
+
+
+        <!-- ================= Basic Terminologies ================= -->
+
+        <section class="lesson-card">
+
+            <h2>Basic Terminologies in Tree Data Structure</h2>
+
+            <figure class="lesson-figure">
+                <img src="../../images/nonLinear/sampletree.png"
+                     alt="Example tree with root 15, children 35 and others, used to illustrate the terms below">
+                <figcaption>
+                    Example tree referenced by the terms below.
+                </figcaption>
+            </figure>
+
+            <ul class="information-list">
+
+                <li>
+                    <strong>Parent Node:</strong>
+                    A node that is an immediate predecessor of another
+                    node. Example: 35 is the parent of 3 and 6.
+                </li>
+
+                <li>
+                    <strong>Child Node:</strong>
+                    A node that is an immediate successor of another
+                    node. Example: 3 and 6 are children of 35.
+                </li>
+
+                <li>
+                    <strong>Root Node:</strong>
+                    The topmost node in a tree, which does not have a
+                    parent. Example: 15 is the root node.
+                </li>
+
+                <li>
+                    <strong>Leaf Node (External Node):</strong>
+                    Nodes that do not have any children. Example: 1, 10,
+                    12, 5, 7, 7 are leaf nodes.
+                </li>
+
+                <li>
+                    <strong>Ancestor:</strong>
+                    Any node on the path from the root to a given node,
+                    excluding the node itself. Example: 15 and 35 are
+                    ancestors of 10.
+                </li>
+
+                <li>
+                    <strong>Descendant:</strong>
+                    A node x is a descendant of another node y if y is
+                    an ancestor of x. Example: 1, 10, and 6 are
+                    descendants of 35.
+                </li>
+
+                <li>
+                    <strong>Sibling:</strong>
+                    Nodes that share the same parent. Example: 1 and 10
+                    are siblings, and 5 and 7 are siblings.
+                </li>
+
+                <li>
+                    <strong>Level of a Node:</strong>
+                    The number of edges in the path from the root to
+                    that node. The root node is at level 0.
+                </li>
+
+                <li>
+                    <strong>Internal Node:</strong>
+                    A node with at least one child.
+                </li>
+
+                <li>
+                    <strong>Neighbor of a Node:</strong>
+                    The parent or children of a node.
+                </li>
+
+                <li>
+                    <strong>Subtree:</strong>
+                    A node and all its descendants form a subtree.
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- ================= Why Non-Linear ================= -->
+
+        <section class="lesson-card">
+
+            <h2>Why Tree is Considered a Non-Linear Data Structure</h2>
+
+            <p>
+                Data in a tree is not stored sequentially, i.e. not in a
+                linear order. Instead, it is organized across multiple
+                levels, forming a hierarchical structure. Because of
+                this arrangement, a tree is classified as a non-linear
+                data structure.
+            </p>
+
+        </section>
+
+
+        <!-- ================= Importance ================= -->
+
+        <section class="lesson-card">
+
+            <h2>Importance of Tree Data Structure</h2>
+
+            <ul class="information-list">
+
+                <li>
+                    Trees are useful for storing data that naturally
+                    forms a hierarchy.
+                </li>
+
+                <li>
+                    File systems on computers are structured as trees,
+                    with folders containing subfolders and files.
+                </li>
+
+                <li>
+                    The DOM (Document Object Model) of an HTML page is a
+                    tree: the &lt;html&gt; tag is the root, &lt;head&gt;
+                    and &lt;body&gt; are its children, and these tags can
+                    have their own child nodes, forming a hierarchical
+                    structure.
+                </li>
+
+                <li>
+                    Trees help in efficient data organization and
+                    retrieval for hierarchical relationships.
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- ================= Types of Trees ================= -->
+
+        <section class="lesson-card">
+
+            <h2>Types of Tree Data Structures</h2>
+
+            <p>
+                Tree data structures can be classified based on the
+                number of children each node can have.
+            </p>
+
+            <h3 class="type-heading">Binary Tree</h3>
+
+            <p>
+                Each node can have a maximum of two children.
+            </p>
+
+            <div class="type-grid">
+
+                <article class="type-card">
+
+                    <h4>Full Binary Tree</h4>
+
+                    <p>Every node has either 0 or 2 children.</p>
+
+                    <figure class="lesson-figure small">
+                        <img src="../../images/nonLinear/fullbinarytree.png"
+                             alt="Diagram of a Full Binary Tree, where every node has either 0 or 2 children">
+                    </figure>
+
+                </article>
+
+                <article class="type-card">
+
+                    <h4>Complete Binary Tree</h4>
+
+                    <p>
+                        All levels are fully filled except possibly the
+                        last, which is filled from left to right.
+                    </p>
+
+                    <figure class="lesson-figure small">
+                        <img src="../../images/nonLinear/completebinarytree.png"
+                             alt="Diagram of a Complete Binary Tree, where all levels are filled except possibly the last, filled left to right">
+                    </figure>
+
+                </article>
+
+                <article class="type-card">
+
+                    <h4>Balanced Binary Tree</h4>
+
+                    <p>
+                        The height difference between the left and right
+                        subtrees of every node is minimal.
+                    </p>
+
+                    <figure class="lesson-figure small">
+                        <img src="../../images/nonLinear/balancedbinarytree.png"
+                             alt="Diagram of a Balanced Binary Tree, where left and right subtree heights differ minimally at every node">
+                    </figure>
+
+                </article>
+
+            </div>
+
+            <h3 class="type-heading">Ternary Tree</h3>
+
+            <p>
+                Each node can have at most three children, often labeled
+                as left, middle, and right.
+            </p>
+
+            <figure class="lesson-figure">
+                <img src="../../images/nonLinear/ternarytree.png"
+                     alt="Diagram of a Ternary Tree, where each node has at most three children labeled left, middle, and right">
+            </figure>
+
+            <h3 class="type-heading">N-ary Tree (or Generic Tree)</h3>
+
+            <ul class="information-list">
+
+                <li>Each node can have any number of children.</li>
+
+                <li>
+                    Each node typically contains some data and a list of
+                    references to its children, and duplicates are not
+                    allowed.
+                </li>
+
+                <li>
+                    Unlike linked lists, nodes store references to
+                    multiple child nodes.
+                </li>
+
+            </ul>
+
+            <figure class="lesson-figure">
+                <img src="../../images/nonLinear/narytree.png"
+                     alt="Diagram of an N-ary Tree, where each node can have any number of children">
+            </figure>
+
+        </section>
+
+
+        <!-- ================= Properties ================= -->
+
+        <section class="lesson-card">
+
+            <h2>Properties of Tree Data Structure</h2>
+
+            <ul class="information-list">
+
+                <li>
+                    <strong>Number of Edges:</strong>
+                    An edge is the connection between two nodes. A tree
+                    with N nodes will always have N − 1 edges, and there
+                    is exactly one path from any node to any other node
+                    in the tree.
+                </li>
+
+                <li>
+                    <strong>Depth of a Node:</strong>
+                    The length of the path from the root to that node.
+                    Each edge in the path adds 1 unit to the length.
+                </li>
+
+                <li>
+                    <strong>Height of the Tree:</strong>
+                    The length of the longest path from the root to any
+                    leaf node.
+                </li>
+
+                <li>
+                    <strong>Degree of a Node:</strong>
+                    The number of subtrees attached to it, i.e. the
+                    number of children it has. A leaf node has a degree
+                    of 0, and the degree of the tree is the maximum
+                    degree among all of its nodes.
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- ================= Interactive Visualization ================= -->
+
+        <section class="lesson-card">
+
+            <div class="visualization-heading">
+
+                <div>
+                    <p class="small-heading">
+                        INTERACTIVE LEARNING
+                    </p>
+
+                    <h2>Binary Search Tree Visualization</h2>
+                </div>
+
+                <span class="visualization-label">
+                    Try it yourself
+                </span>
+
+            </div>
+
+            <p class="visualization-intro">
+                Insert, search for, and delete values to see how a
+                Binary Search Tree keeps every left child smaller and
+                every right child larger than its parent, then run a
+                traversal to watch how each strategy visits the nodes.
+            </p>
+
+
+            <!-- Tree Stats -->
+
+            <div class="tree-stats">
+
+                <div class="stat-box">
+                    <span class="stat-label">Nodes</span>
+                    <span class="stat-value" id="nodeCount">0</span>
+                </div>
+
+                <div class="stat-box">
+                    <span class="stat-label">Height</span>
+                    <span class="stat-value" id="treeHeight">0</span>
+                </div>
+
+            </div>
+
+
+            <!-- Interactive Tree -->
+
+            <div id="interactiveTree"
+                 class="interactive-tree"></div>
+
+
+            <!-- Result Message -->
+
+            <p id="visualizationResult"
+               class="visualization-result">
+                Select an operation to interact with the tree.
+            </p>
+
+
+            <!-- Input Controls -->
+
+            <div class="input-controls tree-input-controls">
+
+                <div class="input-group">
+                    <label for="valueInput">
+                        Value
+                    </label>
+
+                    <input type="number"
+                           id="valueInput"
+                           placeholder="Example: 45">
+                </div>
+
+            </div>
+
+
+            <!-- Operation Buttons -->
+
+            <div class="operation-buttons">
+
+                <button type="button" id="insertButton">
+                    Insert
+                </button>
+
+                <button type="button" id="searchButton">
+                    Search
+                </button>
+
+                <button type="button" id="deleteButton">
+                    Delete
+                </button>
+
+                <button type="button" id="preorderButton">
+                    Preorder
+                </button>
+
+                <button type="button" id="inorderButton">
+                    Inorder
+                </button>
+
+                <button type="button" id="postorderButton">
+                    Postorder
+                </button>
+
+                <button type="button" id="levelOrderButton">
+                    Level Order
+                </button>
+
+                <button type="button"
+                        id="resetButton"
+                        class="secondary-button">
+                    Reset
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= Applications ================= -->
+
+        <section class="lesson-card">
+
+            <h2>Applications</h2>
+
+            <div class="application-grid">
+
+                <article class="small-card">
+
+                    <h3>File Systems</h3>
+
+                    <p>
+                        Folders and files are organized as a tree, with
+                        each folder able to contain subfolders and
+                        files.
+                    </p>
+
+                </article>
+
+                <article class="small-card">
+
+                    <h3>The DOM</h3>
+
+                    <p>
+                        Every HTML page is parsed into a tree of
+                        elements, starting from a single root node.
+                    </p>
+
+                </article>
+
+                <article class="small-card">
+
+                    <h3>Decision Making</h3>
+
+                    <p>
+                        Decision trees branch through a series of
+                        choices to reach an outcome, as used in games
+                        and machine learning.
+                    </p>
+
+                </article>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= Advantages and Disadvantages ================= -->
+
+        <section class="comparison-grid">
+
+            <article class="lesson-card advantage-card">
+
+                <h2>Advantages</h2>
+
+                <ul class="information-list">
+
+                    <li>
+                        Hierarchical relationships are represented
+                        naturally.
+                    </li>
+
+                    <li>
+                        A Binary Search Tree can search, insert, and
+                        delete in O(log n) time when balanced.
+                    </li>
+
+                    <li>
+                        Trees can grow or shrink without shifting
+                        existing elements.
+                    </li>
+
+                    <li>
+                        Traversals allow data to be visited in different
+                        useful orders.
+                    </li>
+
+                </ul>
+
+            </article>
+
+
+            <article class="lesson-card disadvantage-card">
+
+                <h2>Disadvantages</h2>
+
+                <ul class="information-list">
+
+                    <li>
+                        An unbalanced tree can degrade to O(n) for
+                        search, insert, and delete.
+                    </li>
+
+                    <li>
+                        Trees use extra memory for storing child
+                        references.
+                    </li>
+
+                    <li>
+                        Implementing operations like deletion or
+                        balancing is more complex than for linear
+                        structures.
+                    </li>
+
+                </ul>
+
+            </article>
+
+        </section>
+
+
+        <!-- ================= Bottom Navigation ================= -->
+
+        <div class="bottom-navigation">
+
+            <a href="non-linear.html" class="back-button">
+                ← Back to Non-Linear Structures
+            </a>
+
+            <a href="graph.html" class="next-button">
+                Next: Graph →
+            </a>
+
+        </div>
+
+    </main>
+
+
+    <!-- ================= Footer ================= -->
+
+    <footer>
+        <p>
+            DataLab — Learn Data Structures Interactively
+        </p>
+    </footer>
+
+
+    <!-- Tree JavaScript -->
+
+    <script src="../../js/nonLinearJS/tree.js"></script>
+
+</body>
+
+</html>

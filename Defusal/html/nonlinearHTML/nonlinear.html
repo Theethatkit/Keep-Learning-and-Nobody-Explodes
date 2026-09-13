@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Non-linear Data Structures | DataLab</title>
+
+    <!-- Shared Navigation CSS -->
+    <link rel="stylesheet" href="../../css/navbar.css">
+
+    <!-- Non-linear Page CSS -->
+    <link rel="stylesheet" href="../../css/nonlinearCSS/nonlinear.css">
+</head>
+
+<body>
+
+    <!-- ================= Navigation Bar ================= -->
+
+    <header class="navbar">
+
+        <a href="../../index.html" class="logo-link">
+            <img src="../../images/Logo.png"
+                 alt="DataLab Logo"
+                 class="logo">
+        </a>
+
+        <nav class="nav-links">
+
+            <a href="../../index.html" class="nav-link">
+                Home
+            </a>
+
+            <a href="../lessons.html" class="nav-link active">
+                Lessons
+            </a>
+
+            <a href="../defusal.html" class="nav-link">
+                Revision
+            </a>
+
+            <a href="../team.html" class="nav-link">
+                Team
+            </a>
+
+        </nav>
+
+        <a href="../login.html"
+           id="authButton"
+           class="login-button">
+            Log in
+        </a>
+
+    </header>
+
+
+    <!-- ================= Main Content ================= -->
+
+    <main class="container">
+
+        <!-- Page Introduction -->
+
+        <section class="introduction">
+
+            <a href="../lessons.html" class="back-link">
+                ← Back to Learning Paths
+            </a>
+
+            <p class="section-label">
+                NON-LINEAR DATA STRUCTURES
+            </p>
+
+            <h1>
+                Learn Non-linear Data Structures
+            </h1>
+
+            <p class="introduction-text">
+                A non-linear data structure organizes elements in a
+                hierarchical or interconnected way. Elements are not
+                arranged sequentially, and a single element may connect
+                to multiple other elements.
+            </p>
+
+            <p class="introduction-text">
+                Non-linear data structures are useful for representing
+                relationships, hierarchies and fast key-based lookups,
+                but they are often more complex to traverse than linear
+                structures.
+            </p>
+
+        </section>
+
+
+        <!-- ================= Topic Selection ================= -->
+
+        <section class="topics">
+
+            <div class="topics-heading">
+
+                <div>
+                    <p class="section-label">
+                        SELECT A LESSON
+                    </p>
+
+                    <h2>Choose a topic</h2>
+                </div>
+
+                <p>
+                    Start with Tree or select any topic you want to study.
+                </p>
+
+            </div>
+
+
+            <div class="card-grid">
+
+                <!-- Tree -->
+
+                <article class="topic-card"
+                         data-page="tree.html"
+                         tabindex="0">
+
+                    <div class="card-top">
+
+                        <p class="card-number">01</p>
+
+                        <span class="difficulty">
+                            Intermediate
+                        </span>
+
+                    </div>
+
+                    <div class="tree-icon">
+
+                        <span class="tree-node tree-node-root"></span>
+                        <span class="tree-branch tree-branch-left"></span>
+                        <span class="tree-branch tree-branch-right"></span>
+                        <span class="tree-node tree-node-left"></span>
+                        <span class="tree-node tree-node-right"></span>
+
+                    </div>
+
+                    <h3>Tree</h3>
+
+                    <p class="card-description">
+                        A tree stores elements in a hierarchical
+                        structure, with a single root node connected to
+                        child nodes below it.
+                    </p>
+
+                    <div class="topic-details">
+                        <span>Root</span>
+                        <span>Node</span>
+                        <span>Binary Tree</span>
+                        <span>Traversal</span>
+                    </div>
+
+                    <a href="tree.html" class="topic-button">
+                        Explore Tree
+                        <span>→</span>
+                    </a>
+
+                </article>
+
+
+                <!-- Graph -->
+
+                <article class="topic-card"
+                         data-page="graph.html"
+                         tabindex="0">
+
+                    <div class="card-top">
+
+                        <p class="card-number">02</p>
+
+                        <span class="difficulty">
+                            Intermediate
+                        </span>
+
+                    </div>
+
+                    <div class="graph-icon">
+
+                        <span class="graph-node graph-node-top"></span>
+                        <span class="graph-node graph-node-bottom-left"></span>
+                        <span class="graph-node graph-node-bottom-right"></span>
+
+                        <span class="graph-edge graph-edge-left"></span>
+                        <span class="graph-edge graph-edge-right"></span>
+                        <span class="graph-edge graph-edge-bottom"></span>
+
+                    </div>
+
+                    <h3>Graph</h3>
+
+                    <p class="card-description">
+                        A graph stores elements as vertices connected by
+                        edges, allowing complex, many-to-many
+                        relationships between elements.
+                    </p>
+
+                    <div class="topic-details">
+                        <span>Vertex</span>
+                        <span>Edge</span>
+                        <span>Directed</span>
+                        <span>Undirected</span>
+                    </div>
+
+                    <a href="graph.html" class="topic-button">
+                        Explore Graph
+                        <span>→</span>
+                    </a>
+
+                </article>
+
+
+                <!-- HashMap -->
+
+                <article class="topic-card"
+                         data-page="hashmap.html"
+                         tabindex="0">
+
+                    <div class="card-top">
+
+                        <p class="card-number">03</p>
+
+                        <span class="difficulty">
+                            Intermediate
+                        </span>
+
+                    </div>
+
+                    <div class="hashmap-icon">
+                        <span>#</span>
+                    </div>
+
+                    <h3>HashMap</h3>
+
+                    <p class="card-description">
+                        A hashmap stores key-value pairs using a hash
+                        function, allowing fast lookup, insertion and
+                        deletion of data.
+                    </p>
+
+                    <div class="topic-details">
+                        <span>Key</span>
+                        <span>Value</span>
+                        <span>Hashing</span>
+                        <span>O(1) Lookup</span>
+                    </div>
+
+                    <a href="hashmap.html" class="topic-button">
+                        Explore HashMap
+                        <span>→</span>
+                    </a>
+
+                </article>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- ================= Footer ================= -->
+
+    <footer>
+        <p>
+            DataLab — Learn Data Structures Interactively
+        </p>
+    </footer>
+
+
+    <!-- Non-linear Page JavaScript -->
+
+    <script src="../../js/nonlinearJS/nonlinear.js"></script>
+
+</body>
+
+</html>
