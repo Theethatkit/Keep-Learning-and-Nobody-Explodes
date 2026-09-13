@@ -1,0 +1,434 @@
+/* ================= General Settings ================= */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    min-height: 100vh;
+    color: #cbd5e1;
+    font-family: Arial, Helvetica, sans-serif;
+    background: radial-gradient( circle at 80% 10%, rgba(8, 145, 178, 0.16), transparent 32% ), radial-gradient( circle at 10% 70%, rgba(37, 99, 235, 0.12), transparent 35% ), #020617;
+}
+
+
+/* ================= Main Container ================= */
+
+.container {
+    width: min(1160px, calc(100% - 40px));
+    margin: 0 auto;
+    padding: 70px 0 100px;
+}
+
+
+/* ================= Introduction ================= */
+
+.introduction {
+    max-width: 850px;
+    margin-bottom: 70px;
+}
+
+.back-link {
+    display: inline-block;
+    margin-bottom: 40px;
+    color: #94a3b8;
+    font-size: 14px;
+    transition: color 0.25s ease, transform 0.25s ease;
+}
+
+    .back-link:hover {
+        color: #22d3ee;
+        transform: translateX(-4px);
+    }
+
+.section-label {
+    margin-bottom: 10px;
+    color: #22d3ee;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+}
+
+.introduction h1 {
+    margin-bottom: 24px;
+    color: #f8fafc;
+    font-size: clamp(45px, 7vw, 76px);
+    line-height: 1.05;
+    letter-spacing: -3px;
+}
+
+.introduction-text {
+    max-width: 760px;
+    margin-bottom: 12px;
+    color: #94a3b8;
+    font-size: 18px;
+    line-height: 1.8;
+}
+
+
+/* ================= Topics ================= */
+
+.topics-heading {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 30px;
+    margin-bottom: 28px;
+}
+
+    .topics-heading h2 {
+        color: #f8fafc;
+        font-size: 32px;
+    }
+
+    .topics-heading > p {
+        max-width: 390px;
+        color: #64748b;
+        text-align: right;
+    }
+
+
+/* ================= Card Grid ================= */
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+}
+
+
+/* ================= Topic Cards ================= */
+
+.topic-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 430px;
+    padding: 30px;
+    overflow: hidden;
+    cursor: pointer;
+    background: linear-gradient( 145deg, rgba(15, 23, 42, 0.94), rgba(7, 15, 30, 0.96) );
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    border-radius: 22px;
+    transition: opacity 0.4s ease, transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+    .topic-card::before {
+        content: "";
+        position: absolute;
+        top: -100px;
+        right: -100px;
+        width: 220px;
+        height: 220px;
+        opacity: 0;
+        background-color: rgba(34, 211, 238, 0.1);
+        border-radius: 50%;
+        filter: blur(20px);
+        transition: opacity 0.3s ease;
+    }
+
+    .topic-card:hover,
+    .topic-card:focus {
+        outline: none;
+        border-color: rgba(34, 211, 238, 0.65);
+        box-shadow: 0 25px 55px rgba(0, 0, 0, 0.35), 0 0 30px rgba(34, 211, 238, 0.08);
+        transform: translateY(-9px);
+    }
+
+        .topic-card:hover::before,
+        .topic-card:focus::before {
+            opacity: 1;
+        }
+
+.card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 22px;
+}
+
+.card-number {
+    color: #22d3ee;
+    font-family: monospace;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.difficulty {
+    padding: 5px 11px;
+    color: #a7f3d0;
+    font-size: 11px;
+    background-color: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(52, 211, 153, 0.2);
+    border-radius: 999px;
+}
+
+.topic-card h3 {
+    margin: 22px 0 10px;
+    color: #f8fafc;
+    font-size: 27px;
+}
+
+.card-description {
+    min-height: 88px;
+    color: #94a3b8;
+    line-height: 1.7;
+}
+
+
+/* ================= Topic Details ================= */
+
+.topic-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 20px 0;
+}
+
+    .topic-details span {
+        padding: 5px 10px;
+        color: #bae6fd;
+        font-size: 11px;
+        background-color: rgba(14, 165, 233, 0.08);
+        border: 1px solid rgba(56, 189, 248, 0.18);
+        border-radius: 999px;
+    }
+
+
+/* ================= Topic Button ================= */
+
+.topic-button {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: auto;
+    padding: 12px 16px;
+    color: #e0f2fe;
+    font-size: 14px;
+    font-weight: 700;
+    background-color: rgba(30, 41, 59, 0.9);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 10px;
+    transition: color 0.25s ease, background-color 0.25s ease, border-color 0.25s ease;
+}
+
+    .topic-button span {
+        font-size: 19px;
+        transition: transform 0.25s ease;
+    }
+
+.topic-card:hover .topic-button {
+    color: #020617;
+    background-color: #22d3ee;
+    border-color: #22d3ee;
+}
+
+    .topic-card:hover .topic-button span {
+        transform: translateX(5px);
+    }
+
+
+/* ================= Tree Icon ================= */
+
+.tree-icon {
+    position: relative;
+    min-height: 60px;
+    padding-top: 4px;
+}
+
+.tree-node {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background-color: #064e3b;
+    border: 1px solid #34d399;
+    border-radius: 50%;
+}
+
+.tree-node-root {
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.tree-node-left {
+    bottom: 0;
+    left: 18%;
+}
+
+.tree-node-right {
+    right: 18%;
+    bottom: 0;
+}
+
+.tree-branch {
+    position: absolute;
+    top: 18px;
+    width: 2px;
+    height: 26px;
+    background-color: rgba(52, 211, 153, 0.55);
+}
+
+.tree-branch-left {
+    left: 42%;
+    transform-origin: top;
+    transform: rotate(-32deg);
+}
+
+.tree-branch-right {
+    right: 42%;
+    transform-origin: top;
+    transform: rotate(32deg);
+}
+
+
+/* ================= Graph Icon ================= */
+
+.graph-icon {
+    position: relative;
+    min-height: 60px;
+    padding-top: 4px;
+}
+
+.graph-node {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background-color: rgba(225, 29, 72, 0.15);
+    border: 1px solid #fb7185;
+    border-radius: 50%;
+}
+
+.graph-node-top {
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.graph-node-bottom-left {
+    bottom: 0;
+    left: 12%;
+}
+
+.graph-node-bottom-right {
+    right: 12%;
+    bottom: 0;
+}
+
+.graph-edge {
+    position: absolute;
+    top: 10px;
+    height: 2px;
+    background-color: rgba(251, 113, 133, 0.55);
+}
+
+.graph-edge-left {
+    left: 22%;
+    width: 42px;
+    transform-origin: left;
+    transform: rotate(48deg);
+}
+
+.graph-edge-right {
+    right: 22%;
+    width: 42px;
+    transform-origin: right;
+    transform: rotate(-48deg);
+}
+
+.graph-edge-bottom {
+    bottom: 9px;
+    left: 22%;
+    width: 56%;
+}
+
+
+/* ================= HashMap Icon ================= */
+
+.hashmap-icon {
+    display: grid;
+    place-items: center;
+    width: 58px;
+    height: 58px;
+    color: #e0e7ff;
+    font-size: 24px;
+    font-weight: 700;
+    background-color: rgba(79, 70, 229, 0.15);
+    border: 1px solid #818cf8;
+    border-radius: 10px;
+}
+
+
+/* ================= Animation ================= */
+
+.topic-card.card-hidden {
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+.topic-card.card-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+
+/* ================= Footer ================= */
+
+footer {
+    padding: 28px 20px;
+    color: #64748b;
+    text-align: center;
+    border-top: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+
+/* ================= Responsive Design ================= */
+
+@media screen and (max-width: 800px) {
+
+    .card-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .topics-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+        .topics-heading > p {
+            text-align: left;
+        }
+
+    .topic-card {
+        min-height: 400px;
+    }
+}
+
+@media screen and (max-width: 500px) {
+
+    .container {
+        width: min(100% - 24px, 1160px);
+        padding-top: 45px;
+    }
+
+    .introduction h1 {
+        font-size: 43px;
+        letter-spacing: -2px;
+    }
+
+    .introduction-text {
+        font-size: 16px;
+    }
+
+    .topic-card {
+        min-height: 430px;
+        padding: 23px;
+    }
+}
