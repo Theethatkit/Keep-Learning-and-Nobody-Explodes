@@ -11,12 +11,10 @@
 
     <title>Lessons | DataLab</title>
 
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Shared navigation styles -->
+    <!-- Shared Navigation CSS -->
     <link rel="stylesheet" href="../css/navbar.css">
 
-    <!-- Lessons page styles -->
+    <!-- Lessons CSS -->
     <link rel="stylesheet" href="../css/lessons.css">
 </head>
 
@@ -27,12 +25,15 @@
     <header class="navbar">
 
         <a href="../index.html" class="logo-link">
+
             <img
                 src="../images/Logo.png"
                 alt="DataLab Logo"
                 class="logo"
             >
+
         </a>
+
 
         <nav class="nav-links">
 
@@ -45,7 +46,7 @@
             </a>
 
             <a href="defusal.html" class="nav-link">
-                Quiz
+                Revision
             </a>
 
             <a href="team.html" class="nav-link">
@@ -53,6 +54,7 @@
             </a>
 
         </nav>
+
 
         <a
             href="login.html"
@@ -80,15 +82,15 @@
             <h1>Choose Your Learning Path</h1>
 
             <p class="lessons-description">
-                Select a category to learn its structure, basic operations,
-                time complexity, applications, advantages and disadvantages.
-                Each lesson also includes an interactive visualization.
+                Choose between linear and non-linear data structures.
+                Learn their structure, operations, time complexity,
+                applications and interactive visualizations.
             </p>
 
         </section>
 
 
-        <!-- ================= Categories ================= -->
+        <!-- ================= Category Cards ================= -->
 
         <section class="category-grid">
 
@@ -100,14 +102,20 @@
                 tabindex="0"
             >
 
-                <div class="card-number">01</div>
+                <span class="card-number">
+                    01
+                </span>
 
-                <div class="linear-icon">
-                    <span>10</span>
-                    <span>20</span>
-                    <span>30</span>
-                    <span>40</span>
+
+                <div class="card-preview array-preview">
+
+                    <div class="array-box">10</div>
+                    <div class="array-box">20</div>
+                    <div class="array-box">30</div>
+                    <div class="array-box">40</div>
+
                 </div>
+
 
                 <div class="card-content">
 
@@ -117,9 +125,10 @@
 
                     <h2>Linear Data Structures</h2>
 
-                    <p>
-                        Elements are arranged sequentially, with each element
-                        connected to the element before or after it.
+                    <p class="card-description">
+                        Elements are arranged sequentially. Each element
+                        is normally connected to the element before or
+                        after it.
                     </p>
 
                     <div class="topic-list">
@@ -131,13 +140,17 @@
 
                 </div>
 
+
                 <button
                     type="button"
                     class="explore-button"
                     data-page="linearHTML/linear.html"
                 >
                     Explore Linear
-                    <span>→</span>
+
+                    <span aria-hidden="true">
+                        →
+                    </span>
                 </button>
 
             </article>
@@ -151,19 +164,49 @@
                 tabindex="0"
             >
 
-                <div class="card-number">02</div>
+                <span class="card-number">
+                    02
+                </span>
 
-                <div class="tree-icon">
 
-                    <div class="tree-node root-node"></div>
+                <div class="card-preview nonlinear-preview">
 
-                    <div class="tree-line line-left"></div>
-                    <div class="tree-line line-right"></div>
+                    <!-- Tree -->
 
-                    <div class="tree-node left-node"></div>
-                    <div class="tree-node right-node"></div>
+                    <div class="preview-box tree-preview">
+
+                        <span class="mini-node tree-root"></span>
+                        <span class="mini-line tree-left-line"></span>
+                        <span class="mini-line tree-right-line"></span>
+                        <span class="mini-node tree-left"></span>
+                        <span class="mini-node tree-right"></span>
+
+                    </div>
+
+
+                    <!-- Graph -->
+
+                    <div class="preview-box graph-preview">
+
+                        <span class="mini-node graph-top"></span>
+                        <span class="mini-node graph-bottom-left"></span>
+                        <span class="mini-node graph-bottom-right"></span>
+
+                        <span class="mini-line graph-line-left"></span>
+                        <span class="mini-line graph-line-right"></span>
+                        <span class="mini-line graph-line-bottom"></span>
+
+                    </div>
+
+
+                    <!-- HashMap -->
+
+                    <div class="preview-box hash-preview">
+                        <span>#</span>
+                    </div>
 
                 </div>
+
 
                 <div class="card-content">
 
@@ -173,17 +216,20 @@
 
                     <h2>Non-linear Data Structures</h2>
 
-                    <p>
-                        Elements are organized through hierarchical or network
-                        relationships rather than one sequential path.
+                    <p class="card-description">
+                        Explore hierarchical structures, network
+                        relationships and fast key-value storage
+                        using hashing.
                     </p>
 
                     <div class="topic-list">
                         <span>Tree</span>
                         <span>Graph</span>
+                        <span>HashMap</span>
                     </div>
 
                 </div>
+
 
                 <button
                     type="button"
@@ -191,60 +237,10 @@
                     data-page="nonlinearHTML/nonlinear.html"
                 >
                     Explore Non-linear
-                    <span>→</span>
-                </button>
 
-            </article>
-
-
-            <!-- Hash-based Data Structures -->
-
-            <article
-                class="category-card"
-                data-page="hashmap.html"
-                tabindex="0"
-            >
-
-                <div class="card-number">03</div>
-
-                <div class="hash-icon">
-
-                    <div class="hash-key">Key</div>
-
-                    <div class="hash-arrow">→</div>
-
-                    <div class="hash-value">Value</div>
-
-                </div>
-
-                <div class="card-content">
-
-                    <p class="card-category">
-                        CATEGORY THREE
-                    </p>
-
-                    <h2>Hash-based Data Structures</h2>
-
-                    <p>
-                        Data is stored as key-value pairs. A hash function
-                        converts each key into a bucket index.
-                    </p>
-
-                    <div class="topic-list">
-                        <span>HashMap</span>
-                        <span>Hash Function</span>
-                        <span>Collision</span>
-                    </div>
-
-                </div>
-
-                <button
-                    type="button"
-                    class="explore-button"
-                    data-page="hashmap.html"
-                >
-                    Explore HashMap
-                    <span>→</span>
+                    <span aria-hidden="true">
+                        →
+                    </span>
                 </button>
 
             </article>
@@ -256,7 +252,8 @@
 
         <section class="learning-information">
 
-            <div>
+            <div class="information-heading">
+
                 <p class="section-label">
                     WHAT YOU WILL LEARN
                 </p>
@@ -264,45 +261,69 @@
                 <h2>
                     Learn the concept and try it yourself
                 </h2>
+
             </div>
+
 
             <div class="information-grid">
 
-                <div class="information-item">
-                    <span>01</span>
+                <article class="information-item">
+
+                    <span class="information-number">
+                        01
+                    </span>
 
                     <div>
+
                         <h3>Understand</h3>
 
                         <p>
-                            Learn the structure and important terminology.
+                            Learn the structure and important
+                            terminology.
                         </p>
-                    </div>
-                </div>
 
-                <div class="information-item">
-                    <span>02</span>
+                    </div>
+
+                </article>
+
+
+                <article class="information-item">
+
+                    <span class="information-number">
+                        02
+                    </span>
 
                     <div>
+
                         <h3>Compare</h3>
 
                         <p>
                             Compare operations and time complexity.
                         </p>
-                    </div>
-                </div>
 
-                <div class="information-item">
-                    <span>03</span>
+                    </div>
+
+                </article>
+
+
+                <article class="information-item">
+
+                    <span class="information-number">
+                        03
+                    </span>
 
                     <div>
+
                         <h3>Interact</h3>
 
                         <p>
-                            Test operations using interactive visualization.
+                            Test operations using interactive
+                            visualizations.
                         </p>
+
                     </div>
-                </div>
+
+                </article>
 
             </div>
 
@@ -314,9 +335,11 @@
     <!-- ================= Footer ================= -->
 
     <footer>
+
         <p>
             DataLab — Learn Data Structures Interactively
         </p>
+
     </footer>
 
 
