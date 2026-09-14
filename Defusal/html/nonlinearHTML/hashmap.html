@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>HashMap | DataLab</title>
+
+    <!-- Shared Navigation CSS -->
+    <link rel="stylesheet" href="../../css/navbar.css">
+
+    <!-- HashMap Page CSS -->
+    <link
+        rel="stylesheet"
+        href="../../css/nonlinearCSS/hashmap.css"
+    >
+</head>
+
+<body>
+
+    <!-- ================= Navigation Bar ================= -->
+
+    <header class="navbar">
+
+        <a href="../../index.html" class="logo-link">
+
+            <img
+                src="../../images/Logo.png"
+                alt="DataLab Logo"
+                class="logo"
+            >
+
+        </a>
+
+
+        <nav class="nav-links">
+
+            <a href="../../index.html" class="nav-link">
+                Home
+            </a>
+
+            <a href="../lessons.html" class="nav-link active">
+                Lessons
+            </a>
+
+            <a href="../defusal.html" class="nav-link">
+                Revision
+            </a>
+
+            <a href="../team.html" class="nav-link">
+                Team
+            </a>
+
+        </nav>
+
+
+        <a
+            href="../login.html"
+            id="authButton"
+            class="login-button"
+        >
+            Log in
+        </a>
+
+    </header>
+
+
+    <!-- ================= Main Content ================= -->
+
+    <main class="container">
+
+        <!-- Page Header -->
+
+        <section class="page-header">
+
+            <a href="nonlinear.html" class="back-link">
+                ← Back to Non-linear Structures
+            </a>
+
+            <p class="category">
+                HASH-BASED DATA STRUCTURE
+            </p>
+
+            <h1>HashMap</h1>
+
+            <p>
+                Learn how a HashMap stores key-value pairs and uses
+                a hash function to locate values efficiently.
+            </p>
+
+        </section>
+
+
+        <!-- ================= Introduction ================= -->
+
+        <section class="lesson-card">
+
+            <h2>What is a HashMap?</h2>
+
+            <p>
+                A HashMap is a data structure that connects keys to
+                values. It uses a hash function to convert each key
+                into an index inside an array of buckets.
+            </p>
+
+            <p>
+                It is similar to a dictionary. You use a word as the
+                key to quickly find its corresponding meaning, which
+                is the value.
+            </p>
+
+
+            <div class="key-value-example">
+
+                <div class="key-box">
+                    Peter
+                </div>
+
+                <span class="process-arrow">
+                    →
+                </span>
+
+                <div class="function-box">
+                    Hash Function
+                </div>
+
+                <span class="process-arrow">
+                    →
+                </span>
+
+                <div class="value-box">
+                    Spiderman
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= Why HashMaps ================= -->
+
+        <section class="lesson-card">
+
+            <h2>Why Do We Need HashMaps?</h2>
+
+            <p>
+                Searching for a value inside an unsorted array normally
+                requires checking elements one by one, which takes O(n).
+            </p>
+
+            <p>
+                A HashMap uses a key to calculate the location of a value.
+                This allows insertion, lookup and removal to take O(1)
+                average time.
+            </p>
+
+            <div class="comparison-example">
+
+                <article class="comparison-item">
+
+                    <span class="comparison-label">
+                        Array Search
+                    </span>
+
+                    <strong>O(n)</strong>
+
+                    <p>
+                        Check values one by one.
+                    </p>
+
+                </article>
+
+
+                <article class="comparison-item fast-item">
+
+                    <span class="comparison-label">
+                        HashMap Lookup
+                    </span>
+
+                    <strong>O(1) average</strong>
+
+                    <p>
+                        Calculate the bucket from the key.
+                    </p>
+
+                </article>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= Structure ================= -->
+
+        <section class="lesson-card">
+
+            <h2>Key Components of Hashing</h2>
+
+            <div class="structure-grid">
+
+                <article class="structure-item">
+
+                    <h3>Key</h3>
+
+                    <p>
+                        A unique identifier used to locate its
+                        corresponding value.
+                    </p>
+
+                </article>
+
+
+                <article class="structure-item">
+
+                    <h3>Value</h3>
+
+                    <p>
+                        The data stored and associated with a key.
+                    </p>
+
+                </article>
+
+
+                <article class="structure-item">
+
+                    <h3>Hash Function</h3>
+
+                    <p>
+                        Converts a key into a bucket index.
+                    </p>
+
+                </article>
+
+
+                <article class="structure-item">
+
+                    <h3>Bucket</h3>
+
+                    <p>
+                        A position where one or more key-value pairs
+                        are stored.
+                    </p>
+
+                </article>
+
+            </div>
+
+
+            <div class="formula-box">
+
+                <span>Key</span>
+                <span>→</span>
+                <span>Hash Code</span>
+                <span>→</span>
+                <span>Index = Hash Code % Bucket Count</span>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= Operations ================= -->
+
+        <section class="lesson-card">
+
+            <h2>Basic Operations and Time Complexity</h2>
+
+            <div class="operation-table-container">
+
+                <table class="operation-table">
+
+                    <thead>
+                        <tr>
+                            <th>Operation</th>
+                            <th>Description</th>
+                            <th>Average</th>
+                            <th>Worst Case</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td>Put</td>
+
+                            <td>
+                                Add or update a key-value pair.
+                            </td>
+
+                            <td>
+                                <span class="complexity">O(1)</span>
+                            </td>
+
+                            <td>
+                                <span class="worst-complexity">O(n)</span>
+                            </td>
+                        </tr>
+
+
+                        <tr>
+                            <td>Get</td>
+
+                            <td>
+                                Retrieve a value using its key.
+                            </td>
+
+                            <td>
+                                <span class="complexity">O(1)</span>
+                            </td>
+
+                            <td>
+                                <span class="worst-complexity">O(n)</span>
+                            </td>
+                        </tr>
+
+
+                        <tr>
+                            <td>Remove</td>
+
+                            <td>
+                                Delete a key-value pair.
+                            </td>
+
+                            <td>
+                                <span class="complexity">O(1)</span>
+                            </td>
+
+                            <td>
+                                <span class="worst-complexity">O(n)</span>
+                            </td>
+                        </tr>
+
+
+                        <tr>
+                            <td>containsKey</td>
+
+                            <td>
+                                Check whether a key exists.
+                            </td>
+
+                            <td>
+                                <span class="complexity">O(1)</span>
+                            </td>
+
+                            <td>
+                                <span class="worst-complexity">O(n)</span>
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <p class="table-note">
+                Operations may become O(n) in the worst case when many
+                keys collide in the same bucket.
+            </p>
+
+        </section>
+
+
+        <!-- ================= Collision ================= -->
+
+        <section class="lesson-card">
+
+            <h2>Collision in Hashing</h2>
+
+            <p>
+                A collision occurs when two different keys produce the
+                same bucket index. A HashMap must handle collisions
+                without losing either value.
+            </p>
+
+
+            <div class="collision-grid">
+
+                <article class="collision-card">
+
+                    <h3>Chaining</h3>
+
+                    <p>
+                        Each bucket stores a list of key-value pairs.
+                        Keys that produce the same index are placed
+                        inside the same bucket.
+                    </p>
+
+                    <div class="chain-example">
+
+                        <span class="bucket-index">2</span>
+                        <span>Peter: Spiderman</span>
+                        <span>→</span>
+                        <span>Bruce: Batman</span>
+
+                    </div>
+
+                </article>
+
+
+                <article class="collision-card">
+
+                    <h3>Open Addressing</h3>
+
+                    <p>
+                        When a bucket is occupied, the HashMap searches
+                        for another available bucket using a probing
+                        method.
+                    </p>
+
+                    <div class="probing-example">
+
+                        <span>Index 2 occupied</span>
+                        <span>→</span>
+                        <span>Try index 3</span>
+
+                    </div>
+
+                </article>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= Interactive Visualization ================= -->
+
+        <section class="lesson-card">
+
+            <div class="visualization-heading">
+
+                <div>
+
+                    <p class="small-heading">
+                        INTERACTIVE LEARNING
+                    </p>
+
+                    <h2>HashMap Visualization</h2>
+
+                </div>
+
+                <span class="visualization-label">
+                    CHAINING
+                </span>
+
+            </div>
+
+
+            <div class="visualization-layout">
+
+                <!-- Input and Controls -->
+
+                <div class="control-panel">
+
+                    <div class="input-group">
+
+                        <label for="keyInput">
+                            Key
+                        </label>
+
+                        <input
+                            type="text"
+                            id="keyInput"
+                            placeholder="Example: Peter"
+                            maxlength="20"
+                        >
+
+                    </div>
+
+
+                    <div class="input-group">
+
+                        <label for="valueInput">
+                            Value
+                        </label>
+
+                        <input
+                            type="text"
+                            id="valueInput"
+                            placeholder="Example: Spiderman"
+                            maxlength="30"
+                        >
+
+                    </div>
+
+
+                    <div class="operation-buttons">
+
+                        <button type="button" id="putButton">
+                            Put
+                        </button>
+
+                        <button type="button" id="getButton">
+                            Get
+                        </button>
+
+                        <button type="button" id="removeButton">
+                            Remove
+                        </button>
+
+                        <button type="button" id="containsButton">
+                            containsKey
+                        </button>
+
+                        <button
+                            type="button"
+                            id="resetButton"
+                            class="secondary-button"
+                        >
+                            Reset
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Hash Table -->
+
+                <div
+                    id="hashTable"
+                    class="hash-table"
+                ></div>
+
+            </div>
+
+
+            <p
+                id="visualizationResult"
+                class="visualization-result"
+            >
+                Enter a key and value, then select an operation.
+            </p>
+
+        </section>
+
+
+        <!-- ================= Applications ================= -->
+
+        <section class="lesson-card">
+
+            <h2>Applications of HashMaps</h2>
+
+            <div class="application-grid">
+
+                <article class="small-card">
+
+                    <h3>Database Indexing</h3>
+
+                    <p>
+                        Keys help databases retrieve records quickly.
+                    </p>
+
+                </article>
+
+
+                <article class="small-card">
+
+                    <h3>Caching</h3>
+
+                    <p>
+                        Previously calculated results can be stored and
+                        retrieved using their input as a key.
+                    </p>
+
+                </article>
+
+
+                <article class="small-card">
+
+                    <h3>DNS Resolution</h3>
+
+                    <p>
+                        Domain names can be connected to their
+                        corresponding IP addresses.
+                    </p>
+
+                </article>
+
+
+                <article class="small-card">
+
+                    <h3>Symbol Tables</h3>
+
+                    <p>
+                        Compilers use HashMaps to store variables,
+                        functions and other identifiers.
+                    </p>
+
+                </article>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= Advantages and Disadvantages ================= -->
+
+        <section class="advantages-grid">
+
+            <article class="lesson-card advantage-card">
+
+                <h2>Advantages</h2>
+
+                <ul class="information-list">
+
+                    <li>
+                        Fast O(1) average insertion and lookup.
+                    </li>
+
+                    <li>
+                        Keys can represent meaningful identifiers.
+                    </li>
+
+                    <li>
+                        Suitable for large collections of key-value data.
+                    </li>
+
+                    <li>
+                        Existing values can be updated using their keys.
+                    </li>
+
+                </ul>
+
+            </article>
+
+
+            <article class="lesson-card disadvantage-card">
+
+                <h2>Disadvantages</h2>
+
+                <ul class="information-list">
+
+                    <li>
+                        Additional space is required for unused buckets.
+                    </li>
+
+                    <li>
+                        Collisions require special handling.
+                    </li>
+
+                    <li>
+                        Many collisions can reduce performance to O(n).
+                    </li>
+
+                    <li>
+                        Entries do not normally follow a meaningful order.
+                    </li>
+
+                </ul>
+
+            </article>
+
+        </section>
+
+
+        <!-- ================= Bottom Navigation ================= -->
+
+        <div class="bottom-navigation">
+
+            <a href="graph.html" class="back-button">
+                ← Previous: Graph
+            </a>
+
+            <a href="nonlinear.html" class="next-button">
+                Back to Non-linear Structures →
+            </a>
+
+        </div>
+
+    </main>
+
+
+    <!-- ================= Footer ================= -->
+
+    <footer>
+
+        <p>
+            DataLab — Learn Data Structures Interactively
+        </p>
+
+    </footer>
+
+
+    <script src="../../js/nonlinearJS/hashmap.js"></script>
+
+</body>
+
+</html>
