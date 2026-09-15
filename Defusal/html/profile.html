@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Profile | DataLab</title>
+
+    <link rel="stylesheet" href="../css/profile.css">
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <header class="navbar">
+        <a href="../index.html" class="logo-link">
+            <img src="../images/Logo.png" alt="DataLab Logo" class="logo">
+        </a>
+
+        <nav class="nav-links">
+            <a href="../index.html" class="nav-link">Home</a>
+            <a href="lessons.html" class="nav-link">Lessons</a>
+            <a href="games.html" class="nav-link">Games</a>
+            <a href="team.html" class="nav-link">Team</a>
+            <a href="profile.html" class="nav-link active">Profile</a>
+        </nav>
+
+        <button id="logoutButton" class="logout-button">Logout</button>
+    </header>
+
+    <main class="profile-container">
+
+        <!-- Profile Information -->
+        <section class="profile-card">
+            <div class="avatar" id="avatarLetter">U</div>
+
+            <div class="profile-information">
+                <p class="label">Student profile</p>
+                <h1 id="profileUsername">Username</h1>
+                <p id="profileEmail">example@email.com</p>
+            </div>
+        </section>
+
+        <!-- Overall Progress -->
+        <section class="progress-section">
+            <div class="section-heading">
+                <div>
+                    <p class="label">Learning journey</p>
+                    <h2>Your Progress</h2>
+                </div>
+
+                <p class="progress-number">
+                    <span id="completedNumber">0</span>
+                    /
+                    <span id="totalNumber">6</span>
+                    completed
+                </p>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+
+            <p class="progress-percentage" id="progressPercentage">
+                0% completed
+            </p>
+        </section>
+
+        <!-- Lesson Progress -->
+        <section class="lessons-section">
+            <div class="section-heading">
+                <div>
+                    <p class="label">Learning materials</p>
+                    <h2>Lesson Progress</h2>
+                </div>
+            </div>
+
+            <div class="lesson-grid">
+
+                <article class="lesson-card" data-lesson="array">
+                    <div>
+                        <span class="lesson-number">01</span>
+                        <h3>Array</h3>
+                        <p>Learn indexes, elements and array operations.</p>
+                    </div>
+
+                    <div class="lesson-footer">
+                        <span class="lesson-status">Not completed</span>
+                        <a href="array/array.html">Continue</a>
+                    </div>
+                </article>
+
+                <article class="lesson-card" data-lesson="stack">
+                    <div>
+                        <span class="lesson-number">02</span>
+                        <h3>Stack</h3>
+                        <p>Understand the Last In, First Out principle.</p>
+                    </div>
+
+                    <div class="lesson-footer">
+                        <span class="lesson-status">Not completed</span>
+                        <a href="stack/stack.html">Continue</a>
+                    </div>
+                </article>
+
+                <article class="lesson-card" data-lesson="queue">
+                    <div>
+                        <span class="lesson-number">03</span>
+                        <h3>Queue</h3>
+                        <p>Understand the First In, First Out principle.</p>
+                    </div>
+
+                    <div class="lesson-footer">
+                        <span class="lesson-status">Not completed</span>
+                        <a href="queue/queue.html">Continue</a>
+                    </div>
+                </article>
+
+                <article class="lesson-card" data-lesson="hashmap">
+                    <div>
+                        <span class="lesson-number">04</span>
+                        <h3>Hash Map</h3>
+                        <p>Learn key-value pairs and hash functions.</p>
+                    </div>
+
+                    <div class="lesson-footer">
+                        <span class="lesson-status">Not completed</span>
+                        <a href="hashmap/hashmap.html">Continue</a>
+                    </div>
+                </article>
+
+                <article class="lesson-card" data-lesson="tree">
+                    <div>
+                        <span class="lesson-number">05</span>
+                        <h3>Tree</h3>
+                        <p>Explore hierarchical data and tree traversal.</p>
+                    </div>
+
+                    <div class="lesson-footer">
+                        <span class="lesson-status">Not completed</span>
+                        <a href="tree/tree.html">Continue</a>
+                    </div>
+                </article>
+
+                <article class="lesson-card" data-lesson="graph">
+                    <div>
+                        <span class="lesson-number">06</span>
+                        <h3>Graph</h3>
+                        <p>Learn vertices, edges and graph traversal.</p>
+                    </div>
+
+                    <div class="lesson-footer">
+                        <span class="lesson-status">Not completed</span>
+                        <a href="graph/graph.html">Continue</a>
+                    </div>
+                </article>
+
+            </div>
+        </section>
+
+    </main>
+
+    <script src="../js/profile.js"></script>
+</body>
+
+</html>
