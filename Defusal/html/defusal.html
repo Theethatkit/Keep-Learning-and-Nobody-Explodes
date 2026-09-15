@@ -78,6 +78,10 @@
                 Arm Bomb
             </button>
 
+            <button id="openHistoryButtonSetup" class="back-link" type="button">
+                View Past Attempts &rarr;
+            </button>
+
         </section>
 
         <!-- ===================== OVERVIEW SCREEN ===================== -->
@@ -93,6 +97,10 @@
                 before it hits zero.
             </p>
             <p id="overviewModulesSolvedLabel" class="modules-solved-label"></p>
+
+            <button id="openHistoryButton" class="back-link" type="button">
+                View Past Attempts &rarr;
+            </button>
 
             <div class="bomb-casing">
 
@@ -636,6 +644,12 @@
             </div>
 
             <div class="result-buttons">
+                <button id="saveAttemptButton" class="secondary-button hidden" type="button">
+                    Save Attempt
+                </button>
+                <button id="viewHistoryFromResultButton" class="secondary-button" type="button">
+                    View History
+                </button>
                 <button id="retryButton" class="primary-button">
                     Retry
                 </button>
@@ -643,6 +657,44 @@
                     Change Difficulty
                 </button>
             </div>
+
+        </section>
+
+        <!-- ===================== HISTORY SCREEN ===================== -->
+        <!-- Past attempts (up to the last 5 saved), plus a chart of
+             per-topic accuracy across them so mistakes are easy to spot -->
+        <section id="historyScreen" class="screen result-screen hidden">
+
+            <button id="backToOverviewFromHistory" class="back-link" type="button">
+                &larr; Back to Bomb Overview
+            </button>
+
+            <p class="eyebrow">DEFUSAL LOG</p>
+            <h1 class="page-title">Past Attempts</h1>
+            <p class="intro-text">
+                Your last 5 saved attempts, plus which topics you've been
+                missing most.
+            </p>
+
+            <p id="historyEmptyMessage" class="history-empty-message hidden">
+                No saved attempts yet - defuse a bomb and press
+                "Save Attempt" on the result screen to start building
+                your log.
+            </p>
+
+            <div id="historyColumnHeader" class="history-header-row hidden">
+                <span>Result</span>
+                <span>Difficulty</span>
+                <span>Correct</span>
+                <span>Score</span>
+                <span></span>
+                <span>Date</span>
+            </div>
+
+            <ul id="historyAttemptList" class="history-attempt-list"></ul>
+
+            <h3 class="section-heading">Topics to Review</h3>
+            <div id="historyTopicChart" class="history-topic-chart"></div>
 
         </section>
 

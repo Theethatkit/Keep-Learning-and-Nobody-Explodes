@@ -73,6 +73,18 @@ const resultStrikes = document.getElementById("resultStrikes");
 const resultScore = document.getElementById("resultScore");
 const retryButton = document.getElementById("retryButton");
 const changeDifficultyButton = document.getElementById("changeDifficultyButton");
+const saveAttemptButton = document.getElementById("saveAttemptButton");
+const viewHistoryFromResultButton = document.getElementById("viewHistoryFromResultButton");
+
+// ------------------- History screen elements -------------------
+const historyScreen = document.getElementById("historyScreen");
+const openHistoryButton = document.getElementById("openHistoryButton");
+const openHistoryButtonSetup = document.getElementById("openHistoryButtonSetup");
+const backToOverviewFromHistory = document.getElementById("backToOverviewFromHistory");
+const historyEmptyMessage = document.getElementById("historyEmptyMessage");
+const historyColumnHeader = document.getElementById("historyColumnHeader");
+const historyAttemptList = document.getElementById("historyAttemptList");
+const historyTopicChart = document.getElementById("historyTopicChart");
 
 // shape order fixed to the sketch layout: circle (a), triangle (b),
 // square (c), diamond (d) - only used by Module 1's option list
@@ -172,6 +184,12 @@ let runState = null;
 // difficulty id once you actually zoom into that module.
 let armedConfig = null;
 
+// Set by finishBomb() right before the result screen is shown; read by
+// the "Save Attempt" button's click handler. Null for practice runs
+// (nothing to save) and cleared again once a save actually happens, so
+// a second click can't double-save the same attempt.
+let pendingSaveResult = null;
+
 // ------------------- Set up the difficulty dropdown -------------------
 // Difficulty ids/labels are the same set across every module bank
 // (easy/intermediate/hard/expert), just with different numbers behind
@@ -244,7 +262,12 @@ function armBomb(difficultyId, isPracticeMode) {
         startingTimeSeconds: bombDifficulty.startingTimeSeconds,
         timeRemaining: bombDifficulty.startingTimeSeconds,
         timerId: null,
-        moduleResults: {}
+        moduleResults: {},
+        // Correct/total counts per question topic, merged in from each
+        // module's runState as it's completed (or captured mid-question
+        // if the bomb explodes) - this is what feeds the History
+        // screen's "topics to improve" chart.
+        topicStats: {}
     };
     runState = null;
 
@@ -315,7 +338,8 @@ function enterModule(moduleId) {
         currentIndex: 0,
         correctCount: 0,
         strikesUsed: 0,
-        isAnswerLocked: false
+        isAnswerLocked: false,
+        topicStats: {}
     };
 
     renderStrikes();
@@ -1074,6 +1098,15 @@ function submitAnswer(isCorrect, buttonElement, allButtonsForThisModule) {
 function commitAnswer(isCorrect) {
     runState.isAnswerLocked = true;
 
+    const topic = runState.questions[runState.currentIndex].topic;
+    if (!runState.topicStats[topic]) {
+        runState.topicStats[topic] = { correct: 0, total: 0 };
+    }
+    runState.topicStats[topic].total += 1;
+    if (isCorrect) {
+        runState.topicStats[topic].correct += 1;
+    }
+
     if (isCorrect) {
         runState.correctCount += 1;
         renderProgress();
@@ -1164,6 +1197,19 @@ function advanceAfterAnswer() {
     renderCurrentQuestion();
 }
 
+// Folds one module's per-topic correct/total counts into the
+// bomb-wide tally on armedConfig, so topics seen across several
+// modules in the same arm add up instead of overwriting each other.
+function mergeTopicStats(source) {
+    Object.keys(source).forEach(function (topic) {
+        if (!armedConfig.topicStats[topic]) {
+            armedConfig.topicStats[topic] = { correct: 0, total: 0 };
+        }
+        armedConfig.topicStats[topic].correct += source[topic].correct;
+        armedConfig.topicStats[topic].total += source[topic].total;
+    });
+}
+
 // Records this module as solved and checks whether that was the last
 // one - the bomb as a whole only counts as defused once every module
 // in MODULE_REGISTRY has been solved this same arm.
@@ -1175,6 +1221,7 @@ function completeModule(moduleId) {
         baseScore: runState.difficulty.baseScore,
         timeBonusCap: runState.difficulty.timeBonusCap
     };
+    mergeTopicStats(runState.topicStats);
 
     markModuleSolved(moduleId);
     pauseTimer();
@@ -1228,12 +1275,20 @@ function finishBomb(isDefused) {
             baseScore: runState.difficulty.baseScore,
             timeBonusCap: runState.difficulty.timeBonusCap
         };
+        mergeTopicStats(runState.topicStats);
     }
 
     const score = calculateOverallScore();
 
+    // The attempt isn't written to history until the player presses
+    // "Save Attempt" on the result screen - stash what that button
+    // needs here rather than saving automatically.
+    pendingSaveResult = armedConfig.isPracticeMode
+        ? null
+        : { isDefused: isDefused, score: score };
+
     renderResultScreen(isDefused, score);
-    saveRunToHistory(isDefused, score);
+    resetSaveAttemptButton();
 
     showScreen(resultScreen);
 }
@@ -1311,7 +1366,50 @@ function renderResultScreen(isDefused, score) {
     resultScore.textContent = armedConfig.isPracticeMode ? "N/A (practice)" : score;
 }
 
+// Puts the "Save Attempt" button back into its default, clickable
+// state whenever a fresh result screen is shown. Practice runs have
+// nothing to save, so the button is hidden rather than disabled.
+function resetSaveAttemptButton() {
+    if (armedConfig.isPracticeMode) {
+        saveAttemptButton.classList.add("hidden");
+        return;
+    }
+
+    saveAttemptButton.classList.remove("hidden");
+    saveAttemptButton.disabled = false;
+    saveAttemptButton.textContent = "Save Attempt";
+}
+
+// Shared by the result screen's own Save Attempt button and the
+// History screen's inline save button, so whichever one the player
+// used, the other reflects "already saved" if they end up back there.
+function markAttemptSaved() {
+    saveAttemptButton.disabled = true;
+    saveAttemptButton.textContent = "Saved!";
+}
+
 // ------------------- Saving progress -------------------
+// Attempts are namespaced per logged-in user (or "guest"), same as
+// the rest of the site's saved data.
+function getHistoryStorageKey() {
+    const loggedInUser = JSON.parse(
+        localStorage.getItem("loggedInUser") || "null"
+    );
+
+    return loggedInUser
+        ? "bombDefusalHistory_" + loggedInUser.username
+        : "bombDefusalHistory_guest";
+}
+
+function getSavedHistory() {
+    const historyKey = getHistoryStorageKey();
+    return JSON.parse(localStorage.getItem(historyKey)) || [];
+}
+
+// Only the 5 most recent attempts are kept, per the "past 5 attempts"
+// history view - older ones fall off the end.
+const MAX_HISTORY_ENTRIES = 5;
+
 function saveRunToHistory(isDefused, score) {
     // practice runs are not saved, per the "practice mode" idea of
     // going at your own pace without pressure
@@ -1319,15 +1417,8 @@ function saveRunToHistory(isDefused, score) {
         return;
     }
 
-    const loggedInUser = JSON.parse(
-        localStorage.getItem("loggedInUser") || "null"
-    );
-
-    const historyKey = loggedInUser
-        ? "bombDefusalHistory_" + loggedInUser.username
-        : "bombDefusalHistory_guest";
-
-    const history = JSON.parse(localStorage.getItem(historyKey)) || [];
+    const historyKey = getHistoryStorageKey();
+    const history = getSavedHistory();
 
     const totals = getAggregatedResults();
 
@@ -1341,6 +1432,17 @@ function saveRunToHistory(isDefused, score) {
         };
     });
 
+    // Per-topic correct/total, e.g. { "Linked Lists": { correct: 3,
+    // total: 4 } } - this is what the History screen's chart reads to
+    // show which topics the player is solid on vs. still missing.
+    const topicBreakdown = {};
+    Object.keys(armedConfig.topicStats).forEach(function (topic) {
+        topicBreakdown[topic] = {
+            correct: armedConfig.topicStats[topic].correct,
+            total: armedConfig.topicStats[topic].total
+        };
+    });
+
     history.push({
         difficulty: armedConfig.difficultyId,
         score: score,
@@ -1349,11 +1451,177 @@ function saveRunToHistory(isDefused, score) {
         timeRemainingSeconds: armedConfig.timeRemaining,
         strikesUsed: totals.strikesUsed,
         modules: moduleBreakdown,
+        topics: topicBreakdown,
         passed: isDefused,
         timestamp: new Date().toISOString()
     });
 
-    localStorage.setItem(historyKey, JSON.stringify(history));
+    const trimmedHistory = history.slice(-MAX_HISTORY_ENTRIES);
+
+    localStorage.setItem(historyKey, JSON.stringify(trimmedHistory));
+}
+
+// ------------------- History screen -------------------
+
+// If the player just finished a non-practice run and hasn't pressed
+// "Save Attempt" yet, this builds a preview row for it so the History
+// screen can offer to save it directly - without one, that run's data
+// is only reachable from the result screen.
+function buildPendingHistoryPreview() {
+    if (!pendingSaveResult || !armedConfig) {
+        return null;
+    }
+
+    const totals = getAggregatedResults();
+
+    const topics = {};
+    Object.keys(armedConfig.topicStats).forEach(function (topic) {
+        topics[topic] = {
+            correct: armedConfig.topicStats[topic].correct,
+            total: armedConfig.topicStats[topic].total
+        };
+    });
+
+    return {
+        isPending: true,
+        difficulty: armedConfig.difficultyId,
+        score: pendingSaveResult.score,
+        correctAnswers: totals.correctCount,
+        totalQuestions: totals.totalQuestions,
+        passed: pendingSaveResult.isDefused,
+        topics: topics
+    };
+}
+
+function formatHistoryTimestamp(isoTimestamp) {
+    const date = new Date(isoTimestamp);
+    if (isNaN(date.getTime())) {
+        return "";
+    }
+
+    return date.toLocaleDateString(undefined, { month: "short", day: "numeric" }) +
+        " " +
+        date.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+}
+
+// Builds one <li> for the history list. Saved attempts show their
+// date; the one still-pending attempt (if any) shows a Save button in
+// that same spot instead, immediately to the left of where its date
+// will appear once it's actually saved.
+function buildHistoryRow(attempt) {
+    const row = document.createElement("li");
+    row.className =
+        "history-row" +
+        (attempt.passed ? " passed" : " failed") +
+        (attempt.isPending ? " pending" : "");
+
+    const actionAndDateHtml = attempt.isPending
+        ? '<span class="history-row-action">' +
+              '<button class="history-save-button" type="button">Save</button>' +
+          "</span>" +
+          '<span class="history-row-date history-row-date-pending">Not saved yet</span>'
+        : '<span class="history-row-action"></span>' +
+          '<span class="history-row-date">' + formatHistoryTimestamp(attempt.timestamp) + "</span>";
+
+    row.innerHTML =
+        '<span class="history-row-status">' + (attempt.passed ? "Defused" : "Boom") + "</span>" +
+        '<span class="history-row-difficulty">' + attempt.difficulty + "</span>" +
+        '<span class="history-row-accuracy">' + attempt.correctAnswers + " / " + attempt.totalQuestions + "</span>" +
+        '<span class="history-row-score">' + (attempt.score || 0) + " pts</span>" +
+        actionAndDateHtml;
+
+    if (attempt.isPending) {
+        row.querySelector(".history-save-button").addEventListener("click", function () {
+            saveRunToHistory(pendingSaveResult.isDefused, pendingSaveResult.score);
+            pendingSaveResult = null;
+            markAttemptSaved();
+            renderHistoryScreen(); // redraw: the pending row is now a normal saved one
+        });
+    }
+
+    return row;
+}
+
+function renderHistoryScreen() {
+    const savedHistory = getSavedHistory().slice().reverse(); // most recent first
+    const pendingPreview = buildPendingHistoryPreview();
+    const rows = pendingPreview ? [pendingPreview].concat(savedHistory) : savedHistory;
+
+    historyAttemptList.innerHTML = "";
+    historyTopicChart.innerHTML = "";
+
+    if (!rows.length) {
+        historyEmptyMessage.classList.remove("hidden");
+        historyColumnHeader.classList.add("hidden");
+        historyAttemptList.classList.add("hidden");
+        historyTopicChart.classList.add("hidden");
+        return;
+    }
+
+    historyEmptyMessage.classList.add("hidden");
+    historyColumnHeader.classList.remove("hidden");
+    historyAttemptList.classList.remove("hidden");
+
+    rows.forEach(function (attempt) {
+        historyAttemptList.appendChild(buildHistoryRow(attempt));
+    });
+
+    renderTopicChart(rows);
+}
+
+// Aggregates per-topic correct/total across every attempt currently
+// shown on the History screen - up to 5 saved ones, plus the pending
+// unsaved run if there is one - then draws one horizontal bar per
+// topic, weakest accuracy first, so the topics most worth reviewing
+// show up at the top.
+function renderTopicChart(attempts) {
+    const combined = {};
+
+    attempts.forEach(function (attempt) {
+        const topics = attempt.topics || {};
+        Object.keys(topics).forEach(function (topic) {
+            if (!combined[topic]) {
+                combined[topic] = { correct: 0, total: 0 };
+            }
+            combined[topic].correct += topics[topic].correct;
+            combined[topic].total += topics[topic].total;
+        });
+    });
+
+    const topicNames = Object.keys(combined);
+
+    if (!topicNames.length) {
+        historyTopicChart.classList.add("hidden");
+        return;
+    }
+
+    historyTopicChart.classList.remove("hidden");
+
+    const rows = topicNames
+        .map(function (topic) {
+            const stats = combined[topic];
+            const accuracy = stats.total > 0 ? stats.correct / stats.total : 0;
+            return { topic: topic, stats: stats, accuracy: accuracy };
+        })
+        .sort(function (a, b) {
+            return a.accuracy - b.accuracy; // weakest topics first
+        });
+
+    rows.forEach(function (row) {
+        const percent = Math.round(row.accuracy * 100);
+        const level = percent >= 80 ? "strong" : percent >= 50 ? "medium" : "weak";
+
+        const barRow = document.createElement("div");
+        barRow.className = "topic-bar-row";
+        barRow.innerHTML =
+            '<span class="topic-bar-label">' + row.topic + "</span>" +
+            '<div class="topic-bar-track">' +
+            '<div class="topic-bar-fill ' + level + '" style="width: ' + percent + '%"></div>' +
+            "</div>" +
+            '<span class="topic-bar-value">' + percent + "% (" + row.stats.correct + "/" + row.stats.total + ")</span>";
+
+        historyTopicChart.appendChild(barRow);
+    });
 }
 
 // ------------------- Screen switching -------------------
@@ -1377,6 +1645,37 @@ retryButton.addEventListener("click", function () {
 
 changeDifficultyButton.addEventListener("click", function () {
     showScreen(setupScreen);
+});
+
+saveAttemptButton.addEventListener("click", function () {
+    if (!pendingSaveResult) {
+        return; // already saved, or nothing to save (practice mode)
+    }
+
+    saveRunToHistory(pendingSaveResult.isDefused, pendingSaveResult.score);
+    pendingSaveResult = null;
+    markAttemptSaved();
+});
+
+viewHistoryFromResultButton.addEventListener("click", function () {
+    renderHistoryScreen();
+    showScreen(historyScreen);
+});
+
+openHistoryButton.addEventListener("click", function () {
+    renderHistoryScreen();
+    showScreen(historyScreen);
+});
+
+openHistoryButtonSetup.addEventListener("click", function () {
+    renderHistoryScreen();
+    showScreen(historyScreen);
+});
+
+backToOverviewFromHistory.addEventListener("click", function () {
+    // No bomb armed yet (came here from the setup screen) - go back
+    // there instead of to an overview with nothing armed on it.
+    showScreen(armedConfig ? overviewScreen : setupScreen);
 });
 
 // ------------------- Bomb overview navigation -------------------
