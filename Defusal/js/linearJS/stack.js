@@ -240,6 +240,26 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    /* ================= Lesson Completion ================= */
+    const completeLessonButton =
+    document.getElementById("completeLessonButton");
+
+    if (isLessonCompleted("stack")) {
+        completeLessonButton.textContent = "Completed ✓";
+        completeLessonButton.classList.add("completed");
+    }
+
+    completeLessonButton.addEventListener("click", function () {
+    const saved = completeLesson("stack");
+
+    if (saved) {
+        completeLessonButton.textContent = "Completed ✓";
+        completeLessonButton.classList.add("completed");
+
+        alert("Stack lesson completed!");
+    }
+    });
+
 
     /* ================= Button Events ================= */
 

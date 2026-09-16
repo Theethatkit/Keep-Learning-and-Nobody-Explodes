@@ -635,6 +635,25 @@ document.addEventListener("DOMContentLoaded", function () {
 
     }
 
+    /* ================= Lesson Completion ================= */
+    const completeLessonButton =
+    document.getElementById("completeLessonButton");
+
+    if (isLessonCompleted("hashmap")) {
+        completeLessonButton.textContent = "Completed ✓";
+        completeLessonButton.classList.add("completed");
+    }
+
+    completeLessonButton.addEventListener("click", function () {
+    const saved = completeLesson("hashmap");
+
+    if (saved) {
+        completeLessonButton.textContent = "Completed ✓";
+        completeLessonButton.classList.add("completed");
+
+        alert("HashMap lesson completed!");
+    }
+    });
 
     /* ================= Button Events ================= */
 

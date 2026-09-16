@@ -1,0 +1,46 @@
+.complete-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+
+    padding: 28px;
+    margin: 30px 0;
+
+    border: 1px solid rgba(34, 211, 238, 0.25);
+    border-radius: 18px;
+    background: rgba(15, 23, 42, 0.85);
+}
+
+.complete-section h2 {
+    margin-bottom: 8px;
+    color: #ffffff;
+}
+
+.complete-section p {
+    color: #94a3b8;
+}
+
+.complete-lesson-button {
+    padding: 12px 22px;
+
+    color: #020617;
+    font-weight: 700;
+    cursor: pointer;
+
+    border: none;
+    border-radius: 999px;
+    background: #22d3ee;
+
+    transition: 0.3s ease;
+}
+
+.complete-lesson-button:hover {
+    background: #67e8f9;
+    transform: translateY(-2px);
+}
+
+.complete-lesson-button.completed {
+    color: #d1fae5;
+    background: #047857;
+}

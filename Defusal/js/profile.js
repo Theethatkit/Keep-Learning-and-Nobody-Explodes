@@ -1,72 +1,77 @@
-const profileUsername = document.getElementById("profileUsername");
-const profileEmail = document.getElementById("profileEmail");
-const avatarLetter = document.getElementById("avatarLetter");
+document.addEventListener("DOMContentLoaded", function () {
 
-const completedNumber = document.getElementById("completedNumber");
-const totalNumber = document.getElementById("totalNumber");
-const progressFill = document.getElementById("progressFill");
-const progressPercentage = document.getElementById("progressPercentage");
+    /* ================= Elements ================= */
 
-const logoutButton = document.getElementById("logoutButton");
+    const profileUsername =
+        document.getElementById("profileUsername");
 
-logoutButton.addEventListener("click", function () {
-    localStorage.removeItem("loggedInUser");
-    window.location.href = "../index.html";
-});
+    const profileEmail =
+        document.getElementById("profileEmail");
+
+    const avatarLetter =
+        document.getElementById("avatarLetter");
+
+    const completedNumber =
+        document.getElementById("completedNumber");
+
+    const totalNumber =
+        document.getElementById("totalNumber");
+
+    const progressFill =
+        document.getElementById("progressFill");
+
+    const progressPercentage =
+        document.getElementById("progressPercentage");
+
+    const logoutButton =
+        document.getElementById("logoutButton");
+
+    const lessonCards =
+        document.querySelectorAll(".lesson-card");
 
 
-const lessonCards = document.querySelectorAll(".lesson-card");
+    /* ================= Check Login ================= */
 
-function getLoggedInUser() {
-    const savedUser = localStorage.getItem("loggedInUser");
+    const user = getCurrentUser();
 
-    if (!savedUser) {
+    if (!user) {
+        alert("Please log in before accessing your profile.");
         window.location.href = "login.html";
-        return null;
+        return;
     }
 
-    try {
-        return JSON.parse(savedUser);
-    } catch (error) {
-        console.error("Cannot read user information:", error);
-        window.location.href = "login.html";
-        return null;
+
+    /* ================= Profile Information ================= */
+
+    let username;
+    let email;
+
+    if (typeof user === "string") {
+        username = user;
+        email = "No email information";
+    } else {
+        username = user.username || "Student";
+        email = user.email || "No email information";
     }
-}
-
-function getCompletedLessons() {
-    const savedLessons = localStorage.getItem("completedLessons");
-
-    if (!savedLessons) {
-        return [];
-    }
-
-    try {
-        return JSON.parse(savedLessons);
-    } catch (error) {
-        console.error("Cannot read lesson progress:", error);
-        return [];
-    }
-}
-
-function displayProfile(user) {
-    const username = user.username || "Student";
-    const email = user.email || "No email information";
 
     profileUsername.textContent = username;
     profileEmail.textContent = email;
-    avatarLetter.textContent = username.charAt(0).toUpperCase();
-}
 
-function displayProgress() {
+    avatarLetter.textContent =
+        username.charAt(0).toUpperCase();
+
+
+    /* ================= Lesson Progress ================= */
+
     const completedLessons = getCompletedLessons();
-    const totalLessons = lessonCards.length;
 
     let completedCount = 0;
 
     lessonCards.forEach(function (card) {
         const lessonName = card.dataset.lesson;
-        const status = card.querySelector(".lesson-status");
+
+        const status =
+            card.querySelector(".lesson-status");
 
         if (completedLessons.includes(lessonName)) {
             card.classList.add("completed");
@@ -78,27 +83,29 @@ function displayProgress() {
         }
     });
 
+    const totalLessons = lessonCards.length;
+
     const percentage =
         totalLessons === 0
             ? 0
-            : Math.round((completedCount / totalLessons) * 100);
+            : Math.round(
+                (completedCount / totalLessons) * 100
+            );
 
     completedNumber.textContent = completedCount;
     totalNumber.textContent = totalLessons;
+
     progressFill.style.width = percentage + "%";
-    progressPercentage.textContent = percentage + "% completed";
-}
 
-function logout() {
-    localStorage.removeItem("loggedInUser");
-    window.location.href = "login.html";
-}
+    progressPercentage.textContent =
+        percentage + "% completed";
 
-const currentUser = getLoggedInUser();
 
-if (currentUser) {
-    displayProfile(currentUser);
-    displayProgress();
-}
+    /* ================= Logout ================= */
 
-logoutButton.addEventListener("click", logout);
+    logoutButton.addEventListener("click", function () {
+        localStorage.removeItem("loggedInUser");
+        window.location.href = "../index.html";
+    });
+
+});

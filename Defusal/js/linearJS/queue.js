@@ -220,6 +220,25 @@ document.addEventListener("DOMContentLoaded", function () {
         );
     }
 
+    /* ================= Lesson Completion ================= */
+    const completeLessonButton =
+    document.getElementById("completeLessonButton");
+
+    if (isLessonCompleted("queue")) {
+        completeLessonButton.textContent = "Completed ✓";
+        completeLessonButton.classList.add("completed");
+    }
+
+    completeLessonButton.addEventListener("click", function () {
+    const saved = completeLesson("queue");
+
+    if (saved) {
+        completeLessonButton.textContent = "Completed ✓";
+        completeLessonButton.classList.add("completed");
+
+        alert("Queue lesson completed!");
+    }
+    });
 
     /* ================= Button Events ================= */
 

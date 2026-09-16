@@ -441,6 +441,26 @@ document.addEventListener("DOMContentLoaded", function () {
         listType.disabled = disabled;
     }
 
+    /* ================= Lesson Completion ================= */
+    const completeLessonButton =
+    document.getElementById("completeLessonButton");
+
+    if (isLessonCompleted("linked-list")) {
+        completeLessonButton.textContent = "Completed ✓";
+        completeLessonButton.classList.add("completed");
+    }
+
+    completeLessonButton.addEventListener("click", function () {
+    const saved = completeLesson("linked-list");
+
+    if (saved) {
+        completeLessonButton.textContent = "Completed ✓";
+        completeLessonButton.classList.add("completed");
+
+        alert("Linked List lesson completed!");
+    }
+    });
+
 
     /* ================= Events ================= */
 

@@ -413,6 +413,26 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    /* ================= Lesson Completion ================= */
+    const completeLessonButton =
+    document.getElementById("completeLessonButton");
+
+    if (isLessonCompleted("array")) {
+        completeLessonButton.textContent = "Completed ✓";
+        completeLessonButton.classList.add("completed");
+    }
+
+    completeLessonButton.addEventListener("click", function () {
+    const saved = completeLesson("array");
+
+    if (saved) {
+        completeLessonButton.textContent = "Completed ✓";
+        completeLessonButton.classList.add("completed");
+
+        alert("Array lesson completed!");
+    }
+    });
+
 
     /* ================= Button Events ================= */
 
