@@ -7,15 +7,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (authButton) {
         if (loggedInUser) {
-            authButton.textContent = "Logout";
-            authButton.href = "#";
-
-            authButton.addEventListener("click", function (event) {
-                event.preventDefault();
-
-                localStorage.removeItem("loggedInUser");
-                window.location.href = "../../index.html";
-            });
+            authButton.textContent = "Profile";
+            authButton.href = "../profile.html";
         } else {
             authButton.textContent = "Log in";
             authButton.href = "../login.html";
@@ -633,6 +626,25 @@ document.addEventListener("DOMContentLoaded", function () {
         );
     }
 
+    /* ================= Lesson Completion ================= */
+    const completeLessonButton =
+    document.getElementById("completeLessonButton");
+
+    if (isLessonCompleted("tree")) {
+        completeLessonButton.textContent = "Completed ✓";
+        completeLessonButton.classList.add("completed");
+    }
+
+    completeLessonButton.addEventListener("click", function () {
+    const saved = completeLesson("tree");
+
+    if (saved) {
+        completeLessonButton.textContent = "Completed ✓";
+        completeLessonButton.classList.add("completed");
+
+        alert("Tree lesson completed!");
+    }
+    });
 
     /* ================= Button Events ================= */
 

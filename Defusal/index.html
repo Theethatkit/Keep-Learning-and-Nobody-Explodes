@@ -54,12 +54,7 @@
 
             </nav>
 
-            <!-- Login / Logout button -->
-            <a
-                id="authButton"
-                href="html/login.html"
-                class="auth-button"
-            >
+            <a href="html/login.html" id="authButton" class="auth-button">
                 Log in
             </a>
 
@@ -125,44 +120,44 @@
     </main>
 
     <script>
-        const loggedInUser =
-            localStorage.getItem("loggedInUser");
+    const loggedInUser =
+        localStorage.getItem("loggedInUser");
 
-        const authButton =
-            document.getElementById("authButton");
+    const authButton =
+        document.getElementById("authButton");
 
-        const protectedButtons = [
-            document.getElementById("startLearningButton"),
-            document.getElementById("learnButton"),
-            document.getElementById("reviseButton"),
-            document.getElementById("teamButton")
-        ];
+    const protectedButtons = [
+        document.getElementById("startLearningButton"),
+        document.getElementById("learnButton"),
+        document.getElementById("reviseButton"),
+        document.getElementById("teamButton")
+    ];
 
-        // Change Log in to Log out when the user is logged in
-        if (loggedInUser) {
-            authButton.textContent = "Log out";
-            authButton.href = "#";
+    /* Change Login button to Profile */
 
-            authButton.addEventListener("click", function (event) {
-                event.preventDefault();
+    if (loggedInUser) {
+        authButton.textContent = "Profile";
+        authButton.href = "html/profile.html";
+    } else {
+        authButton.textContent = "Log in";
+        authButton.href = "html/login.html";
+    }
 
-                localStorage.removeItem("loggedInUser");
+    /* Require login before opening protected pages */
 
-                window.location.reload();
-            });
+    protectedButtons.forEach(function (button) {
+        if (!button) {
+            return;
         }
 
-        // Require login before opening protected pages
-        protectedButtons.forEach(function (button) {
-            button.addEventListener("click", function (event) {
-                if (!localStorage.getItem("loggedInUser")) {
-                    event.preventDefault();
-
-                    window.location.href = "html/login.html";
-                }
-            });
+        button.addEventListener("click", function (event) {
+            if (!localStorage.getItem("loggedInUser")) {
+                event.preventDefault();
+                window.location.href = "html/login.html";
+            }
         });
-    </script>
+    });
+</script>
 
     <script src="js/script.js"></script>
 

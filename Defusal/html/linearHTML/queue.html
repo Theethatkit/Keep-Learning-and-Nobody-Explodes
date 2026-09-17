@@ -16,6 +16,9 @@
 
     <!-- Queue Page CSS -->
     <link rel="stylesheet" href="../../css/linearCSS/queue.css">
+
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="../../css/style.css">
 </head>
 
 <body>
@@ -52,14 +55,10 @@
 
         </nav>
 
-        <a
-            href="../login.html"
-            id="authButton"
-            class="login-button"
-        >
+        <a href="../login.html" id="authButton" class="auth-button">
             Log in
         </a>
-
+        
     </header>
 
 
@@ -544,6 +543,17 @@
 
         </section>
 
+        <section class="complete-section">
+            <div>
+                <h2>Finished this lesson?</h2>
+                <p>Mark the Array lesson as completed.</p>
+            </div>
+
+            <button type="button" id="completeLessonButton" class="complete-lesson-button">
+                Mark as Completed
+            </button>
+        </section>
+
 
         <!-- ================= Bottom Navigation ================= -->
 
@@ -570,7 +580,7 @@
         </p>
     </footer>
 
-
+    <script src="../../js/progress.js"></script>
     <script src="../../js/linearJS/queue.js"></script>
 
 </body>

@@ -7,21 +7,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (authButton) {
         if (loggedInUser) {
-            authButton.textContent = "Logout";
-            authButton.href = "#";
-
-            authButton.addEventListener("click", function (event) {
-                event.preventDefault();
-
-                localStorage.removeItem("loggedInUser");
-                window.location.href = "../../index.html";
-            });
+            authButton.textContent = "Profile";
+            authButton.href = "../profile.html";
         } else {
             authButton.textContent = "Log in";
             authButton.href = "../login.html";
         }
     }
-
 
     /* ================= Linked List Settings ================= */
 
@@ -448,6 +440,26 @@ document.addEventListener("DOMContentLoaded", function () {
 
         listType.disabled = disabled;
     }
+
+    /* ================= Lesson Completion ================= */
+    const completeLessonButton =
+    document.getElementById("completeLessonButton");
+
+    if (isLessonCompleted("linked-list")) {
+        completeLessonButton.textContent = "Completed ✓";
+        completeLessonButton.classList.add("completed");
+    }
+
+    completeLessonButton.addEventListener("click", function () {
+    const saved = completeLesson("linked-list");
+
+    if (saved) {
+        completeLessonButton.textContent = "Completed ✓";
+        completeLessonButton.classList.add("completed");
+
+        alert("Linked List lesson completed!");
+    }
+    });
 
 
     /* ================= Events ================= */

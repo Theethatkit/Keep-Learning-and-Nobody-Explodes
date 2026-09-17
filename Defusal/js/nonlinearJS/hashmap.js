@@ -2,43 +2,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
     /* ================= Authentication ================= */
 
-    const authButton =
-        document.getElementById("authButton");
-
-    const loggedInUser =
-        localStorage.getItem("loggedInUser");
-
+    const authButton = document.getElementById("authButton");
+    const loggedInUser = localStorage.getItem("loggedInUser");
 
     if (authButton) {
-
         if (loggedInUser) {
-
-            authButton.textContent = "Logout";
-            authButton.href = "#";
-
-            authButton.addEventListener(
-                "click",
-                function (event) {
-
-                    event.preventDefault();
-
-                    localStorage.removeItem(
-                        "loggedInUser"
-                    );
-
-                    window.location.href =
-                        "../../index.html";
-
-                }
-            );
-
+            authButton.textContent = "Profile";
+            authButton.href = "../profile.html";
         } else {
-
             authButton.textContent = "Log in";
             authButton.href = "../login.html";
-
         }
     }
+
+
 
 
     /* ================= HashMap Settings ================= */
@@ -658,6 +635,25 @@ document.addEventListener("DOMContentLoaded", function () {
 
     }
 
+    /* ================= Lesson Completion ================= */
+    const completeLessonButton =
+    document.getElementById("completeLessonButton");
+
+    if (isLessonCompleted("hashmap")) {
+        completeLessonButton.textContent = "Completed ✓";
+        completeLessonButton.classList.add("completed");
+    }
+
+    completeLessonButton.addEventListener("click", function () {
+    const saved = completeLesson("hashmap");
+
+    if (saved) {
+        completeLessonButton.textContent = "Completed ✓";
+        completeLessonButton.classList.add("completed");
+
+        alert("HashMap lesson completed!");
+    }
+    });
 
     /* ================= Button Events ================= */
 
