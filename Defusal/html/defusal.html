@@ -113,13 +113,15 @@
 
                     <div class="bomb-grid">
 
-                        <!-- Module 4: True or False (active) -->
-                        <button id="module4Slot" class="bomb-cell playable-cell" type="button">
+                        <!-- Module 4: Analyze (active) - traces a short
+                             sequence of operations and has the player
+                             type the resulting value, so its mock icon
+                             is a little console/trace glyph rather than
+                             Identify's shape grid (see moduleAnalyzeSlot
+                             below in MODULE_REGISTRY) -->
+                        <button id="moduleAnalyzeSlot" class="bomb-cell playable-cell" type="button">
                             <span class="cell-led active"></span>
-                            <div class="cell-content mock-truefalse">
-                                <span class="mock-btn true-btn">True</span>
-                                <span class="mock-btn false-btn">False</span>
-                            </div>
+                            <div class="cell-content mock-keyboard">&#10095;_</div>
                             <span class="cell-hint">Tap to defuse</span>
                         </button>
 
@@ -148,16 +150,19 @@
                             <span class="cell-hint">Tap to defuse</span>
                         </button>
 
-                        <!-- Module 5: Choose the Correct Answer (active) -->
+                        <!-- Module 5: Defuse (active) - a scenario with
+                             several candidate structures, single pick;
+                             mock icon is a little option list with one
+                             item picked out, rather than Identify's
+                             shape grid (which this module used to reuse
+                             indirectly via its old statement-grid) -->
                         <button id="module5Slot" class="bomb-cell playable-cell" type="button">
                             <span class="cell-led active"></span>
-                            <div class="cell-content mini-shape-grid-6">
-                                <span class="shape shape-circle"></span>
-                                <span class="shape shape-diamond"></span>
-                                <span class="shape shape-square"></span>
-                                <span class="shape shape-hexagon"></span>
-                                <span class="shape shape-triangle"></span>
-                                <span class="shape shape-star"></span>
+                            <div class="cell-content mock-scenario">
+                                <span class="mock-scenario-bar mock-scenario-bar-picked"></span>
+                                <span class="mock-scenario-bar"></span>
+                                <span class="mock-scenario-bar"></span>
+                                <span class="mock-scenario-bar"></span>
                             </div>
                             <span class="cell-hint">Tap to defuse</span>
                         </button>
@@ -168,8 +173,12 @@
                             <div id="overviewTimerDisplay" class="timer-lcd">10:00</div>
                         </div>
 
-                        <!-- Module 1: Multiple Choice (active) -->
-                        <button id="module1Slot" class="bomb-cell module1-cell" type="button">
+                        <!-- Module 1: Identify (active) - dispatches MC
+                             or True/False questions depending on each
+                             question's own `type`; absorbs what used to
+                             be the separate Module 1 (MC) and Module 4
+                             (True/False) slots -->
+                        <button id="moduleIdentifySlot" class="bomb-cell module1-cell" type="button">
                             <span class="cell-led active"></span>
                             <div class="cell-content mini-shape-grid">
                                 <span class="shape shape-circle"></span>
@@ -188,45 +197,54 @@
 
         </section>
 
-        <!-- ===================== GAME SCREEN ===================== -->
-        <!-- Zoomed into Module 1: timer counts down here -->
-        <section id="gameScreen" class="screen game-screen hidden">
+        <!-- ===================== IDENTIFY GAME SCREEN ===================== -->
+        <!-- Zoomed into Module 1 - Identify: timer counts down here.
+             This screen now holds BOTH the shape-grid (MC) and the
+             truefalse-grid widgets - only one is shown at a time,
+             picked per-question by its `type` field. Module 4 -
+             Analyze (further below) carries an identical pair of
+             widgets under its own ids, so the two modules share the
+             same rendering engine in defusal.js without sharing DOM
+             elements. -->
+        <section id="identifyGameScreen" class="screen game-screen hidden">
 
-            <button id="backToOverviewFromGame" class="back-link" type="button">
+            <button id="backToOverviewFromIdentify" class="back-link" type="button">
                 &larr; Back to Bomb Overview
             </button>
 
-            <div class="bomb-shell" id="bombShell">
+            <div class="bomb-shell" id="identifyBombShell">
 
                 <!-- Top display strip -->
                 <div class="bomb-display">
 
                     <div class="display-block">
                         <span class="display-label">Time</span>
-                        <span id="timerDisplay" class="timer-lcd timer-lcd-small">10:00</span>
+                        <span id="identifyTimerDisplay" class="timer-lcd timer-lcd-small">10:00</span>
                     </div>
 
                     <div class="display-block">
                         <span class="display-label">Strikes</span>
-                        <div id="strikesDisplay" class="strikes-display"></div>
+                        <div id="identifyStrikesDisplay" class="strikes-display"></div>
                     </div>
 
                     <div class="display-block">
                         <span class="display-label">Solved</span>
-                        <span id="progressDisplay" class="led-text">0 / 0</span>
+                        <span id="identifyProgressDisplay" class="led-text">0 / 0</span>
                     </div>
 
                 </div>
 
-                <!-- Module 1 face: four shape buttons on the left,
-                     the question panel on the right -->
+                <!-- Module 1 face: whichever answer widget the current
+                     question's type calls for, on the left; the
+                     question panel on the right -->
                 <div class="module-face">
 
-                    <p class="module-label">Module 1: Multiple Choice</p>
+                    <p class="module-label">Module 1: Identify</p>
 
                     <div class="module-face-columns">
 
-                        <div class="shape-grid">
+                        <!-- MC widget - shown when the question type is "mc" -->
+                        <div class="shape-grid" data-widget="mc">
                             <button class="shape-button" data-option-id="a">
                                 <span class="option-letter">A</span>
                                 <span class="shape shape-circle"></span>
@@ -248,17 +266,34 @@
                             </button>
                         </div>
 
-                        <!-- Question popup, shown beside the shape buttons
-                             while a question is active -->
-                        <div id="questionPopup" class="question-popup">
+                        <!-- True/False widget - shown when the question
+                             type is "trueFalse"; starts hidden since MC
+                             is the more common type -->
+                        <div class="truefalse-grid hidden" data-widget="trueFalse">
+                            <button class="truefalse-button truefalse-true" data-answer="true">
+                                <span class="truefalse-icon">&#10003;</span>
+                                <span class="truefalse-text">True</span>
+                            </button>
 
-                            <p class="question-topic" id="questionTopic">Topic</p>
-                            <p class="question-prompt" id="questionPrompt">
+                            <button class="truefalse-button truefalse-false" data-answer="false">
+                                <span class="truefalse-icon">&#10007;</span>
+                                <span class="truefalse-text">False</span>
+                            </button>
+                        </div>
+
+                        <!-- Question popup, shown beside whichever widget
+                             is active. The option list only fills in for
+                             MC questions - renderTrueFalseQuestion leaves
+                             it empty. -->
+                        <div id="identifyQuestionPopup" class="question-popup">
+
+                            <p class="question-topic" id="identifyQuestionTopic">Topic</p>
+                            <p class="question-prompt" id="identifyQuestionPrompt">
                                 Question text goes here.
                             </p>
 
-                            <ul class="option-list" id="optionList">
-                                <!-- option rows injected here by JS -->
+                            <ul class="option-list" id="identifyOptionList">
+                                <!-- option rows injected here by JS, MC only -->
                             </ul>
 
                         </div>
@@ -314,44 +349,44 @@
 
                         <div class="keypad-grid">
                             <div class="keypad-row">
-                                <button class="keypad-key" data-letter="Q">Q</button>
-                                <button class="keypad-key" data-letter="W">W</button>
-                                <button class="keypad-key" data-letter="E">E</button>
-                                <button class="keypad-key" data-letter="R">R</button>
-                                <button class="keypad-key" data-letter="T">T</button>
-                                <button class="keypad-key" data-letter="Y">Y</button>
-                                <button class="keypad-key" data-letter="U">U</button>
-                                <button class="keypad-key" data-letter="I">I</button>
-                                <button class="keypad-key" data-letter="O">O</button>
-                                <button class="keypad-key" data-letter="P">P</button>
+                                <button class="keypad-key module2-keypad-key" data-letter="Q">Q</button>
+                                <button class="keypad-key module2-keypad-key" data-letter="W">W</button>
+                                <button class="keypad-key module2-keypad-key" data-letter="E">E</button>
+                                <button class="keypad-key module2-keypad-key" data-letter="R">R</button>
+                                <button class="keypad-key module2-keypad-key" data-letter="T">T</button>
+                                <button class="keypad-key module2-keypad-key" data-letter="Y">Y</button>
+                                <button class="keypad-key module2-keypad-key" data-letter="U">U</button>
+                                <button class="keypad-key module2-keypad-key" data-letter="I">I</button>
+                                <button class="keypad-key module2-keypad-key" data-letter="O">O</button>
+                                <button class="keypad-key module2-keypad-key" data-letter="P">P</button>
                             </div>
 
                             <div class="keypad-row">
-                                <button class="keypad-key" data-letter="A">A</button>
-                                <button class="keypad-key" data-letter="S">S</button>
-                                <button class="keypad-key" data-letter="D">D</button>
-                                <button class="keypad-key" data-letter="F">F</button>
-                                <button class="keypad-key" data-letter="G">G</button>
-                                <button class="keypad-key" data-letter="H">H</button>
-                                <button class="keypad-key" data-letter="J">J</button>
-                                <button class="keypad-key" data-letter="K">K</button>
-                                <button class="keypad-key" data-letter="L">L</button>
+                                <button class="keypad-key module2-keypad-key" data-letter="A">A</button>
+                                <button class="keypad-key module2-keypad-key" data-letter="S">S</button>
+                                <button class="keypad-key module2-keypad-key" data-letter="D">D</button>
+                                <button class="keypad-key module2-keypad-key" data-letter="F">F</button>
+                                <button class="keypad-key module2-keypad-key" data-letter="G">G</button>
+                                <button class="keypad-key module2-keypad-key" data-letter="H">H</button>
+                                <button class="keypad-key module2-keypad-key" data-letter="J">J</button>
+                                <button class="keypad-key module2-keypad-key" data-letter="K">K</button>
+                                <button class="keypad-key module2-keypad-key" data-letter="L">L</button>
                             </div>
 
                             <div class="keypad-row">
-                                <button class="keypad-key" data-letter="Z">Z</button>
-                                <button class="keypad-key" data-letter="X">X</button>
-                                <button class="keypad-key" data-letter="C">C</button>
-                                <button class="keypad-key" data-letter="V">V</button>
-                                <button class="keypad-key" data-letter="B">B</button>
-                                <button class="keypad-key" data-letter="N">N</button>
-                                <button class="keypad-key" data-letter="M">M</button>
+                                <button class="keypad-key module2-keypad-key" data-letter="Z">Z</button>
+                                <button class="keypad-key module2-keypad-key" data-letter="X">X</button>
+                                <button class="keypad-key module2-keypad-key" data-letter="C">C</button>
+                                <button class="keypad-key module2-keypad-key" data-letter="V">V</button>
+                                <button class="keypad-key module2-keypad-key" data-letter="B">B</button>
+                                <button class="keypad-key module2-keypad-key" data-letter="N">N</button>
+                                <button class="keypad-key module2-keypad-key" data-letter="M">M</button>
                             </div>
 
                             <div class="keypad-row">
-                                <button class="keypad-key keypad-key-wide" data-action="backspace">&larr; Delete</button>
-                                <button class="keypad-key keypad-key-wide" data-action="space">Space</button>
-                                <button class="keypad-key keypad-key-wide keypad-key-submit" data-action="submit">Enter</button>
+                                <button class="keypad-key keypad-key-wide module2-keypad-key" data-action="backspace">&larr; Delete</button>
+                                <button class="keypad-key keypad-key-wide module2-keypad-key" data-action="space">Space</button>
+                                <button class="keypad-key keypad-key-wide keypad-key-submit module2-keypad-key" data-action="submit">Enter</button>
                             </div>
                         </div>
 
@@ -378,66 +413,124 @@
 
         </section>
 
-        <!-- ===================== MODULE 4 GAME SCREEN ===================== -->
-        <!-- Zoomed into Module 4: same shell/timer/strikes pattern as
-             Module 1, just with two True/False buttons instead of the
-             four shape buttons -->
-        <section id="module4GameScreen" class="screen game-screen hidden">
+        <!-- ===================== ANALYZE GAME SCREEN ===================== -->
+        <!-- Zoomed into Module 4 - Analyze: same shell/timer/strikes
+             pattern as the other modules, but the module face is a
+             keypad + trace log instead of a set of answer buttons.
+             Analyze's whole point is "determine what an algorithm
+             does" - the trace list on the right lays out a short
+             sequence of operations (question.operations), and the
+             player types the resulting value on the keypad, same
+             input style as Module 2 but with digits available too
+             since trace results are often numbers. -->
+        <section id="analyzeGameScreen" class="screen game-screen hidden">
 
-            <button id="backToOverviewFromModule4" class="back-link" type="button">
+            <button id="backToOverviewFromAnalyze" class="back-link" type="button">
                 &larr; Back to Bomb Overview
             </button>
 
-            <div class="bomb-shell" id="module4BombShell">
+            <div class="bomb-shell" id="analyzeBombShell">
 
                 <!-- Top display strip -->
                 <div class="bomb-display">
 
                     <div class="display-block">
                         <span class="display-label">Time</span>
-                        <span id="module4TimerDisplay" class="timer-lcd timer-lcd-small">10:00</span>
+                        <span id="analyzeTimerDisplay" class="timer-lcd timer-lcd-small">10:00</span>
                     </div>
 
                     <div class="display-block">
                         <span class="display-label">Strikes</span>
-                        <div id="module4StrikesDisplay" class="strikes-display"></div>
+                        <div id="analyzeStrikesDisplay" class="strikes-display"></div>
                     </div>
 
                     <div class="display-block">
                         <span class="display-label">Solved</span>
-                        <span id="module4ProgressDisplay" class="led-text">0 / 0</span>
+                        <span id="analyzeProgressDisplay" class="led-text">0 / 0</span>
                     </div>
 
                 </div>
 
-                <!-- Module 4 face: True/False buttons on the left,
-                     the question panel on the right -->
+                <!-- Module 4 face: on-screen keypad on the left, the
+                     trace log + typed-answer readout on the right -->
                 <div class="module-face">
 
-                    <p class="module-label">Module 4: True or False</p>
+                    <p class="module-label">Module 4: Analyze</p>
 
                     <div class="module-face-columns">
 
-                        <div class="truefalse-grid">
-                            <button class="truefalse-button truefalse-true" data-answer="true">
-                                <span class="truefalse-icon">&#10003;</span>
-                                <span class="truefalse-text">True</span>
-                            </button>
+                        <div class="keypad-grid">
+                            <div class="keypad-row">
+                                <button class="keypad-key analyze-keypad-key" data-letter="1">1</button>
+                                <button class="keypad-key analyze-keypad-key" data-letter="2">2</button>
+                                <button class="keypad-key analyze-keypad-key" data-letter="3">3</button>
+                                <button class="keypad-key analyze-keypad-key" data-letter="4">4</button>
+                                <button class="keypad-key analyze-keypad-key" data-letter="5">5</button>
+                                <button class="keypad-key analyze-keypad-key" data-letter="6">6</button>
+                                <button class="keypad-key analyze-keypad-key" data-letter="7">7</button>
+                                <button class="keypad-key analyze-keypad-key" data-letter="8">8</button>
+                                <button class="keypad-key analyze-keypad-key" data-letter="9">9</button>
+                                <button class="keypad-key analyze-keypad-key" data-letter="0">0</button>
+                            </div>
 
-                            <button class="truefalse-button truefalse-false" data-answer="false">
-                                <span class="truefalse-icon">&#10007;</span>
-                                <span class="truefalse-text">False</span>
-                            </button>
+                            <div class="keypad-row">
+                                <button class="keypad-key analyze-keypad-key" data-letter="Q">Q</button>
+                                <button class="keypad-key analyze-keypad-key" data-letter="W">W</button>
+                                <button class="keypad-key analyze-keypad-key" data-letter="E">E</button>
+                                <button class="keypad-key analyze-keypad-key" data-letter="R">R</button>
+                                <button class="keypad-key analyze-keypad-key" data-letter="T">T</button>
+                                <button class="keypad-key analyze-keypad-key" data-letter="Y">Y</button>
+                                <button class="keypad-key analyze-keypad-key" data-letter="U">U</button>
+                                <button class="keypad-key analyze-keypad-key" data-letter="I">I</button>
+                                <button class="keypad-key analyze-keypad-key" data-letter="O">O</button>
+                                <button class="keypad-key analyze-keypad-key" data-letter="P">P</button>
+                            </div>
+
+                            <div class="keypad-row">
+                                <button class="keypad-key analyze-keypad-key" data-letter="A">A</button>
+                                <button class="keypad-key analyze-keypad-key" data-letter="S">S</button>
+                                <button class="keypad-key analyze-keypad-key" data-letter="D">D</button>
+                                <button class="keypad-key analyze-keypad-key" data-letter="F">F</button>
+                                <button class="keypad-key analyze-keypad-key" data-letter="G">G</button>
+                                <button class="keypad-key analyze-keypad-key" data-letter="H">H</button>
+                                <button class="keypad-key analyze-keypad-key" data-letter="J">J</button>
+                                <button class="keypad-key analyze-keypad-key" data-letter="K">K</button>
+                                <button class="keypad-key analyze-keypad-key" data-letter="L">L</button>
+                            </div>
+
+                            <div class="keypad-row">
+                                <button class="keypad-key analyze-keypad-key" data-letter="Z">Z</button>
+                                <button class="keypad-key analyze-keypad-key" data-letter="X">X</button>
+                                <button class="keypad-key analyze-keypad-key" data-letter="C">C</button>
+                                <button class="keypad-key analyze-keypad-key" data-letter="V">V</button>
+                                <button class="keypad-key analyze-keypad-key" data-letter="B">B</button>
+                                <button class="keypad-key analyze-keypad-key" data-letter="N">N</button>
+                                <button class="keypad-key analyze-keypad-key" data-letter="M">M</button>
+                            </div>
+
+                            <div class="keypad-row">
+                                <button class="keypad-key keypad-key-wide analyze-keypad-key" data-action="backspace">&larr; Delete</button>
+                                <button class="keypad-key keypad-key-wide keypad-key-submit analyze-keypad-key" data-action="submit">Enter</button>
+                            </div>
                         </div>
 
-                        <!-- Question popup, shown beside the True/False
-                             buttons while a question is active -->
-                        <div id="module4QuestionPopup" class="question-popup">
+                        <!-- Trace log + question popup, shown beside
+                             the keypad while a question is active -->
+                        <div id="analyzeQuestionPopup" class="question-popup">
 
-                            <p class="question-topic" id="module4QuestionTopic">Topic</p>
-                            <p class="question-prompt" id="module4QuestionPrompt">
+                            <p class="question-topic" id="analyzeQuestionTopic">Topic</p>
+
+                            <ol class="trace-list" id="analyzeTraceList">
+                                <!-- operation lines injected here by JS -->
+                            </ol>
+
+                            <p class="question-prompt" id="analyzeQuestionPrompt">
                                 Question text goes here.
                             </p>
+
+                            <div id="analyzeAnswerDisplay" class="answer-display answer-display-placeholder">
+                                type the result...
+                            </div>
 
                         </div>
 
@@ -520,11 +613,16 @@
         </section>
 
         <!-- ===================== MODULE 5 GAME SCREEN ===================== -->
-        <!-- Zoomed into Module 5: same shell/timer/strikes pattern as the
-             other modules. Left column is a grid of selectable statement
-             buttons (toggle on/off, no immediate answer lock), the right
-             panel lists each statement's full text plus a Confirm button
-             that checks the whole selected set at once. -->
+        <!-- Zoomed into Module 5 - Application: same shell/timer/strikes
+             pattern as the other modules. This is the "apply
+             everything to a problem" module - the question popup on
+             the right poses a scenario, the left column lists a few
+             candidate data structures, and picking one locks the
+             answer in immediately (single-select, same "click = submit"
+             feel as Identify's MC buttons) rather than toggling several
+             on and confirming. The option buttons are rebuilt fresh
+             every question by JS, since which structures are offered
+             (and in what order) changes from question to question. -->
         <section id="module5GameScreen" class="screen game-screen hidden">
 
             <button id="backToOverviewFromModule5" class="back-link" type="button">
@@ -553,46 +651,19 @@
 
                 </div>
 
-                <!-- Module 5 face: toggleable statement buttons on the
-                     left, the question + full statement text on the
-                     right -->
+                <!-- Module 5 face: candidate structures on the left,
+                     the scenario on the right -->
                 <div class="module-face">
 
-                    <p class="module-label">Module 5: Choose the Correct Answer</p>
+                    <p class="module-label">Module 5: Application</p>
 
                     <div class="module-face-columns">
 
-                        <div class="statement-column">
-
-                            <div class="statement-grid">
-                                <button class="statement-button" data-statement-id="a">
-                                    <span class="statement-letter">A</span>
-                                    <span class="statement-checkbox"></span>
-                                </button>
-
-                                <button class="statement-button" data-statement-id="b">
-                                    <span class="statement-letter">B</span>
-                                    <span class="statement-checkbox"></span>
-                                </button>
-
-                                <button class="statement-button" data-statement-id="c">
-                                    <span class="statement-letter">C</span>
-                                    <span class="statement-checkbox"></span>
-                                </button>
-
-                                <button class="statement-button" data-statement-id="d">
-                                    <span class="statement-letter">D</span>
-                                    <span class="statement-checkbox"></span>
-                                </button>
-                            </div>
-
-                            <button id="module5ConfirmButton" class="primary-button confirm-button" type="button">
-                                Confirm Selection
-                            </button>
-
+                        <div class="scenario-option-list" id="module5OptionList">
+                            <!-- option buttons injected here by JS -->
                         </div>
 
-                        <!-- Question popup, shown beside the statement
+                        <!-- Question popup, shown beside the option
                              buttons while a question is active -->
                         <div id="module5QuestionPopup" class="question-popup">
 
@@ -600,10 +671,6 @@
                             <p class="question-prompt" id="module5QuestionPrompt">
                                 Question text goes here.
                             </p>
-
-                            <ul class="statement-list" id="module5StatementList">
-                                <!-- statement rows injected here by JS -->
-                            </ul>
 
                         </div>
 
@@ -700,10 +767,26 @@
 
     </main>
 
-    <script src="../data/module1-questions.js"></script>
+    <!-- identify-questions.js supplies IDENTIFY_QUESTION_BANK, built
+         with the { type: "mc" | "trueFalse" } schema Module 1
+         dispatches on (see createIdentifyStyleModule in defusal.js).
+         IMPORTANT: identify-questions.js previously also defined
+         ANALYZE_QUESTION_BANK, back when Analyze borrowed Identify's
+         MC/True-False engine - that bank now lives in its own
+         analyze-questions.js below, with its own { operations, prompt,
+         answer } schema, so remove the old ANALYZE_QUESTION_BANK
+         definition from identify-questions.js to avoid a duplicate
+         declaration. module5-questions.js still defines
+         MODULE5_QUESTION_BANK under the same name/path as before, but
+         its question schema has changed too (single-select scenario:
+         { prompt, options: [{id, text}], correctOptionId } instead of
+         the old { statements: [{id, text, isCorrect}] } multi-select
+         shape) - see the file itself. Module 2/3 are unchanged and
+         still load their original files/schemas. -->
+    <script src="../data/identify-questions.js"></script>
+    <script src="../data/analyze-questions.js"></script>
     <script src="../data/module2-questions.js"></script>
     <script src="../data/module3-questions.js"></script>
-    <script src="../data/module4-questions.js"></script>
     <script src="../data/module5-questions.js"></script>
     <script src="../js/defusal.js"></script>
 
