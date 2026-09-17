@@ -30,6 +30,12 @@
 // MODULE_REGISTRY below with the same shape as the others.
 // ===================================================================
 
+// ------------------- Custom sound effects -------------------
+// Swaps in real audio clips for a few key events; anything not
+// listed here just keeps using SFX's built-in synthesized tone.
+SFX.loadCustomSound("exploded", "../audio/explosion.mp3");
+SFX.loadCustomSound("defused", "../audio/defused-fanfare.mp3");
+
 // ------------------- Screens -------------------
 const overviewScreen = document.getElementById("overviewScreen");
 const setupScreen = document.getElementById("setupScreen");
@@ -1084,11 +1090,13 @@ document.addEventListener("keydown", function (event) {
 });
 
 function typeModule2Character(character) {
+    SFX.playKeyTap();
     module2TypedAnswer += character.toLowerCase();
     renderModule2AnswerDisplay();
 }
 
 function backspaceModule2Answer() {
+    SFX.playKeyTap();
     module2TypedAnswer = module2TypedAnswer.slice(0, -1);
     renderModule2AnswerDisplay();
 }
@@ -1210,6 +1218,12 @@ function submitAnswer(isCorrect, buttonElement, allButtonsForThisModule) {
 // question (or end the run)
 function commitAnswer(isCorrect) {
     runState.isAnswerLocked = true;
+
+      if (isCorrect) {
+        SFX.playCorrect();
+    } else {
+        SFX.playWrong();
+    }
 
     const topic = runState.questions[runState.currentIndex].topic;
     if (!runState.topicStats[topic]) {
@@ -1337,6 +1351,8 @@ function completeModule(moduleId) {
     mergeTopicStats(runState.topicStats);
 
     markModuleSolved(moduleId);
+    SFX.playModuleSolved();
+
     pauseTimer();
     runState = null;
 
@@ -1372,6 +1388,11 @@ function markModuleSolved(moduleId) {
 
 // ------------------- Ending the bomb (defused or exploded) -------------------
 function finishBomb(isDefused) {
+     if (isDefused) {
+        SFX.playDefused();
+    } else {
+        SFX.playExploded();
+    }
     if (armedConfig.timerId) {
         clearInterval(armedConfig.timerId);
         armedConfig.timerId = null;
