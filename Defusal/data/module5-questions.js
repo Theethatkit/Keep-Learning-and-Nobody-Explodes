@@ -1,198 +1,388 @@
 // ===================================================================
-// Module 5 - Choose the Correct Answer
+// Module 5 - Defuse question bank
 //
-// Unlike Module 1 (exactly one correct option), each question here
-// gives 4 statements and the player must select EVERY statement that
-// is true - no more, no less - before pressing Confirm. Getting the
-// exact set right solves the question; anything else (missing a true
-// statement, or selecting a false one) counts as a strike, same as a
-// wrong answer in the other modules.
+// Defuse's job is "apply everything to a problem": each question
+// poses a real-world scenario (`prompt`) and a short list of
+// candidate data structures (`options`, an array of { id, text }),
+// exactly one of which is right (`correctOptionId`). Unlike the old
+// multi-select version of this module, there is no "select every
+// correct statement" here - picking an option submits immediately,
+// same as Module 1's MC buttons (see renderScenarioQuestion /
+// module5OptionList's click handler in defusal.js).
 //
-// Shape matches module1-questions.js on purpose (same difficulty
-// keys/fields) so it drops into MODULE_REGISTRY the same way - just
-// "options" -> "statements", and "correctOptionId" -> each
-// statement's own "isCorrect" flag instead of a single id.
+// Keep `options` to 3-4 candidates per question, and keep each
+// option's `text` short (it's rendered directly on a button, not in
+// a separate list) - a structure name, not a sentence.
+//
+// difficulty ids (easy/intermediate/hard/expert) must match the ids
+// used by the other modules' banks, since the overview's difficulty
+// dropdown and its "X:XX on the clock" preview are built from
+// IDENTIFY_QUESTION_BANK, not this one (see populateDifficultyOptions
+// in defusal.js) - only the numbers below are Defuse's own.
+//
+// NOTE: the numbers below (time/mistakes/question count/scoring) are
+// reasonable placeholders, not pulled from the site's existing
+// per-module balance - adjust startingTimeSeconds/mistakesAllowed/
+// baseScore/timeBonusCap per difficulty to match however Modules
+// 1/2/3/4 are currently tuned, so Defuse doesn't feel noticeably
+// easier or harder than the rest of the bomb.
 // ===================================================================
+
 const MODULE5_QUESTION_BANK = {
-    "moduleType": "chooseCorrect",
-    "difficulties": {
-        "easy": {
-            "label": "Easy",
-            "questionCount": 5,
-            "startingTimeSeconds": 720,
-            "mistakesAllowed": 3,
-            "baseScore": 600,
-            "timeBonusCap": 500
+    difficulties: {
+        easy: {
+            label: "Easy",
+            startingTimeSeconds: 600,
+            mistakesAllowed: 3,
+            questionCount: 5,
+            baseScore: 100,
+            timeBonusCap: 50
         },
-        "intermediate": {
-            "label": "Intermediate",
-            "questionCount": 5,
-            "startingTimeSeconds": 480,
-            "mistakesAllowed": 3,
-            "baseScore": 1200,
-            "timeBonusCap": 750
+        intermediate: {
+            label: "Intermediate",
+            startingTimeSeconds: 480,
+            mistakesAllowed: 2,
+            questionCount: 6,
+            baseScore: 150,
+            timeBonusCap: 75
         },
-        "hard": {
-            "label": "Hard",
-            "questionCount": 10,
-            "startingTimeSeconds": 360,
-            "mistakesAllowed": 2,
-            "baseScore": 2400,
-            "timeBonusCap": 1000
+        hard: {
+            label: "Hard",
+            startingTimeSeconds: 360,
+            mistakesAllowed: 2,
+            questionCount: 7,
+            baseScore: 200,
+            timeBonusCap: 100
         },
-        "expert": {
-            "label": "Expert",
-            "questionCount": 10,
-            "startingTimeSeconds": 240,
-            "mistakesAllowed": 1,
-            "baseScore": 3600,
-            "timeBonusCap": 1500
+        expert: {
+            label: "Expert",
+            startingTimeSeconds: 240,
+            mistakesAllowed: 1,
+            questionCount: 8,
+            baseScore: 300,
+            timeBonusCap: 150
         }
     },
-    "questions": [
+
+    questions: [
+        // ----------------------------- easy -----------------------------
         {
-            "id": "cc-e-01",
-            "difficulty": "easy",
-            "topic": "Array",
-            "prompt": "Select every statement below that is TRUE about Arrays.",
-            "statements": [
-                { "id": "a", "text": "Accessing an element by index is O(1).", "isCorrect": true },
-                { "id": "b", "text": "Elements are stored in contiguous memory.", "isCorrect": true },
-                { "id": "c", "text": "Every array can resize itself for free at runtime.", "isCorrect": false },
-                { "id": "d", "text": "Inserting at the front is always O(1).", "isCorrect": false }
-            ]
+            topic: "Queues",
+            difficulty: "easy",
+            prompt: "The system receives customers in the order they arrive. The first customer must be processed first. Which structure should be used?",
+            options: [
+                { id: "a", text: "Queue" },
+                { id: "b", text: "Stack" },
+                { id: "c", text: "Array" },
+                { id: "d", text: "Linked List" }
+            ],
+            correctOptionId: "a"
         },
         {
-            "id": "cc-e-02",
-            "difficulty": "easy",
-            "topic": "Stack",
-            "prompt": "Select every statement below that is TRUE about Stacks.",
-            "statements": [
-                { "id": "a", "text": "A Stack follows Last In, First Out order.", "isCorrect": true },
-                { "id": "b", "text": "push() adds an element to the top.", "isCorrect": true },
-                { "id": "c", "text": "A Stack follows First In, First Out order.", "isCorrect": false },
-                { "id": "d", "text": "You can access any element directly by index.", "isCorrect": false }
-            ]
+            topic: "Stacks",
+            difficulty: "easy",
+            prompt: "A text editor needs to undo the user's most recent action first, then the one before that. Which structure fits best?",
+            options: [
+                { id: "a", text: "Queue" },
+                { id: "b", text: "Stack" },
+                { id: "c", text: "Array" },
+                { id: "d", text: "Tree" }
+            ],
+            correctOptionId: "b"
         },
         {
-            "id": "cc-e-03",
-            "difficulty": "easy",
-            "topic": "Queue",
-            "prompt": "Select every statement below that is TRUE about Queues.",
-            "statements": [
-                { "id": "a", "text": "A Queue follows First In, First Out order.", "isCorrect": true },
-                { "id": "b", "text": "enqueue() adds an element to the back.", "isCorrect": true },
-                { "id": "c", "text": "dequeue() removes the most recently added element.", "isCorrect": false },
-                { "id": "d", "text": "A Queue can only ever hold one element at a time.", "isCorrect": false }
-            ]
+            topic: "Arrays",
+            difficulty: "easy",
+            prompt: "You need to store exactly 10 temperature readings and access any of them instantly by their position (e.g. the 3rd reading). Which structure fits best?",
+            options: [
+                { id: "a", text: "Array" },
+                { id: "b", text: "Stack" },
+                { id: "c", text: "Queue" },
+                { id: "d", text: "Linked List" }
+            ],
+            correctOptionId: "a"
         },
         {
-            "id": "cc-e-04",
-            "difficulty": "easy",
-            "topic": "Linked List",
-            "prompt": "Select every statement below that is TRUE about singly Linked Lists.",
-            "statements": [
-                { "id": "a", "text": "Each node stores a pointer to the next node.", "isCorrect": true },
-                { "id": "b", "text": "Nodes are stored in contiguous memory, like an array.", "isCorrect": false },
-                { "id": "c", "text": "The list is traversed starting from the head node.", "isCorrect": true },
-                { "id": "d", "text": "Every node knows the address of the previous node.", "isCorrect": false }
-            ]
+            topic: "Queues",
+            difficulty: "easy",
+            prompt: "Print jobs sent to a shared office printer should come out in the same order they were sent. Which structure should be used?",
+            options: [
+                { id: "a", text: "Stack" },
+                { id: "b", text: "Queue" },
+                { id: "c", text: "Binary Tree" },
+                { id: "d", text: "Array" }
+            ],
+            correctOptionId: "b"
         },
         {
-            "id": "cc-e-05",
-            "difficulty": "easy",
-            "topic": "Array vs Linked List",
-            "prompt": "Select every statement below that is TRUE.",
-            "statements": [
-                { "id": "a", "text": "Arrays support constant-time random access.", "isCorrect": true },
-                { "id": "b", "text": "Linked Lists support constant-time random access.", "isCorrect": false },
-                { "id": "c", "text": "Linked Lists can grow or shrink without reallocating a whole block.", "isCorrect": true },
-                { "id": "d", "text": "Arrays never need contiguous memory.", "isCorrect": false }
-            ]
+            topic: "Stacks",
+            difficulty: "easy",
+            prompt: "A browser's \"Back\" button should return to the most recently visited page first. Which structure should be used?",
+            options: [
+                { id: "a", text: "Queue" },
+                { id: "b", text: "Array" },
+                { id: "c", text: "Stack" },
+                { id: "d", text: "Hash Table" }
+            ],
+            correctOptionId: "c"
+        },
+
+        // -------------------------- intermediate --------------------------
+        {
+            topic: "Linked Lists",
+            difficulty: "intermediate",
+            prompt: "You're building a playlist where songs are frequently inserted and removed from the middle, and you never need to jump straight to song #47. Which structure fits best?",
+            options: [
+                { id: "a", text: "Array" },
+                { id: "b", text: "Linked List" },
+                { id: "c", text: "Stack" },
+                { id: "d", text: "Queue" }
+            ],
+            correctOptionId: "b"
         },
         {
-            "id": "cc-i-01",
-            "difficulty": "intermediate",
-            "topic": "Stack",
-            "prompt": "Select every statement below that is TRUE about Stack use cases.",
-            "statements": [
-                { "id": "a", "text": "Undo/redo history in an editor is a natural fit for a Stack.", "isCorrect": true },
-                { "id": "b", "text": "Function call tracking (the call stack) behaves like a Stack.", "isCorrect": true },
-                { "id": "c", "text": "A print queue at a shared office printer behaves like a Stack.", "isCorrect": false },
-                { "id": "d", "text": "A Stack is the best fit for scheduling tasks by priority.", "isCorrect": false }
-            ]
+            topic: "Queues",
+            difficulty: "intermediate",
+            prompt: "Support tickets should be handled in the order they came in, and new tickets keep arriving while old ones are still being processed. Which structure should be used?",
+            options: [
+                { id: "a", text: "Stack" },
+                { id: "b", text: "Linked List" },
+                { id: "c", text: "Queue" },
+                { id: "d", text: "Array" }
+            ],
+            correctOptionId: "c"
         },
         {
-            "id": "cc-i-02",
-            "difficulty": "intermediate",
-            "topic": "Tree",
-            "prompt": "Select every statement below that is TRUE about Binary Search Trees.",
-            "statements": [
-                { "id": "a", "text": "Values smaller than a node are stored in its left subtree.", "isCorrect": true },
-                { "id": "b", "text": "Values larger than a node are stored in its right subtree.", "isCorrect": true },
-                { "id": "c", "text": "Every BST is automatically balanced.", "isCorrect": false },
-                { "id": "d", "text": "A BST can only store numbers, never strings.", "isCorrect": false }
-            ]
+            topic: "Arrays",
+            difficulty: "intermediate",
+            prompt: "You need to store a fixed set of 7 days of the week and quickly access \"day 4\" without walking through the others. Which structure fits best?",
+            options: [
+                { id: "a", text: "Linked List" },
+                { id: "b", text: "Stack" },
+                { id: "c", text: "Queue" },
+                { id: "d", text: "Array" }
+            ],
+            correctOptionId: "d"
         },
         {
-            "id": "cc-i-03",
-            "difficulty": "intermediate",
-            "topic": "Graph",
-            "prompt": "Select every statement below that is TRUE about Graphs.",
-            "statements": [
-                { "id": "a", "text": "A Graph can be represented with an adjacency matrix.", "isCorrect": true },
-                { "id": "b", "text": "A Graph can be represented with an adjacency list.", "isCorrect": true },
-                { "id": "c", "text": "Every Graph must be a tree.", "isCorrect": false },
-                { "id": "d", "text": "Graphs cannot contain cycles.", "isCorrect": false }
-            ]
+            topic: "Stacks",
+            difficulty: "intermediate",
+            prompt: "A calculator needs to check whether every open parenthesis in an expression has a matching close parenthesis, in the right order. Which structure should be used?",
+            options: [
+                { id: "a", text: "Queue" },
+                { id: "b", text: "Stack" },
+                { id: "c", text: "Array" },
+                { id: "d", text: "Linked List" }
+            ],
+            correctOptionId: "b"
         },
         {
-            "id": "cc-i-04",
-            "difficulty": "intermediate",
-            "topic": "Queue",
-            "prompt": "Select every statement below that is TRUE about a Deque.",
-            "statements": [
-                { "id": "a", "text": "Elements can be inserted at both the front and the back.", "isCorrect": true },
-                { "id": "b", "text": "Elements can be removed from both the front and the back.", "isCorrect": true },
-                { "id": "c", "text": "A Deque only allows insertion at the front.", "isCorrect": false },
-                { "id": "d", "text": "A Deque is another name for a Priority Queue.", "isCorrect": false }
-            ]
+            topic: "Linked Lists",
+            difficulty: "intermediate",
+            prompt: "A music app needs to insert a new song right after the currently playing one without shifting every other song in memory. Which structure fits best?",
+            options: [
+                { id: "a", text: "Array" },
+                { id: "b", text: "Stack" },
+                { id: "c", text: "Linked List" },
+                { id: "d", text: "Queue" }
+            ],
+            correctOptionId: "c"
         },
         {
-            "id": "cc-i-05",
-            "difficulty": "intermediate",
-            "topic": "Linked List",
-            "prompt": "Select every statement below that is TRUE about Linked Lists vs Arrays.",
-            "statements": [
-                { "id": "a", "text": "Inserting in the middle of a Linked List avoids shifting other elements.", "isCorrect": true },
-                { "id": "b", "text": "Linked Lists generally have better cache locality than arrays.", "isCorrect": false },
-                { "id": "c", "text": "A Linked List's size can change without reallocating one big block.", "isCorrect": true },
-                { "id": "d", "text": "Random access is faster on a Linked List than an Array.", "isCorrect": false }
-            ]
+            topic: "Queues",
+            difficulty: "intermediate",
+            prompt: "A call center needs callers answered in the exact order they dialed in. Which structure should be used?",
+            options: [
+                { id: "a", text: "Stack" },
+                { id: "b", text: "Array" },
+                { id: "c", text: "Linked List" },
+                { id: "d", text: "Queue" }
+            ],
+            correctOptionId: "d"
+        },
+
+        // ------------------------------ hard ------------------------------
+        {
+            topic: "Stacks",
+            difficulty: "hard",
+            prompt: "A function-call tracker needs to know which function to return control to when the currently running one finishes - always the most recently called, still-running one. Which structure should be used?",
+            options: [
+                { id: "a", text: "Queue" },
+                { id: "b", text: "Stack" },
+                { id: "c", text: "Array" },
+                { id: "d", text: "Linked List" }
+            ],
+            correctOptionId: "b"
         },
         {
-            "id": "cc-h-01",
-            "difficulty": "hard",
-            "topic": "Tree",
-            "prompt": "Select every statement below that is TRUE about balanced Binary Search Trees.",
-            "statements": [
-                { "id": "a", "text": "Search runs in O(log n) time.", "isCorrect": true },
-                { "id": "b", "text": "Insertion runs in O(log n) time.", "isCorrect": true },
-                { "id": "c", "text": "Search degrades to O(n) even when the tree is balanced.", "isCorrect": false },
-                { "id": "d", "text": "A balanced BST must be a linked list in disguise.", "isCorrect": false }
-            ]
+            topic: "Queues",
+            difficulty: "hard",
+            prompt: "A ride-share app needs to match drivers to riders in the order the ride requests came in, with requests constantly being added. Which structure should be used?",
+            options: [
+                { id: "a", text: "Stack" },
+                { id: "b", text: "Array" },
+                { id: "c", text: "Queue" },
+                { id: "d", text: "Tree" }
+            ],
+            correctOptionId: "c"
         },
         {
-            "id": "cc-h-02",
-            "difficulty": "hard",
-            "topic": "Graph",
-            "prompt": "Select every statement below that is TRUE about graph traversal.",
-            "statements": [
-                { "id": "a", "text": "Breadth-First Search uses a Queue as its core data structure.", "isCorrect": true },
-                { "id": "b", "text": "Depth-First Search can be implemented with a Stack (or recursion).", "isCorrect": true },
-                { "id": "c", "text": "Breadth-First Search uses a Stack as its core data structure.", "isCorrect": false },
-                { "id": "d", "text": "DFS always visits nodes in the same order as BFS.", "isCorrect": false }
-            ]
+            topic: "Linked Lists",
+            difficulty: "hard",
+            prompt: "A note-taking app frequently removes notes from anywhere in a long list and never accesses notes by their position number. Which structure fits best?",
+            options: [
+                { id: "a", text: "Array" },
+                { id: "b", text: "Linked List" },
+                { id: "c", text: "Stack" },
+                { id: "d", text: "Queue" }
+            ],
+            correctOptionId: "b"
+        },
+        {
+            topic: "Arrays",
+            difficulty: "hard",
+            prompt: "A grading app stores exactly 30 students' fixed seat numbers and needs to jump straight to seat #18 instantly. Which structure fits best?",
+            options: [
+                { id: "a", text: "Linked List" },
+                { id: "b", text: "Queue" },
+                { id: "c", text: "Array" },
+                { id: "d", text: "Stack" }
+            ],
+            correctOptionId: "c"
+        },
+        {
+            topic: "Stacks",
+            difficulty: "hard",
+            prompt: "A maze-solving robot needs to backtrack to its most recent unexplored junction whenever it hits a dead end. Which structure should be used?",
+            options: [
+                { id: "a", text: "Queue" },
+                { id: "b", text: "Array" },
+                { id: "c", text: "Linked List" },
+                { id: "d", text: "Stack" }
+            ],
+            correctOptionId: "d"
+        },
+        {
+            topic: "Queues",
+            difficulty: "hard",
+            prompt: "A video game's matchmaking system pairs players in the order they queued up for a match. Which structure should be used?",
+            options: [
+                { id: "a", text: "Queue" },
+                { id: "b", text: "Stack" },
+                { id: "c", text: "Array" },
+                { id: "d", text: "Linked List" }
+            ],
+            correctOptionId: "a"
+        },
+        {
+            topic: "Arrays",
+            difficulty: "hard",
+            prompt: "A spreadsheet-like tool needs to store a fixed 5x5 grid of values and read/write any cell by its row and column instantly. Which structure fits best?",
+            options: [
+                { id: "a", text: "Linked List" },
+                { id: "b", text: "Array" },
+                { id: "c", text: "Queue" },
+                { id: "d", text: "Stack" }
+            ],
+            correctOptionId: "b"
+        },
+
+        // ----------------------------- expert -----------------------------
+        {
+            topic: "Stacks",
+            difficulty: "expert",
+            prompt: "A compiler needs to verify that brackets, braces, and parentheses in source code all close in the correct nested order. Which structure should be used?",
+            options: [
+                { id: "a", text: "Queue" },
+                { id: "b", text: "Array" },
+                { id: "c", text: "Stack" },
+                { id: "d", text: "Linked List" }
+            ],
+            correctOptionId: "c"
+        },
+        {
+            topic: "Queues",
+            difficulty: "expert",
+            prompt: "A print server must process documents from multiple offices strictly in the order they were submitted, with new documents constantly arriving. Which structure should be used?",
+            options: [
+                { id: "a", text: "Stack" },
+                { id: "b", text: "Queue" },
+                { id: "c", text: "Array" },
+                { id: "d", text: "Linked List" }
+            ],
+            correctOptionId: "b"
+        },
+        {
+            topic: "Linked Lists",
+            difficulty: "expert",
+            prompt: "A version-history feature needs to insert and remove entries from anywhere in a long, frequently changing sequence, with no need to jump to entry #200 directly. Which structure fits best?",
+            options: [
+                { id: "a", text: "Array" },
+                { id: "b", text: "Queue" },
+                { id: "c", text: "Stack" },
+                { id: "d", text: "Linked List" }
+            ],
+            correctOptionId: "d"
+        },
+        {
+            topic: "Arrays",
+            difficulty: "expert",
+            prompt: "A lookup table of exactly 100 fixed product IDs needs instant access to any entry by its index. Which structure fits best?",
+            options: [
+                { id: "a", text: "Linked List" },
+                { id: "b", text: "Array" },
+                { id: "c", text: "Stack" },
+                { id: "d", text: "Queue" }
+            ],
+            correctOptionId: "b"
+        },
+        {
+            topic: "Stacks",
+            difficulty: "expert",
+            prompt: "A recursive algorithm's call frames must unwind in exactly the reverse order they were created. Which structure models this?",
+            options: [
+                { id: "a", text: "Queue" },
+                { id: "b", text: "Linked List" },
+                { id: "c", text: "Stack" },
+                { id: "d", text: "Array" }
+            ],
+            correctOptionId: "c"
+        },
+        {
+            topic: "Queues",
+            difficulty: "expert",
+            prompt: "A task scheduler runs background jobs strictly in the order they were submitted, and jobs keep getting added while others are still waiting. Which structure should be used?",
+            options: [
+                { id: "a", text: "Stack" },
+                { id: "b", text: "Array" },
+                { id: "c", text: "Linked List" },
+                { id: "d", text: "Queue" }
+            ],
+            correctOptionId: "d"
+        },
+        {
+            topic: "Linked Lists",
+            difficulty: "expert",
+            prompt: "A large contact list needs frequent inserts/deletes anywhere in the middle, and the app never needs to fetch \"the 500th contact\" directly. Which structure fits best?",
+            options: [
+                { id: "a", text: "Array" },
+                { id: "b", text: "Linked List" },
+                { id: "c", text: "Stack" },
+                { id: "d", text: "Queue" }
+            ],
+            correctOptionId: "b"
+        },
+        {
+            topic: "Arrays",
+            difficulty: "expert",
+            prompt: "An image is stored as a fixed grid of pixels, and the app needs to read pixel (x, y) instantly without scanning other pixels. Which structure fits best?",
+            options: [
+                { id: "a", text: "Array" },
+                { id: "b", text: "Linked List" },
+                { id: "c", text: "Queue" },
+                { id: "d", text: "Stack" }
+            ],
+            correctOptionId: "a"
         }
     ]
 };

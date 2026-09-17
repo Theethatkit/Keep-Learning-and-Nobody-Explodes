@@ -1,18 +1,33 @@
 // ===================================================================
-// Bomb Defusal - shared shell + Module 1 (Multiple Choice)
-//                                + Module 2 (Fill in the Blanks)
-//                                + Module 4 (True or False)
+// Bomb Defusal - shared shell + Identify (MC / True-False)
+//                                + Operate (Fill in the Blanks)
+//                                + Trace (Connect the Dots)
+//                                + Analyze (Trace + Typed Output)
+//                                + Defuse (Scenario, single-select)
 //
-// Question data comes from data/moduleX-questions.js (loaded first,
-// as plain <script> tags), so this file's job is the timer/strikes/
+// Question data comes from data/*-questions.js (loaded first, as
+// plain <script> tags), so this file's job is the timer/strikes/
 // scoring shell, plus each module's own answer-checking UI.
+//
+// A module is not bound to exactly one question format: Identify
+// renders whichever of MC or True/False a given question calls for
+// (see createIdentifyStyleModule below). Analyze used to share that
+// same engine, but its educational purpose ("determine what an
+// algorithm does") is a poor fit for choosing between four
+// pre-written answers - so it now has its own mechanic: the module
+// face lists out a sequence of operations like a little trace/console
+// log, and the player types the resulting value on a keypad (see the
+// "Module 4 (Analyze)" section below, which mirrors Module 2's
+// fill-in-the-blank input handling but keeps its own DOM/state so the
+// two don't clobber each other). Operate/Trace/Defuse still each own
+// a single format for now - the same createXStyleModule pattern is
+// how a future module would gain more than one format.
 //
 // Only one module can be zoomed into at a time, so there is a single
 // `runState` that gets rebuilt fresh every time a module cell on the
-// overview screen is tapped. Adding a future module (connect-the-
-// dots, choose-the-answer) means: give it a data file + its own
-// screen in the HTML, then add one more entry to MODULE_REGISTRY
-// below with the same shape as module1/module2/module4.
+// overview screen is tapped. Adding a future module means: give it a
+// data file + its own screen in the HTML, then add one more entry to
+// MODULE_REGISTRY below with the same shape as the others.
 // ===================================================================
 
 // ------------------- Screens -------------------
@@ -31,17 +46,34 @@ const difficultyPreview = document.getElementById("difficultyPreview");
 const practiceModeToggle = document.getElementById("practiceModeToggle");
 const startButton = document.getElementById("startButton");
 
-// ------------------- Module 1 (Multiple Choice) elements -------------------
-const shapeButtons = document.querySelectorAll(".shape-button");
-const questionTopic = document.getElementById("questionTopic");
-const questionPrompt = document.getElementById("questionPrompt");
-const optionList = document.getElementById("optionList");
+// Module 1 (Identify) elements are NOT declared here as flat consts,
+// unlike the other modules - it owns its own copy of the MC/True-False
+// widget pair (one shape-grid, one truefalse-grid), so its DOM lookups
+// are scoped per-screen inside createIdentifyStyleModule() further
+// down instead of one global querySelectorAll() that would grab both
+// screens' nodes at once (Analyze used to share that same screen
+// scoping trick; now that it has its own keypad-based mechanic, its
+// elements are declared as flat consts below instead, same as
+// Module 2's).
 
 // ------------------- Module 2 (Fill in the Blanks) elements -------------------
-const keypadKeys = document.querySelectorAll(".keypad-key");
+const keypadKeys = document.querySelectorAll(".module2-keypad-key");
 const module2QuestionTopic = document.getElementById("module2QuestionTopic");
 const module2QuestionPrompt = document.getElementById("module2QuestionPrompt");
 const module2AnswerDisplay = document.getElementById("module2AnswerDisplay");
+
+// ------------------- Module 4 (Analyze) elements -------------------
+// Same keypad-driven input pattern as Module 2, but scoped to its own
+// screen/keys (".analyze-keypad-key" instead of ".module2-keypad-key")
+// so the two modules' keydown/click handling never cross-fires, and
+// with a trace list in place of Module 2's plain prompt text, since
+// what the player needs to read here is a short sequence of
+// operations rather than a single fill-in-the-blank sentence.
+const analyzeKeypadKeys = document.querySelectorAll(".analyze-keypad-key");
+const analyzeQuestionTopic = document.getElementById("analyzeQuestionTopic");
+const analyzeTraceList = document.getElementById("analyzeTraceList");
+const analyzeQuestionPrompt = document.getElementById("analyzeQuestionPrompt");
+const analyzeAnswerDisplay = document.getElementById("analyzeAnswerDisplay");
 
 // ------------------- Module 3 (Connect the Dots) elements -------------------
 const module3QuestionTopic = document.getElementById("module3QuestionTopic");
@@ -52,17 +84,17 @@ const module3DefinitionsColumn = document.getElementById("module3DefinitionsColu
 const module3ConnectLinesSvg = document.getElementById("module3ConnectLinesSvg");
 const module3CheckButton = document.getElementById("module3CheckButton");
 
-// ------------------- Module 4 (True/False) elements -------------------
-const truefalseButtons = document.querySelectorAll(".truefalse-button");
-const module4QuestionTopic = document.getElementById("module4QuestionTopic");
-const module4QuestionPrompt = document.getElementById("module4QuestionPrompt");
-
-// ------------------- Module 5 (Choose the Correct Answer) elements -------------------
-const statementButtons = document.querySelectorAll(".statement-button");
+// ------------------- Module 5 (Scenario / Defuse) elements -------------------
+// Single-select now, not multi: one scenario, pick the one best
+// structure. Unlike Module 1's fixed A/B/C/D shape buttons, the
+// option set here is text (structure names) that varies per
+// question, so - same as Module 3's term/definition columns - the
+// buttons are rebuilt fresh every question rather than looked up
+// once as a fixed NodeList; module5OptionList is the container they
+// get rendered into, and clicks are handled via delegation on it.
+const module5OptionList = document.getElementById("module5OptionList");
 const module5QuestionTopic = document.getElementById("module5QuestionTopic");
 const module5QuestionPrompt = document.getElementById("module5QuestionPrompt");
-const module5StatementList = document.getElementById("module5StatementList");
-const module5ConfirmButton = document.getElementById("module5ConfirmButton");
 
 // ------------------- Result screen elements -------------------
 const resultTitle = document.getElementById("resultTitle");
@@ -95,25 +127,113 @@ const SHAPE_BY_OPTION_ID = {
     d: "diamond"
 };
 
+// ------------------- Identify / Analyze shared widget factory -------------------
+// Both Identify and Analyze render whichever of MC or True/False a
+// question calls for, on their own separate screens. Rather than
+// giving each module its own copy of render/reset/click-handling
+// logic (which is how Module 1 and Module 4 used to work), this
+// factory builds one { renderQuestion, resetInputs } pair per module,
+// scoped to that module's own screen - so the two modules share the
+// exact same engine without sharing DOM elements or clobbering each
+// other's button state.
+//
+// question.type selects the widget: "mc" needs options/correctOptionId,
+// "trueFalse" needs correctAnswer (boolean). Both types share
+// topic/prompt/difficulty, same as the old Module 1 / Module 4 banks did.
+function createIdentifyStyleModule(moduleId, screenId) {
+    const screen = document.getElementById(screenId);
+
+    const shapeButtons = screen.querySelectorAll(".shape-button");
+    const truefalseButtons = screen.querySelectorAll(".truefalse-button");
+    const mcWidget = screen.querySelector('[data-widget="mc"]');
+    const trueFalseWidget = screen.querySelector('[data-widget="trueFalse"]');
+    const questionTopicEl = screen.querySelector(".question-topic");
+    const questionPromptEl = screen.querySelector(".question-prompt");
+    const optionListEl = screen.querySelector(".option-list");
+
+    function showWidgetForType(type) {
+        mcWidget.classList.toggle("hidden", type !== "mc");
+        trueFalseWidget.classList.toggle("hidden", type !== "trueFalse");
+    }
+
+    function renderQuestion(question) {
+        questionTopicEl.textContent = question.topic;
+        questionPromptEl.textContent = question.prompt;
+
+        showWidgetForType(question.type);
+
+        if (question.type === "mc") {
+            renderMultipleChoiceOptions(optionListEl, question);
+        } else {
+            // True/False has no option list - the popup just shows
+            // the statement itself via questionPromptEl above.
+            optionListEl.innerHTML = "";
+        }
+    }
+
+    function resetInputs() {
+        shapeButtons.forEach(function (button) {
+            button.disabled = false;
+            button.classList.remove("correct", "wrong");
+        });
+
+        truefalseButtons.forEach(function (button) {
+            button.disabled = false;
+            button.classList.remove("correct", "wrong");
+        });
+    }
+
+    shapeButtons.forEach(function (button) {
+        button.addEventListener("click", function () {
+            if (!runState || runState.moduleId !== moduleId || runState.isAnswerLocked) {
+                return;
+            }
+
+            const question = runState.questions[runState.currentIndex];
+            const isCorrect = button.dataset.optionId === question.correctOptionId;
+
+            submitAnswer(isCorrect, button, shapeButtons);
+        });
+    });
+
+    truefalseButtons.forEach(function (button) {
+        button.addEventListener("click", function () {
+            if (!runState || runState.moduleId !== moduleId || runState.isAnswerLocked) {
+                return;
+            }
+
+            const question = runState.questions[runState.currentIndex];
+            const selectedAnswer = button.dataset.answer === "true";
+            const isCorrect = selectedAnswer === question.correctAnswer;
+
+            submitAnswer(isCorrect, button, truefalseButtons);
+        });
+    });
+
+    return { renderQuestion: renderQuestion, resetInputs: resetInputs };
+}
+
+const identifyModuleWidgets = createIdentifyStyleModule("identify", "identifyGameScreen");
+
 // ------------------- Module registry -------------------
 // Every playable module plugs in here: its own screen/DOM elements,
 // its own question bank, and the two functions that know how to draw
 // a question and reset its answer buttons. Everything else (timer,
 // strikes, progress, scoring, screen switching) is shared.
 const MODULE_REGISTRY = {
-    module1: {
-        moduleName: "module1-multipleChoice",
-        label: "Module 1: Multiple Choice",
-        slot: document.getElementById("module1Slot"),
-        screen: document.getElementById("gameScreen"),
-        bombShell: document.getElementById("bombShell"),
-        timerDisplay: document.getElementById("timerDisplay"),
-        strikesDisplay: document.getElementById("strikesDisplay"),
-        progressDisplay: document.getElementById("progressDisplay"),
-        backButton: document.getElementById("backToOverviewFromGame"),
-        questionBank: MODULE1_QUESTION_BANK,
-        renderQuestion: renderMultipleChoiceQuestion,
-        resetInputs: resetMultipleChoiceButtons
+    identify: {
+        moduleName: "module1-identify",
+        label: "Module 1: Identify",
+        slot: document.getElementById("moduleIdentifySlot"),
+        screen: document.getElementById("identifyGameScreen"),
+        bombShell: document.getElementById("identifyBombShell"),
+        timerDisplay: document.getElementById("identifyTimerDisplay"),
+        strikesDisplay: document.getElementById("identifyStrikesDisplay"),
+        progressDisplay: document.getElementById("identifyProgressDisplay"),
+        backButton: document.getElementById("backToOverviewFromIdentify"),
+        questionBank: IDENTIFY_QUESTION_BANK,
+        renderQuestion: identifyModuleWidgets.renderQuestion,
+        resetInputs: identifyModuleWidgets.resetInputs
     },
     module2: {
         moduleName: "module2-fillInTheBlank",
@@ -143,23 +263,23 @@ const MODULE_REGISTRY = {
         renderQuestion: renderConnectQuestion,
         resetInputs: resetConnectInputs
     },
-    module4: {
-        moduleName: "module4-trueFalse",
-        label: "Module 4: True or False",
-        slot: document.getElementById("module4Slot"),
-        screen: document.getElementById("module4GameScreen"),
-        bombShell: document.getElementById("module4BombShell"),
-        timerDisplay: document.getElementById("module4TimerDisplay"),
-        strikesDisplay: document.getElementById("module4StrikesDisplay"),
-        progressDisplay: document.getElementById("module4ProgressDisplay"),
-        backButton: document.getElementById("backToOverviewFromModule4"),
-        questionBank: MODULE4_QUESTION_BANK,
-        renderQuestion: renderTrueFalseQuestion,
-        resetInputs: resetTrueFalseButtons
+    analyze: {
+        moduleName: "module4-analyze",
+        label: "Module 4: Analyze",
+        slot: document.getElementById("moduleAnalyzeSlot"),
+        screen: document.getElementById("analyzeGameScreen"),
+        bombShell: document.getElementById("analyzeBombShell"),
+        timerDisplay: document.getElementById("analyzeTimerDisplay"),
+        strikesDisplay: document.getElementById("analyzeStrikesDisplay"),
+        progressDisplay: document.getElementById("analyzeProgressDisplay"),
+        backButton: document.getElementById("backToOverviewFromAnalyze"),
+        questionBank: ANALYZE_QUESTION_BANK,
+        renderQuestion: renderAnalyzeQuestion,
+        resetInputs: resetAnalyzeInputs
     },
     module5: {
-        moduleName: "module5-chooseCorrect",
-        label: "Module 5: Choose the Correct Answer",
+        moduleName: "module5-defuse",
+        label: "Module 5: Defuse",
         slot: document.getElementById("module5Slot"),
         screen: document.getElementById("module5GameScreen"),
         bombShell: document.getElementById("module5BombShell"),
@@ -168,8 +288,8 @@ const MODULE_REGISTRY = {
         progressDisplay: document.getElementById("module5ProgressDisplay"),
         backButton: document.getElementById("backToOverviewFromModule5"),
         questionBank: MODULE5_QUESTION_BANK,
-        renderQuestion: renderChooseCorrectQuestion,
-        resetInputs: resetChooseCorrectInputs
+        renderQuestion: renderScenarioQuestion,
+        resetInputs: resetScenarioInputs
     }
 };
 
@@ -197,10 +317,10 @@ let pendingSaveResult = null;
 populateDifficultyOptions();
 
 function populateDifficultyOptions() {
-    const difficultyIds = Object.keys(MODULE1_QUESTION_BANK.difficulties);
+    const difficultyIds = Object.keys(IDENTIFY_QUESTION_BANK.difficulties);
 
     difficultyIds.forEach(function (difficultyId) {
-        const difficulty = MODULE1_QUESTION_BANK.difficulties[difficultyId];
+        const difficulty = IDENTIFY_QUESTION_BANK.difficulties[difficultyId];
 
         const option = document.createElement("option");
         option.value = difficultyId;
@@ -217,7 +337,7 @@ function populateDifficultyOptions() {
 // (numbers shown here are Module 1's - the module you actually zoom
 // into may use slightly different numbers for the same difficulty id)
 function renderDifficultyPreview() {
-    const difficulty = MODULE1_QUESTION_BANK.difficulties[difficultySelect.value];
+    const difficulty = IDENTIFY_QUESTION_BANK.difficulties[difficultySelect.value];
 
     if (!difficulty) {
         return;
@@ -244,7 +364,7 @@ startButton.addEventListener("click", function () {
 });
 
 function armBomb(difficultyId, isPracticeMode) {
-    const bombDifficulty = MODULE1_QUESTION_BANK.difficulties[difficultyId];
+    const bombDifficulty = IDENTIFY_QUESTION_BANK.difficulties[difficultyId];
 
     // The countdown itself lives here, on armedConfig, not on the
     // per-module runState - that's what lets it keep running (or
@@ -462,12 +582,12 @@ function renderCurrentQuestion() {
     runState.isAnswerLocked = false;
 }
 
-// ----- Module 1 (Multiple Choice) rendering -----
-function renderMultipleChoiceQuestion(question) {
-    questionTopic.textContent = question.topic;
-    questionPrompt.textContent = question.prompt;
-
-    optionList.innerHTML = "";
+// ----- MC option list rendering (shared by Identify and Analyze) -----
+// Extracted from what used to be Module 1's own renderMultipleChoiceQuestion
+// so createIdentifyStyleModule() can fill in whichever screen's option
+// list belongs to the module currently being rendered.
+function renderMultipleChoiceOptions(optionListEl, question) {
+    optionListEl.innerHTML = "";
 
     question.options.forEach(function (option) {
         const row = document.createElement("li");
@@ -498,14 +618,7 @@ function renderMultipleChoiceQuestion(question) {
         row.appendChild(letter);
         row.appendChild(iconWell);
         row.appendChild(label);
-        optionList.appendChild(row);
-    });
-}
-
-function resetMultipleChoiceButtons() {
-    shapeButtons.forEach(function (button) {
-        button.disabled = false;
-        button.classList.remove("correct", "wrong");
+        optionListEl.appendChild(row);
     });
 }
 
@@ -539,6 +652,50 @@ function renderModule2AnswerDisplay() {
         : "type your answer...";
 
     module2AnswerDisplay.classList.toggle("answer-display-placeholder", !hasTyped);
+}
+
+// ----- Module 4 (Analyze) rendering -----
+// Unlike Module 2's single prompt sentence, Analyze's prompt is
+// preceded by a short "trace" of operations (question.operations, an
+// ordered array of strings like "push(A)") rendered as a numbered
+// list, so the player can see the whole sequence at a glance before
+// typing what it produces. Answer-typing itself reuses Module 2's
+// approach (a separate bit of "what's been typed so far" state, kept
+// under its own name so the two modules' state never collide).
+let module4TypedAnswer = "";
+
+function renderAnalyzeQuestion(question) {
+    analyzeQuestionTopic.textContent = question.topic;
+    analyzeQuestionPrompt.textContent = question.prompt;
+
+    analyzeTraceList.innerHTML = "";
+    question.operations.forEach(function (operationLine) {
+        const line = document.createElement("li");
+        line.classList.add("trace-line");
+        line.textContent = operationLine;
+        analyzeTraceList.appendChild(line);
+    });
+}
+
+function resetAnalyzeInputs() {
+    module4TypedAnswer = "";
+    renderAnalyzeAnswerDisplay();
+
+    analyzeKeypadKeys.forEach(function (key) {
+        key.disabled = false;
+    });
+
+    analyzeAnswerDisplay.classList.remove("correct", "wrong");
+}
+
+function renderAnalyzeAnswerDisplay() {
+    const hasTyped = module4TypedAnswer.length > 0;
+
+    analyzeAnswerDisplay.textContent = hasTyped
+        ? module4TypedAnswer
+        : "type the result...";
+
+    analyzeAnswerDisplay.classList.toggle("answer-display-placeholder", !hasTyped);
 }
 
 // ----- Module 3 (Connect the Dots) rendering -----
@@ -791,205 +948,81 @@ function submitConnectAnswer() {
     commitAnswer(isCorrect);
 }
 
-// ----- Module 4 (True/False) rendering -----
-function renderTrueFalseQuestion(question) {
-    module4QuestionTopic.textContent = question.topic;
-    module4QuestionPrompt.textContent = question.prompt;
+// Module 4 (Analyze) rendering is handled entirely by
+// createIdentifyStyleModule() above - it shares Identify's MC/True-False
+// engine rather than having its own render/reset functions here.
+
+// ----- Module 5 (Defuse / scenario) rendering -----
+// Single-select: one scenario, one best structure, clicking a button
+// locks the answer in immediately - no separate Confirm step, same
+// as Identify's MC buttons. The option set (structure names) is
+// different every question though, so - like Module 3's term/
+// definition nodes - the buttons themselves are rebuilt fresh each
+// question rather than being a fixed A/B/C/D NodeList.
+function renderScenarioQuestion(question) {
+    module5QuestionTopic.textContent = question.topic;
+    module5QuestionPrompt.textContent = question.prompt;
+
+    module5OptionList.innerHTML = "";
+
+    question.options.forEach(function (option) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.classList.add("scenario-button");
+        button.dataset.optionId = option.id;
+
+        const letter = document.createElement("span");
+        letter.classList.add("scenario-button-letter");
+        letter.textContent = option.id.toUpperCase();
+
+        const label = document.createElement("span");
+        label.classList.add("scenario-button-label");
+        label.textContent = option.text;
+
+        button.appendChild(letter);
+        button.appendChild(label);
+        module5OptionList.appendChild(button);
+    });
 }
 
-function resetTrueFalseButtons() {
-    truefalseButtons.forEach(function (button) {
+// The buttons are already freshly built (enabled, no feedback
+// classes) by renderScenarioQuestion just before this runs - this is
+// mostly a defensive no-op, kept for symmetry with every other
+// module's resetInputs and in case a future retry path re-renders
+// without rebuilding the list.
+function resetScenarioInputs() {
+    module5OptionList.querySelectorAll(".scenario-button").forEach(function (button) {
         button.disabled = false;
         button.classList.remove("correct", "wrong");
     });
 }
 
-// ----- Module 5 (Choose the Correct Answer) rendering -----
-// Unlike the other modules, nothing here is "submitted" the moment a
-// button is clicked - the player can toggle statements on and off
-// freely, so this needs its own bit of state for "what's currently
-// selected", cleared fresh every question.
-let module5SelectedIds = [];
-
-function renderChooseCorrectQuestion(question) {
-    module5QuestionTopic.textContent = question.topic;
-    module5QuestionPrompt.textContent = question.prompt;
-
-    module5StatementList.innerHTML = "";
-
-    question.statements.forEach(function (statement) {
-        const row = document.createElement("li");
-        row.classList.add("statement-row");
-        row.dataset.statementId = statement.id;
-
-        const letter = document.createElement("span");
-        letter.classList.add("statement-row-letter");
-        letter.textContent = statement.id.toUpperCase();
-
-        const checkbox = document.createElement("span");
-        checkbox.classList.add("statement-row-checkbox");
-
-        const label = document.createElement("span");
-        label.textContent = statement.text;
-
-        row.appendChild(letter);
-        row.appendChild(checkbox);
-        row.appendChild(label);
-        module5StatementList.appendChild(row);
-    });
-}
-
-function resetChooseCorrectInputs() {
-    module5SelectedIds = [];
-
-    statementButtons.forEach(function (button) {
-        button.disabled = false;
-        button.classList.remove("selected", "correct", "wrong", "missed");
-    });
-
-    module5ConfirmButton.disabled = false;
-
-    module5StatementList.querySelectorAll(".statement-row").forEach(function (row) {
-        row.classList.remove("selected", "correct", "wrong", "missed");
-    });
-}
-
-// Toggling a statement on/off - only allowed before Confirm is
-// pressed (isAnswerLocked stays false the whole time the player is
-// still picking statements).
-function toggleModule5Statement(statementId) {
-    const button = document.querySelector(
-        '.statement-button[data-statement-id="' + statementId + '"]'
-    );
-    const row = module5StatementList.querySelector(
-        '.statement-row[data-statement-id="' + statementId + '"]'
-    );
-
-    const selectedIndex = module5SelectedIds.indexOf(statementId);
-    const isNowSelected = selectedIndex === -1;
-
-    if (isNowSelected) {
-        module5SelectedIds.push(statementId);
-    } else {
-        module5SelectedIds.splice(selectedIndex, 1);
-    }
-
-    if (button) {
-        button.classList.toggle("selected", isNowSelected);
-    }
-
-    if (row) {
-        row.classList.toggle("selected", isNowSelected);
-    }
-}
-
-// Confirm checks the whole selected set at once: correct only if it
-// exactly matches every statement flagged isCorrect - no more, no
-// less.
-function submitChooseCorrectAnswer() {
-    const question = runState.questions[runState.currentIndex];
-
-    const correctIds = question.statements
-        .filter(function (statement) {
-            return statement.isCorrect;
-        })
-        .map(function (statement) {
-            return statement.id;
-        });
-
-    const isCorrect =
-        correctIds.length === module5SelectedIds.length &&
-        correctIds.every(function (id) {
-            return module5SelectedIds.indexOf(id) !== -1;
-        });
-
-    statementButtons.forEach(function (button) {
-        button.disabled = true;
-    });
-    module5ConfirmButton.disabled = true;
-
-    question.statements.forEach(function (statement) {
-        const wasSelected = module5SelectedIds.indexOf(statement.id) !== -1;
-
-        let feedbackClass = null;
-        if (statement.isCorrect && wasSelected) {
-            feedbackClass = "correct"; // true statement, correctly selected
-        } else if (!statement.isCorrect && wasSelected) {
-            feedbackClass = "wrong"; // false statement, wrongly selected
-        } else if (statement.isCorrect && !wasSelected) {
-            feedbackClass = "missed"; // true statement the player left unchecked
-        }
-        // false statement correctly left unchecked - no feedback class needed
-
-        if (!feedbackClass) {
-            return;
-        }
-
-        const button = document.querySelector(
-            '.statement-button[data-statement-id="' + statement.id + '"]'
-        );
-        const row = module5StatementList.querySelector(
-            '.statement-row[data-statement-id="' + statement.id + '"]'
-        );
-
-        if (button) {
-            button.classList.add(feedbackClass);
-        }
-        if (row) {
-            row.classList.add(feedbackClass);
-        }
-    });
-
-    commitAnswer(isCorrect);
-}
-
 // ------------------- Answering -------------------
-shapeButtons.forEach(function (button) {
-    button.addEventListener("click", function () {
-        if (!runState || runState.moduleId !== "module1" || runState.isAnswerLocked) {
-            return;
-        }
-
-        const question = runState.questions[runState.currentIndex];
-        const isCorrect = button.dataset.optionId === question.correctOptionId;
-
-        submitAnswer(isCorrect, button, shapeButtons);
-    });
-});
-
-truefalseButtons.forEach(function (button) {
-    button.addEventListener("click", function () {
-        if (!runState || runState.moduleId !== "module4" || runState.isAnswerLocked) {
-            return;
-        }
-
-        const question = runState.questions[runState.currentIndex];
-        const selectedAnswer = button.dataset.answer === "true";
-        const isCorrect = selectedAnswer === question.correctAnswer;
-
-        submitAnswer(isCorrect, button, truefalseButtons);
-    });
-});
-
-statementButtons.forEach(function (button) {
-    button.addEventListener("click", function () {
-        if (!runState || runState.moduleId !== "module5" || runState.isAnswerLocked) {
-            return;
-        }
-
-        toggleModule5Statement(button.dataset.statementId);
-    });
-});
-
-module5ConfirmButton.addEventListener("click", function () {
+// Identify's MC/True-False click handlers are wired up inside
+// createIdentifyStyleModule() above, scoped to its own screen - see
+// identifyModuleWidgets. Analyze's keypad handlers are wired up in
+// its own "Module 4 (Analyze) answering" section further down.
+//
+// Module 5's buttons are rebuilt every question (see
+// renderScenarioQuestion above), so - like Module 3's term/definition
+// clicks - this is a single delegated listener on the container
+// rather than a per-button listener that would need re-attaching
+// every time the buttons are rebuilt.
+module5OptionList.addEventListener("click", function (event) {
     if (!runState || runState.moduleId !== "module5" || runState.isAnswerLocked) {
         return;
     }
 
-    // Lock immediately (before the 700ms flash delay in commitAnswer)
-    // so a double-click on Confirm can't submit the answer twice.
-    runState.isAnswerLocked = true;
-    submitChooseCorrectAnswer();
+    const button = event.target.closest(".scenario-button");
+    if (!button) {
+        return;
+    }
+
+    const question = runState.questions[runState.currentIndex];
+    const isCorrect = button.dataset.optionId === question.correctOptionId;
+    const allButtons = module5OptionList.querySelectorAll(".scenario-button");
+
+    submitAnswer(isCorrect, button, allButtons);
 });
 
 keypadKeys.forEach(function (key) {
@@ -1074,6 +1107,86 @@ function submitFillBlankAnswer() {
     if (!module2TypedAnswer.trim().length) {
         module2AnswerDisplay.textContent = "(no answer)";
         module2AnswerDisplay.classList.remove("answer-display-placeholder");
+    }
+
+    commitAnswer(isCorrect);
+}
+
+// ------------------- Module 4 (Analyze) answering -------------------
+// Same keypad-typing pattern as Module 2 above (on-screen keys, a
+// matching physical-keyboard listener, backspace/submit), duplicated
+// rather than shared so Analyze's answers can include digits (trace
+// results are often numbers, e.g. a sum or a count) without Module 2's
+// letter-only fill-in-the-blank keys picking up digit input too.
+analyzeKeypadKeys.forEach(function (key) {
+    key.addEventListener("click", function () {
+        if (!runState || runState.moduleId !== "analyze" || runState.isAnswerLocked) {
+            return;
+        }
+
+        const action = key.dataset.action;
+
+        if (action === "backspace") {
+            backspaceAnalyzeAnswer();
+            return;
+        }
+
+        if (action === "submit") {
+            submitAnalyzeAnswer();
+            return;
+        }
+
+        // a regular letter/digit key
+        typeAnalyzeCharacter(key.dataset.letter);
+    });
+});
+
+document.addEventListener("keydown", function (event) {
+    if (!runState || runState.moduleId !== "analyze" || runState.isAnswerLocked) {
+        return;
+    }
+
+    if (event.key === "Enter") {
+        event.preventDefault();
+        submitAnalyzeAnswer();
+        return;
+    }
+
+    if (event.key === "Backspace") {
+        event.preventDefault();
+        backspaceAnalyzeAnswer();
+        return;
+    }
+
+    if (/^[a-zA-Z0-9]$/.test(event.key)) {
+        typeAnalyzeCharacter(event.key);
+    }
+});
+
+function typeAnalyzeCharacter(character) {
+    module4TypedAnswer += character.toLowerCase();
+    renderAnalyzeAnswerDisplay();
+}
+
+function backspaceAnalyzeAnswer() {
+    module4TypedAnswer = module4TypedAnswer.slice(0, -1);
+    renderAnalyzeAnswerDisplay();
+}
+
+function submitAnalyzeAnswer() {
+    const question = runState.questions[runState.currentIndex];
+    const isCorrect =
+        module4TypedAnswer.trim().toLowerCase() === question.answer.toLowerCase();
+
+    analyzeKeypadKeys.forEach(function (key) {
+        key.disabled = true;
+    });
+
+    analyzeAnswerDisplay.classList.add(isCorrect ? "correct" : "wrong");
+
+    if (!module4TypedAnswer.trim().length) {
+        analyzeAnswerDisplay.textContent = "(no answer)";
+        analyzeAnswerDisplay.classList.remove("answer-display-placeholder");
     }
 
     commitAnswer(isCorrect);
