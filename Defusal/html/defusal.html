@@ -714,6 +714,9 @@
                 <button id="saveAttemptButton" class="secondary-button hidden" type="button">
                     Save Attempt
                 </button>
+                <button id="viewExplanationsFromResultButton" class="secondary-button" type="button">
+                    View Explanations
+                </button>
                 <button id="viewHistoryFromResultButton" class="secondary-button" type="button">
                     View History
                 </button>
@@ -765,6 +768,31 @@
 
         </section>
 
+        <!-- ===================== REVIEW SCREEN ===================== -->
+        <!-- Every question from one run (just-finished or a saved past
+             attempt), shown with the player's answer, the correct
+             answer, and an explanation. Reached from the result
+             screen's "View Explanations" button (that run's own
+             in-memory answerLog) or from a row's "Review" button on
+             the History screen (that attempt's saved answerLog) - see
+             renderReviewScreen() and reviewReturnScreen in defusal.js. -->
+        <section id="reviewScreen" class="screen result-screen hidden">
+
+            <button id="backFromReview" class="back-link" type="button">
+                &larr; Back
+            </button>
+
+            <p class="eyebrow">ANSWER KEY</p>
+            <h1 class="page-title">Explanations</h1>
+            <p class="intro-text">
+                Every question from this run, with the answer you gave,
+                the correct one, and why.
+            </p>
+
+            <div id="reviewQuestionList" class="review-question-list"></div>
+
+        </section>
+
     </main>
 
     <!-- identify-questions.js supplies IDENTIFY_QUESTION_BANK, built
@@ -782,7 +810,11 @@
          { prompt, options: [{id, text}], correctOptionId } instead of
          the old { statements: [{id, text, isCorrect}] } multi-select
          shape) - see the file itself. Module 2/3 are unchanged and
-         still load their original files/schemas. -->
+         still load their original files/schemas. Every module's
+         questions now also accept an optional `explanation` string
+         field (shown on the new Explanations/review screen); a
+         question with none falls back to a generic message - see
+         renderReviewScreen() in defusal.js. -->
     <script src="../data/identify-questions.js"></script>
     <script src="../data/analyze-questions.js"></script>
     <script src="../data/module2-questions.js"></script>

@@ -20,7 +20,7 @@ const MODULE4_QUESTION_BANK = {
         "hard": {
             "label": "Hard",
             "questionCount": 10,
-            "startingTimeSeconds": 300,
+            "startingTimeSeconds": 360,
             "mistakesAllowed": 2,
             "baseScore": 2000,
             "timeBonusCap": 1000
@@ -28,7 +28,7 @@ const MODULE4_QUESTION_BANK = {
         "expert": {
             "label": "Expert",
             "questionCount": 10,
-            "startingTimeSeconds": 180,
+            "startingTimeSeconds": 300,
             "mistakesAllowed": 1,
             "baseScore": 3000,
             "timeBonusCap": 1500

@@ -33,32 +33,32 @@ const ANALYZE_QUESTION_BANK = {
             startingTimeSeconds: 600,
             mistakesAllowed: 3,
             questionCount: 5,
-            baseScore: 100,
-            timeBonusCap: 50
+            baseScore: 500,
+            timeBonusCap: 500
         },
         intermediate: {
             label: "Intermediate",
-            startingTimeSeconds: 480,
+            startingTimeSeconds: 420,
             mistakesAllowed: 2,
             questionCount: 6,
-            baseScore: 150,
-            timeBonusCap: 75
+            baseScore: 1000,
+            timeBonusCap: 750
         },
         hard: {
             label: "Hard",
             startingTimeSeconds: 360,
             mistakesAllowed: 2,
             questionCount: 7,
-            baseScore: 200,
-            timeBonusCap: 100
+            baseScore: 2000,
+            timeBonusCap: 1000
         },
         expert: {
             label: "Expert",
-            startingTimeSeconds: 240,
+            startingTimeSeconds: 300,
             mistakesAllowed: 1,
             questionCount: 8,
-            baseScore: 300,
-            timeBonusCap: 150
+            baseScore: 3000,
+            timeBonusCap: 1500
         }
     },
 

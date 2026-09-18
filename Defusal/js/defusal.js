@@ -112,6 +112,7 @@ const resultScore = document.getElementById("resultScore");
 const retryButton = document.getElementById("retryButton");
 const changeDifficultyButton = document.getElementById("changeDifficultyButton");
 const saveAttemptButton = document.getElementById("saveAttemptButton");
+const viewExplanationsFromResultButton = document.getElementById("viewExplanationsFromResultButton");
 const viewHistoryFromResultButton = document.getElementById("viewHistoryFromResultButton");
 
 // ------------------- History screen elements -------------------
@@ -123,6 +124,15 @@ const historyEmptyMessage = document.getElementById("historyEmptyMessage");
 const historyColumnHeader = document.getElementById("historyColumnHeader");
 const historyAttemptList = document.getElementById("historyAttemptList");
 const historyTopicChart = document.getElementById("historyTopicChart");
+
+// ------------------- Review screen elements -------------------
+// Shows every question from one run - either the run that just
+// finished (from the result screen) or a saved past attempt (from
+// the History screen) - with the player's answer, the correct one,
+// and an explanation. See renderReviewScreen() further down.
+const reviewScreen = document.getElementById("reviewScreen");
+const reviewQuestionList = document.getElementById("reviewQuestionList");
+const backFromReview = document.getElementById("backFromReview");
 
 // shape order fixed to the sketch layout: circle (a), triangle (b),
 // square (c), diamond (d) - only used by Module 1's option list
@@ -198,7 +208,17 @@ function createIdentifyStyleModule(moduleId, screenId) {
             const question = runState.questions[runState.currentIndex];
             const isCorrect = button.dataset.optionId === question.correctOptionId;
 
-            submitAnswer(isCorrect, button, shapeButtons);
+            const chosenOption = question.options.find(function (option) {
+                return option.id === button.dataset.optionId;
+            });
+            const correctOption = question.options.find(function (option) {
+                return option.id === question.correctOptionId;
+            });
+
+            submitAnswer(isCorrect, button, shapeButtons, {
+                yourAnswerText: chosenOption ? chosenOption.text : "(no answer)",
+                correctAnswerText: correctOption ? correctOption.text : ""
+            });
         });
     });
 
@@ -212,7 +232,10 @@ function createIdentifyStyleModule(moduleId, screenId) {
             const selectedAnswer = button.dataset.answer === "true";
             const isCorrect = selectedAnswer === question.correctAnswer;
 
-            submitAnswer(isCorrect, button, truefalseButtons);
+            submitAnswer(isCorrect, button, truefalseButtons, {
+                yourAnswerText: selectedAnswer ? "True" : "False",
+                correctAnswerText: question.correctAnswer ? "True" : "False"
+            });
         });
     });
 
@@ -316,6 +339,11 @@ let armedConfig = null;
 // a second click can't double-save the same attempt.
 let pendingSaveResult = null;
 
+// Which screen the review screen's "Back" button should return to -
+// the result screen if opened via "View Explanations", or the History
+// screen if opened via a saved attempt's "Review" button.
+let reviewReturnScreen = null;
+
 // ------------------- Set up the difficulty dropdown -------------------
 // Difficulty ids/labels are the same set across every module bank
 // (easy/intermediate/hard/expert), just with different numbers behind
@@ -393,7 +421,11 @@ function armBomb(difficultyId, isPracticeMode) {
         // module's runState as it's completed (or captured mid-question
         // if the bomb explodes) - this is what feeds the History
         // screen's "topics to improve" chart.
-        topicStats: {}
+        topicStats: {},
+        // One entry per question answered this arm, across every
+        // module, merged in the same way as topicStats - this is what
+        // feeds the Explanations/review screen.
+        answerLog: []
     };
     runState = null;
 
@@ -465,7 +497,8 @@ function enterModule(moduleId) {
         correctCount: 0,
         strikesUsed: 0,
         isAnswerLocked: false,
-        topicStats: {}
+        topicStats: {},
+        answerLog: []
     };
 
     renderStrikes();
@@ -951,7 +984,25 @@ function submitConnectAnswer() {
         line.classList.add(wasConnectedCorrectly ? "correct" : "wrong");
     });
 
-    commitAnswer(isCorrect);
+    // Multiple pairs per question, so the "answer" is a summary line
+    // per term rather than one value - each term with whatever
+    // definition the player connected it to (or "(unanswered)").
+    const yourAnswerText = question.pairs.map(function (pair) {
+        const connectedDefinitionId = module3Pairings[pair.id];
+        const connectedPair = question.pairs.find(function (candidate) {
+            return candidate.id === connectedDefinitionId;
+        });
+        return pair.term + " \u2192 " + (connectedPair ? connectedPair.definition : "(unanswered)");
+    }).join("; ");
+
+    const correctAnswerText = question.pairs.map(function (pair) {
+        return pair.term + " \u2192 " + pair.definition;
+    }).join("; ");
+
+    commitAnswer(isCorrect, {
+        yourAnswerText: yourAnswerText,
+        correctAnswerText: correctAnswerText
+    });
 }
 
 // Module 4 (Analyze) rendering is handled entirely by
@@ -1028,7 +1079,17 @@ module5OptionList.addEventListener("click", function (event) {
     const isCorrect = button.dataset.optionId === question.correctOptionId;
     const allButtons = module5OptionList.querySelectorAll(".scenario-button");
 
-    submitAnswer(isCorrect, button, allButtons);
+    const chosenOption = question.options.find(function (option) {
+        return option.id === button.dataset.optionId;
+    });
+    const correctOption = question.options.find(function (option) {
+        return option.id === question.correctOptionId;
+    });
+
+    submitAnswer(isCorrect, button, allButtons, {
+        yourAnswerText: chosenOption ? chosenOption.text : "(no answer)",
+        correctAnswerText: correctOption ? correctOption.text : ""
+    });
 });
 
 keypadKeys.forEach(function (key) {
@@ -1117,7 +1178,10 @@ function submitFillBlankAnswer() {
         module2AnswerDisplay.classList.remove("answer-display-placeholder");
     }
 
-    commitAnswer(isCorrect);
+    commitAnswer(isCorrect, {
+        yourAnswerText: module2TypedAnswer.trim() || "(no answer)",
+        correctAnswerText: question.answer
+    });
 }
 
 // ------------------- Module 4 (Analyze) answering -------------------
@@ -1197,26 +1261,38 @@ function submitAnalyzeAnswer() {
         analyzeAnswerDisplay.classList.remove("answer-display-placeholder");
     }
 
-    commitAnswer(isCorrect);
+    commitAnswer(isCorrect, {
+        yourAnswerText: module4TypedAnswer.trim() || "(no answer)",
+        correctAnswerText: question.answer
+    });
 }
 
-// shared by every module: flash the button that was pressed, count
-// the answer, then move on
-function submitAnswer(isCorrect, buttonElement, allButtonsForThisModule) {
+// shared by every button-based module (Identify's shape/true-false
+// buttons, Module 5's scenario buttons): flash the button that was
+// pressed, count the answer, then move on
+function submitAnswer(isCorrect, buttonElement, allButtonsForThisModule, answerDetails) {
     allButtonsForThisModule.forEach(function (button) {
         button.disabled = true;
     });
 
     buttonElement.classList.add(isCorrect ? "correct" : "wrong");
 
-    commitAnswer(isCorrect);
+    commitAnswer(isCorrect, answerDetails);
 }
 
 // the part every module's submit function shares once its own answer
 // UI has been locked/flashed: lock out further input, count the
-// answer, wait for the flash to be visible, then move to the next
-// question (or end the run)
-function commitAnswer(isCorrect) {
+// answer, log it for the review screen, wait for the flash to be
+// visible, then move to the next question (or end the run).
+//
+// answerDetails is optional (module-specific submit functions build
+// it right before calling commitAnswer/submitAnswer) and, when given,
+// should be { yourAnswerText, correctAnswerText } - plain strings
+// describing what the player picked/typed and what the right answer
+// was, for the Explanations/review screen. A question's own
+// `explanation` field (if the data file provides one) is read here,
+// not passed in, since every module shares the same fallback text.
+function commitAnswer(isCorrect, answerDetails) {
     runState.isAnswerLocked = true;
 
       if (isCorrect) {
@@ -1225,7 +1301,9 @@ function commitAnswer(isCorrect) {
         SFX.playWrong();
     }
 
-    const topic = runState.questions[runState.currentIndex].topic;
+    const question = runState.questions[runState.currentIndex];
+
+    const topic = question.topic;
     if (!runState.topicStats[topic]) {
         runState.topicStats[topic] = { correct: 0, total: 0 };
     }
@@ -1233,6 +1311,18 @@ function commitAnswer(isCorrect) {
     if (isCorrect) {
         runState.topicStats[topic].correct += 1;
     }
+
+    runState.answerLog.push({
+        moduleLabel: MODULE_REGISTRY[runState.moduleId].label,
+        topic: topic,
+        prompt: question.prompt,
+        isCorrect: isCorrect,
+        yourAnswerText: answerDetails && answerDetails.yourAnswerText
+            ? answerDetails.yourAnswerText
+            : "(no answer)",
+        correctAnswerText: answerDetails ? answerDetails.correctAnswerText || "" : "",
+        explanation: question.explanation || "No explanation was provided for this question."
+    });
 
     if (isCorrect) {
         runState.correctCount += 1;
@@ -1337,6 +1427,13 @@ function mergeTopicStats(source) {
     });
 }
 
+// Appends one module's answered questions onto the bomb-wide log, in
+// the order they were answered within that module (modules themselves
+// are already in whatever order the player tackled them).
+function mergeAnswerLog(source) {
+    armedConfig.answerLog = armedConfig.answerLog.concat(source);
+}
+
 // Records this module as solved and checks whether that was the last
 // one - the bomb as a whole only counts as defused once every module
 // in MODULE_REGISTRY has been solved this same arm.
@@ -1349,6 +1446,7 @@ function completeModule(moduleId) {
         timeBonusCap: runState.difficulty.timeBonusCap
     };
     mergeTopicStats(runState.topicStats);
+    mergeAnswerLog(runState.answerLog);
 
     markModuleSolved(moduleId);
     SFX.playModuleSolved();
@@ -1410,6 +1508,7 @@ function finishBomb(isDefused) {
             timeBonusCap: runState.difficulty.timeBonusCap
         };
         mergeTopicStats(runState.topicStats);
+        mergeAnswerLog(runState.answerLog);
     }
 
     const score = calculateOverallScore();
@@ -1419,7 +1518,7 @@ function finishBomb(isDefused) {
     // needs here rather than saving automatically.
     pendingSaveResult = armedConfig.isPracticeMode
         ? null
-        : { isDefused: isDefused, score: score };
+        : { isDefused: isDefused, score: score, answerLog: armedConfig.answerLog };
 
     renderResultScreen(isDefused, score);
     resetSaveAttemptButton();
@@ -1586,6 +1685,10 @@ function saveRunToHistory(isDefused, score) {
         strikesUsed: totals.strikesUsed,
         modules: moduleBreakdown,
         topics: topicBreakdown,
+        // The full per-question answer log, so a saved attempt can
+        // still be opened on the Explanations/review screen later -
+        // see buildHistoryRow()'s "Review" button.
+        answerLog: armedConfig.answerLog,
         passed: isDefused,
         timestamp: new Date().toISOString()
     });
@@ -1623,7 +1726,8 @@ function buildPendingHistoryPreview() {
         correctAnswers: totals.correctCount,
         totalQuestions: totals.totalQuestions,
         passed: pendingSaveResult.isDefused,
-        topics: topics
+        topics: topics,
+        answerLog: pendingSaveResult.answerLog
     };
 }
 
@@ -1649,12 +1753,20 @@ function buildHistoryRow(attempt) {
         (attempt.passed ? " passed" : " failed") +
         (attempt.isPending ? " pending" : "");
 
+    // Older saved attempts (from before this screen existed) won't
+    // have an answerLog at all - only offer Review when there's
+    // actually something to show.
+    const reviewButtonHtml = (attempt.answerLog && attempt.answerLog.length)
+        ? '<button class="history-review-button" type="button">Review</button>'
+        : "";
+
     const actionAndDateHtml = attempt.isPending
         ? '<span class="history-row-action">' +
               '<button class="history-save-button" type="button">Save</button>' +
+              reviewButtonHtml +
           "</span>" +
           '<span class="history-row-date history-row-date-pending">Not saved yet</span>'
-        : '<span class="history-row-action"></span>' +
+        : '<span class="history-row-action">' + reviewButtonHtml + "</span>" +
           '<span class="history-row-date">' + formatHistoryTimestamp(attempt.timestamp) + "</span>";
 
     row.innerHTML =
@@ -1670,6 +1782,14 @@ function buildHistoryRow(attempt) {
             pendingSaveResult = null;
             markAttemptSaved();
             renderHistoryScreen(); // redraw: the pending row is now a normal saved one
+        });
+    }
+
+    const reviewButton = row.querySelector(".history-review-button");
+    if (reviewButton) {
+        reviewButton.addEventListener("click", function () {
+            renderReviewScreen(attempt.answerLog, historyScreen);
+            showScreen(reviewScreen);
         });
     }
 
@@ -1757,6 +1877,52 @@ function renderTopicChart(attempts) {
         historyTopicChart.appendChild(barRow);
     });
 }
+
+// ------------------- Review screen (answer explanations) -------------------
+// answerLog is an array of { moduleLabel, topic, prompt, isCorrect,
+// yourAnswerText, correctAnswerText, explanation } entries - either
+// the just-finished run's armedConfig.answerLog, or a saved attempt's
+// own answerLog pulled out of localStorage. returnScreen is which
+// screen element the Back button on this screen should go back to.
+function renderReviewScreen(answerLog, returnScreen) {
+    reviewReturnScreen = returnScreen;
+    reviewQuestionList.innerHTML = "";
+
+    if (!answerLog || !answerLog.length) {
+        reviewQuestionList.innerHTML =
+            '<p class="review-empty-message">No question details were saved for this attempt.</p>';
+        return;
+    }
+
+    answerLog.forEach(function (entry, index) {
+        const card = document.createElement("div");
+        card.className = "review-card " + (entry.isCorrect ? "review-card-correct" : "review-card-wrong");
+
+        const correctAnswerRow = entry.isCorrect
+            ? ""
+            : '<p class="review-card-answer-row"><span class="review-card-answer-label">Correct answer:</span> ' +
+              entry.correctAnswerText + "</p>";
+
+        card.innerHTML =
+            '<p class="review-card-module">' + entry.moduleLabel + " \u00B7 " + entry.topic + "</p>" +
+            '<p class="review-card-prompt">' + (index + 1) + ". " + entry.prompt + "</p>" +
+            '<p class="review-card-answer-row"><span class="review-card-answer-label">Your answer:</span> ' +
+            entry.yourAnswerText + "</p>" +
+            correctAnswerRow +
+            '<p class="review-card-explanation">' + entry.explanation + "</p>";
+
+        reviewQuestionList.appendChild(card);
+    });
+}
+
+viewExplanationsFromResultButton.addEventListener("click", function () {
+    renderReviewScreen(armedConfig.answerLog, resultScreen);
+    showScreen(reviewScreen);
+});
+
+backFromReview.addEventListener("click", function () {
+    showScreen(reviewReturnScreen || (armedConfig ? overviewScreen : setupScreen));
+});
 
 // ------------------- Screen switching -------------------
 // Grabs every element with class "screen" (overview, setup, result,

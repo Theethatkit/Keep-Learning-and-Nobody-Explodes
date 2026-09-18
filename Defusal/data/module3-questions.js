@@ -54,7 +54,7 @@ const MODULE3_QUESTION_BANK = {
         },
         intermediate: {
             label: "Intermediate",
-            startingTimeSeconds: 480,
+            startingTimeSeconds: 420,
             mistakesAllowed: 3,
             questionCount: 3,
             baseScore: 150,
@@ -70,7 +70,7 @@ const MODULE3_QUESTION_BANK = {
         },
         expert: {
             label: "Expert",
-            startingTimeSeconds: 240,
+            startingTimeSeconds: 300,
             mistakesAllowed: 1,
             questionCount: 2,
             baseScore: 300,
