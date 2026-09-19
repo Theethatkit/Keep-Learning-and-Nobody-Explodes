@@ -2157,9 +2157,18 @@ openAchievementsButtonSetup.addEventListener("click", function () {
     showScreen(achievementsScreen);
 });
 
+const cameFromProfile =
+    new URLSearchParams(window.location.search).get("view") === "achievements";
+
+if (cameFromProfile) {
+    backToOverviewFromAchievements.textContent = "\u2190 Back to Profile";
+}
+
 backToOverviewFromAchievements.addEventListener("click", function () {
-    // Same rule as History's back button - no bomb armed yet (came
-    // here from the setup screen) goes back there instead.
+    if (cameFromProfile && !armedConfig) {
+        window.location.href = "profile.html";
+        return;
+    }
     showScreen(armedConfig ? overviewScreen : setupScreen);
 });
 
@@ -2284,3 +2293,13 @@ Object.keys(MODULE_REGISTRY).forEach(function (moduleId) {
         showScreen(overviewScreen);
     });
 });
+
+// ------------------- Deep link: profile page -> Achievements -------------------
+// profile.html links to defusal.html?view=achievements. The Achievements
+// screen is just a section on this page, so open it directly if that
+// param is present. Must run last, after every element/function above
+// is defined and after the setup screen is the default visible screen.
+if (new URLSearchParams(window.location.search).get("view") === "achievements") {
+    renderAchievementsScreen();
+    showScreen(achievementsScreen);
+}
