@@ -122,11 +122,11 @@
                     <div class="bomb-grid">
 
                         <!-- Module 4: Analyze (active) - traces a short
-                             sequence of operations and has the player
-                             type the resulting value, so its mock icon
-                             is a little console/trace glyph rather than
-                             Identify's shape grid (see moduleAnalyzeSlot
-                             below in MODULE_REGISTRY) -->
+         sequence of operations and has the player
+         type the resulting value, so its mock icon
+         is a little console/trace glyph rather than
+         Identify's shape grid (see moduleAnalyzeSlot
+         below in MODULE_REGISTRY) -->
                         <button id="moduleAnalyzeSlot" class="bomb-cell playable-cell" type="button">
                             <span class="cell-led active"></span>
                             <div class="cell-content mock-keyboard">&#10095;_</div>
@@ -158,19 +158,14 @@
                             <span class="cell-hint">Tap to defuse</span>
                         </button>
 
-                        <!-- Module 5: Defuse (active) - a scenario with
-                             several candidate structures, single pick;
-                             mock icon is a little option list with one
-                             item picked out, rather than Identify's
-                             shape grid (which this module used to reuse
-                             indirectly via its old statement-grid) -->
+                        <!-- Module 5: Apply (active) - a scenario with several candidate
+    structures, single pick; mock icon is a piece fitting into a
+    socket, standing in for "apply the structure to the problem" -->
                         <button id="module5Slot" class="bomb-cell playable-cell" type="button">
                             <span class="cell-led active"></span>
-                            <div class="cell-content mock-scenario">
-                                <span class="mock-scenario-bar mock-scenario-bar-picked"></span>
-                                <span class="mock-scenario-bar"></span>
-                                <span class="mock-scenario-bar"></span>
-                                <span class="mock-scenario-bar"></span>
+                            <div class="cell-content mock-apply">
+                                <span class="mock-apply-socket"></span>
+                                <span class="mock-apply-piece"></span>
                             </div>
                             <span class="cell-hint">Tap to defuse</span>
                         </button>
@@ -182,10 +177,10 @@
                         </div>
 
                         <!-- Module 1: Identify (active) - dispatches MC
-                             or True/False questions depending on each
-                             question's own `type`; absorbs what used to
-                             be the separate Module 1 (MC) and Module 4
-                             (True/False) slots -->
+         or True/False questions depending on each
+         question's own `type`; absorbs what used to
+         be the separate Module 1 (MC) and Module 4
+         (True/False) slots -->
                         <button id="moduleIdentifySlot" class="bomb-cell module1-cell" type="button">
                             <span class="cell-led active"></span>
                             <div class="cell-content mini-shape-grid">

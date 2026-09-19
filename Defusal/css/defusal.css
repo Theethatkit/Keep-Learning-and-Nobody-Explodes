@@ -414,27 +414,33 @@ a {
         transform: rotate(45deg);
     }
 
-/* Module 5's overview mock icon - a little option list with the top
-   item picked out, standing in for "pick the one right structure"
-   (replaces the old mini-shape-grid-6 six-shape mock from Module 5's
-   multi-select days) */
-.mock-scenario {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 5px;
+/* Module 5's overview mock icon - a small "piece" fitting into a
+   socket, standing in for "apply the right structure to the
+   problem" (replaces the old option-list mock-scenario icon, which
+   read more as generic single-select than as "apply") */
+.mock-apply {
+    position: relative;
     width: 34px;
+    height: 34px;
 }
 
-.mock-scenario-bar {
-    height: 6px;
-    background-color: #52525b;
-    border-radius: 9999px;
+.mock-apply-socket {
+    position: absolute;
+    inset: 4px;
+    border: 2px solid white;
+    border-right: none;
+    border-radius: 4px 0 0 4px;
 }
 
-.mock-scenario-bar-picked {
+.mock-apply-piece {
+    position: absolute;
+    top: 50%;
+    right: 2px;
+    width: 14px;
+    height: 14px;
     background-color: #4ade80;
     box-shadow: 0 0 6px rgba(74, 222, 128, 0.7);
+    transform: translateY(-50%) rotate(45deg);
 }
 
 /* Timer cell + the digital-alarm-clock LCD look */
