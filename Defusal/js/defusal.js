@@ -134,6 +134,18 @@ const reviewScreen = document.getElementById("reviewScreen");
 const reviewQuestionList = document.getElementById("reviewQuestionList");
 const backFromReview = document.getElementById("backFromReview");
 
+// ------------------- Achievements screen elements -------------------
+// Persistent, cross-attempt progress (unlike History, which only
+// keeps the last 5 runs) - see the "Achievements" section further
+// down for the storage/tracking logic itself.
+const achievementsScreen = document.getElementById("achievementsScreen");
+const achievementList = document.getElementById("achievementList");
+const openAchievementsButton = document.getElementById("openAchievementsButton");
+const openAchievementsButtonSetup = document.getElementById("openAchievementsButtonSetup");
+const backToOverviewFromAchievements = document.getElementById("backToOverviewFromAchievements");
+const achievementToast = document.getElementById("achievementToast");
+const achievementToastLabel = document.getElementById("achievementToastLabel");
+
 // shape order fixed to the sketch layout: circle (a), triangle (b),
 // square (c), diamond (d) - only used by Module 1's option list
 const SHAPE_BY_OPTION_ID = {
@@ -1331,6 +1343,13 @@ function commitAnswer(isCorrect, answerDetails) {
         registerStrike();
     }
 
+    // Achievements only track real (non-practice) attempts - see the
+    // "Achievements" section above for why practice mode is excluded
+    // entirely rather than just excluded from unlocking.
+    if (!armedConfig.isPracticeMode) {
+        updateAchievementStats(question, runState.moduleId, isCorrect);
+    }
+
     setTimeout(function () {
         advanceAfterAnswer();
     }, 700);
@@ -1509,6 +1528,10 @@ function finishBomb(isDefused) {
         };
         mergeTopicStats(runState.topicStats);
         mergeAnswerLog(runState.answerLog);
+    }
+
+    if (!armedConfig.isPracticeMode) {
+        updateBombLevelAchievementStats(isDefused, armedConfig.difficultyId);
     }
 
     const score = calculateOverallScore();
@@ -1877,6 +1900,268 @@ function renderTopicChart(attempts) {
         historyTopicChart.appendChild(barRow);
     });
 }
+
+// ------------------- Achievements -------------------
+// Cumulative, cross-attempt progress toward each entry in
+// ACHIEVEMENT_REGISTRY (achievements-data.js). Deliberately separate
+// from History's localStorage entry: History only keeps the most
+// recent 5 attempts (MAX_HISTORY_ENTRIES), but achievement progress
+// has to survive forever, so it gets its own key and its own
+// incremental-update model instead of being derived from History.
+//
+// Practice-mode runs never call into any of this - see the
+// `!armedConfig.isPracticeMode` guards at each call site
+// (commitAnswer() and finishBomb()) - so nothing here needs its own
+// practice-mode check.
+
+// Namespaced per logged-in user (or guest), same pattern as
+// getHistoryStorageKey().
+function getAchievementsStorageKey() {
+    const loggedInUser = JSON.parse(
+        localStorage.getItem("loggedInUser") || "null"
+    );
+
+    return loggedInUser
+        ? "bombDefusalAchievements_" + loggedInUser.username
+        : "bombDefusalAchievements_guest";
+}
+
+// The persisted shape matches the `progress` object described at the
+// top of achievements-data.js. Missing/corrupt storage just starts
+// fresh rather than throwing.
+function loadAchievementProgress() {
+    const raw = localStorage.getItem(getAchievementsStorageKey());
+    let saved = null;
+
+    try {
+        saved = raw ? JSON.parse(raw) : null;
+    } catch (e) {
+        saved = null;
+    }
+
+    return {
+        categoryStats: (saved && saved.categoryStats) || {},
+        completedQuestionKeys: (saved && saved.completedQuestionKeys) || [],
+        hasDefusedExpertBomb: !!(saved && saved.hasDefusedExpertBomb),
+        unlockedAchievementIds: (saved && saved.unlockedAchievementIds) || []
+    };
+}
+
+function saveAchievementProgress(progress) {
+    localStorage.setItem(getAchievementsStorageKey(), JSON.stringify(progress));
+}
+
+// Every question, from every module's question bank, tagged by its
+// `category` field (stack/queue/linkedList/tree/hash/graph/sorting/
+// array - see achievements-data.js's header comment). This is the
+// denominator for "complete every X question" achievements like
+// Pointer Technician and Tree Navigator - built once by walking
+// MODULE_REGISTRY rather than hand-maintained, so it stays correct
+// automatically as questions are added to any bank.
+//
+// A question's tracking key is "moduleId:questionId" rather than just
+// its own id, since ids are only guaranteed unique within a single
+// bank, not across all five.
+let questionCatalogByCategory = null;
+
+// Normalizes a question's `category` field to an array, so data files
+// can write either a single string (category: "stack") or several
+// (category: ["stack", "queue"]) for a question that genuinely spans
+// more than one structure - e.g. a Connect-the-Dots round whose pairs
+// mix a stack operation with a queue operation. Unknown/invalid
+// category names are silently dropped rather than throwing, so a typo
+// in a data file just means that tag doesn't count toward anything.
+function getQuestionCategories(question) {
+    const raw = question.category;
+    if (!raw) {
+        return [];
+    }
+
+    const list = Array.isArray(raw) ? raw : [raw];
+    return list.filter(function (category) {
+        return CATEGORY_NAMES.indexOf(category) !== -1;
+    });
+}
+
+const CATEGORY_NAMES = [
+    "stack", "queue", "linkedList", "tree", "hash", "graph", "sorting", "array"
+];
+
+function buildQuestionCatalog() {
+    const catalog = {
+        stack: [], queue: [], linkedList: [], tree: [],
+        hash: [], graph: [], sorting: [], array: []
+    };
+
+    Object.keys(MODULE_REGISTRY).forEach(function (moduleId) {
+        const bank = MODULE_REGISTRY[moduleId].questionBank;
+
+        bank.questions.forEach(function (question) {
+            const key = moduleId + ":" + question.id;
+
+            // A multi-category question (e.g. category: ["stack",
+            // "queue"]) is added to every one of its categories'
+            // catalogs, since "complete all linked-list questions"
+            // should count it whether linkedList is its only tag or
+            // one of several.
+            getQuestionCategories(question).forEach(function (category) {
+                catalog[category].push(key);
+            });
+        });
+    });
+
+    return catalog;
+}
+
+function getQuestionCatalog() {
+    if (!questionCatalogByCategory) {
+        questionCatalogByCategory = buildQuestionCatalog();
+    }
+    return questionCatalogByCategory;
+}
+
+// Called from commitAnswer() for every answered question outside
+// practice mode. Updates the running correct/total count for every
+// category the question is tagged with - a question tagged with more
+// than one category (e.g. a Connect-the-Dots round mixing a stack
+// pair and a queue pair) counts toward each of them, since answering
+// it correctly genuinely demonstrates both. On a correct answer, the
+// question is also marked completed once (a single "moduleId:id" key
+// works across every one of its categories - see buildQuestionCatalog()).
+function updateAchievementStats(question, moduleId, isCorrect) {
+    const progress = loadAchievementProgress();
+    const categories = getQuestionCategories(question);
+
+    categories.forEach(function (category) {
+        if (!progress.categoryStats[category]) {
+            progress.categoryStats[category] = { correct: 0, total: 0 };
+        }
+        progress.categoryStats[category].total += 1;
+        if (isCorrect) {
+            progress.categoryStats[category].correct += 1;
+        }
+    });
+
+    if (isCorrect && categories.length) {
+        const key = moduleId + ":" + question.id;
+        if (progress.completedQuestionKeys.indexOf(key) === -1) {
+            progress.completedQuestionKeys.push(key);
+        }
+    }
+
+    saveAchievementProgress(progress);
+    checkAchievements(progress);
+}
+
+// Called from finishBomb() outside practice mode. Only Master Defuser
+// currently depends on the bomb's overall outcome rather than a
+// per-question stat, but this is the natural place for any future
+// achievement like it (e.g. a full-bomb no-strikes run).
+function updateBombLevelAchievementStats(isDefused, difficultyId) {
+    const progress = loadAchievementProgress();
+
+    if (isDefused && difficultyId === "expert") {
+        progress.hasDefusedExpertBomb = true;
+    }
+
+    saveAchievementProgress(progress);
+    checkAchievements(progress);
+}
+
+// Runs every achievement's check() against the current progress
+// snapshot, saves any newly-crossed unlocks, and pops a toast for
+// each one - so an achievement is only ever announced once, the
+// moment it first becomes true, not every time this function re-runs.
+function checkAchievements(progress) {
+    const catalog = getQuestionCatalog();
+    let didUnlockSomething = false;
+
+    Object.keys(ACHIEVEMENT_REGISTRY).forEach(function (achievementId) {
+        if (progress.unlockedAchievementIds.indexOf(achievementId) !== -1) {
+            return; // already unlocked previously
+        }
+
+        const achievement = ACHIEVEMENT_REGISTRY[achievementId];
+        if (achievement.check(progress, catalog)) {
+            progress.unlockedAchievementIds.push(achievementId);
+            didUnlockSomething = true;
+            showAchievementToast(achievement);
+        }
+    });
+
+    if (didUnlockSomething) {
+        saveAchievementProgress(progress);
+    }
+}
+
+// Brief on-screen banner when an achievement unlocks mid-run, reusing
+// the same pulsing-green "cell-hint" visual language as the bomb
+// overview's "Tap to defuse" labels. Auto-hides itself; a second
+// unlock arriving while one is still showing just restarts the timer
+// with the new label rather than queuing a stack of banners.
+let achievementToastTimeoutId = null;
+
+function showAchievementToast(achievement) {
+    achievementToastLabel.textContent = "Achievement unlocked: " + achievement.label;
+    achievementToast.classList.remove("hidden");
+    achievementToast.classList.remove("achievement-toast-visible");
+    void achievementToast.offsetWidth; // restart the CSS transition
+    achievementToast.classList.add("achievement-toast-visible");
+
+    SFX.playModuleSolved();
+
+    if (achievementToastTimeoutId) {
+        clearTimeout(achievementToastTimeoutId);
+    }
+    achievementToastTimeoutId = setTimeout(function () {
+        achievementToast.classList.remove("achievement-toast-visible");
+    }, 3200);
+}
+
+// Builds one row per registered achievement: unlocked ones show a
+// green "Unlocked" state, locked ones show their progress text (e.g.
+// "7 / 10 attempted") from the achievement's own getProgressText().
+function renderAchievementsScreen() {
+    const progress = loadAchievementProgress();
+    const catalog = getQuestionCatalog();
+
+    achievementList.innerHTML = "";
+
+    Object.keys(ACHIEVEMENT_REGISTRY).forEach(function (achievementId) {
+        const achievement = ACHIEVEMENT_REGISTRY[achievementId];
+        const isUnlocked = progress.unlockedAchievementIds.indexOf(achievementId) !== -1;
+
+        const card = document.createElement("div");
+        card.className = "achievement-card" + (isUnlocked ? " achievement-unlocked" : " achievement-locked");
+
+        const statusText = isUnlocked
+            ? "Unlocked"
+            : achievement.getProgressText(progress, catalog);
+
+        card.innerHTML =
+            '<p class="achievement-card-label">' + achievement.label + "</p>" +
+            '<p class="achievement-card-description">' + achievement.description + "</p>" +
+            '<p class="achievement-card-status">' + statusText + "</p>";
+
+        achievementList.appendChild(card);
+    });
+}
+
+openAchievementsButton.addEventListener("click", function () {
+    renderAchievementsScreen();
+    showScreen(achievementsScreen);
+});
+
+openAchievementsButtonSetup.addEventListener("click", function () {
+    renderAchievementsScreen();
+    showScreen(achievementsScreen);
+});
+
+backToOverviewFromAchievements.addEventListener("click", function () {
+    // Same rule as History's back button - no bomb armed yet (came
+    // here from the setup screen) goes back there instead.
+    showScreen(armedConfig ? overviewScreen : setupScreen);
+});
 
 // ------------------- Review screen (answer explanations) -------------------
 // answerLog is an array of { moduleLabel, topic, prompt, isCorrect,

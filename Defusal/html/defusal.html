@@ -82,6 +82,10 @@
                 View Past Attempts &rarr;
             </button>
 
+            <button id="openAchievementsButtonSetup" class="back-link" type="button">
+                View Achievements &rarr;
+            </button>
+
         </section>
 
         <!-- ===================== OVERVIEW SCREEN ===================== -->
@@ -100,6 +104,10 @@
 
             <button id="openHistoryButton" class="back-link" type="button">
                 View Past Attempts &rarr;
+            </button>
+
+            <button id="openAchievementsButton" class="back-link" type="button">
+                View Achievements &rarr;
             </button>
 
             <div class="bomb-casing">
@@ -768,6 +776,28 @@
 
         </section>
 
+        <!-- ===================== ACHIEVEMENTS SCREEN ===================== -->
+        <!-- Persistent, cross-attempt progress - unlike the History
+             screen (which only keeps the last 5 saved runs), this
+             reflects every non-practice question ever answered. See
+             the "Achievements" section in defusal.js. -->
+        <section id="achievementsScreen" class="screen result-screen hidden">
+
+            <button id="backToOverviewFromAchievements" class="back-link" type="button">
+                &larr; Back to Bomb Overview
+            </button>
+
+            <p class="eyebrow">DEFUSAL LOG</p>
+            <h1 class="page-title">Achievements</h1>
+            <p class="intro-text">
+                Earned across every timed attempt - practice mode
+                doesn't count toward these.
+            </p>
+
+            <div id="achievementList" class="achievement-list"></div>
+
+        </section>
+
         <!-- ===================== REVIEW SCREEN ===================== -->
         <!-- Every question from one run (just-finished or a saved past
              attempt), shown with the player's answer, the correct
@@ -795,6 +825,15 @@
 
     </main>
 
+    <!-- Achievement-unlock toast - lives outside any one .screen so it
+         can float above whichever screen happens to be active when an
+         achievement unlocks mid-run. Hidden/shown and auto-dismissed
+         by showAchievementToast() in defusal.js. -->
+    <div id="achievementToast" class="achievement-toast hidden">
+        <span class="achievement-toast-icon">&#9733;</span>
+        <span id="achievementToastLabel" class="achievement-toast-label"></span>
+    </div>
+
     <!-- identify-questions.js supplies IDENTIFY_QUESTION_BANK, built
          with the { type: "mc" | "trueFalse" } schema Module 1
          dispatches on (see createIdentifyStyleModule in defusal.js).
@@ -820,6 +859,7 @@
     <script src="../data/module2-questions.js"></script>
     <script src="../data/module3-questions.js"></script>
     <script src="../data/module5-questions.js"></script>
+    <script src="../data/achievements-data.js"></script>
     <script src="../js/sound-effects.js"></script>
     <script src="../js/defusal.js"></script>
 

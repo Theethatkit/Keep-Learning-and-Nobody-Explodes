@@ -65,6 +65,7 @@ const IDENTIFY_QUESTION_BANK = {
         // ---- easy ----
         {
             topic: "Stacks",
+            category: "stack",
             difficulty: "easy",
             type: "mc",
             prompt: "Which data structure follows LIFO (Last In, First Out)?",
@@ -74,10 +75,12 @@ const IDENTIFY_QUESTION_BANK = {
                 { id: "c", text: "Linked List", shape: "square" },
                 { id: "d", text: "Binary Tree", shape: "diamond" }
             ],
-            correctOptionId: "b"
+            correctOptionId: "b",
+            explanation: "A Stack follows Last In, First Out (LIFO) order, meaning the last element added is the first one to be removed."
         },
         {
             topic: "Queues",
+            category: "queue",
             difficulty: "easy",
             type: "trueFalse",
             prompt: "A queue follows FIFO (First In, First Out).",
@@ -85,6 +88,7 @@ const IDENTIFY_QUESTION_BANK = {
         },
         {
             topic: "Linked Lists",
+            category: "linkedList",
             difficulty: "easy",
             type: "trueFalse",
             prompt: "A singly linked list node stores a pointer to the previous node.",
@@ -94,6 +98,7 @@ const IDENTIFY_QUESTION_BANK = {
         // ---- intermediate ----
         {
             topic: "Trees",
+            category: "tree",
             difficulty: "intermediate",
             type: "mc",
             prompt: "Which structure is best suited for representing hierarchical, parent-child relationships?",
@@ -107,6 +112,7 @@ const IDENTIFY_QUESTION_BANK = {
         },
         {
             topic: "Hash Tables",
+            category: "hash",
             difficulty: "intermediate",
             type: "trueFalse",
             prompt: "A hash table can have two different keys map to the same bucket (a collision).",
@@ -116,6 +122,7 @@ const IDENTIFY_QUESTION_BANK = {
         // ---- hard ----
         {
             topic: "Graphs",
+            category: "graph",
             difficulty: "hard",
             type: "mc",
             prompt: "Which structure naturally represents a network of cities connected by roads, where a road can be one-way?",
@@ -131,6 +138,7 @@ const IDENTIFY_QUESTION_BANK = {
         // ---- expert ----
         {
             topic: "Heaps",
+            category: "heap",
             difficulty: "expert",
             type: "trueFalse",
             prompt: "In a min-heap, the smallest element is always guaranteed to be the leftmost leaf.",

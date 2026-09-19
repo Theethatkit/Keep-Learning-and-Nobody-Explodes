@@ -85,6 +85,7 @@ const MODULE3_QUESTION_BANK = {
         {
             difficulty: "easy",
             topic: "Stacks & Queues",
+            category: ["stack", "queue"],
             prompt: "Trace each operation and connect it to its correct resulting state.",
             pairs: [
                 { id: "p1", term: "Stack (top->bottom): 10. Operation: PUSH 20.", definition: "Result (top->bottom): 20, 10" },
@@ -95,6 +96,7 @@ const MODULE3_QUESTION_BANK = {
         {
             difficulty: "easy",
             topic: "Queues & Stacks",
+            category: ["queue", "stack"],
             prompt: "Trace each operation and connect it to its correct resulting state.",
             pairs: [
                 { id: "p1", term: "Queue (front->back): A, B, C. Operation: DEQUEUE.", definition: "Result (front->back): B, C" },
@@ -105,6 +107,7 @@ const MODULE3_QUESTION_BANK = {
         {
             difficulty: "easy",
             topic: "Linked Lists",
+            category: "linkedList",
             prompt: "Trace each operation and connect it to its correct resulting state.",
             pairs: [
                 { id: "p1", term: "List: 10 -> 20 -> NULL. Operation: Insert 30 at the end.", definition: "Result: 10 -> 20 -> 30 -> NULL" },
@@ -115,6 +118,7 @@ const MODULE3_QUESTION_BANK = {
         {
             difficulty: "easy",
             topic: "Arrays & Queues",
+            category: ["array", "queue"],
             prompt: "Trace each operation and connect it to its correct resulting state.",
             pairs: [
                 { id: "p1", term: "Array: [1, 2, 3]. Operation: Append 4.", definition: "Result: [1, 2, 3, 4]" },
@@ -125,6 +129,7 @@ const MODULE3_QUESTION_BANK = {
         {
             difficulty: "easy",
             topic: "Stacks & Lists",
+            category: ["stack", "linkedList"],
             prompt: "Trace each operation and connect it to its correct resulting state.",
             pairs: [
                 { id: "p1", term: "Stack (top->bottom): 6, 3. Operations: POP, then PUSH 9.", definition: "Result (top->bottom): 9, 3" },
@@ -138,6 +143,7 @@ const MODULE3_QUESTION_BANK = {
         {
             difficulty: "intermediate",
             topic: "Stacks & Queues",
+            category: ["stack", "queue"],
             prompt: "Trace each operation sequence and connect it to its correct resulting state.",
             pairs: [
                 { id: "p1", term: "Stack (top->bottom): 10, 20, 30. Operations: POP, PUSH 50, POP.", definition: "Result (top->bottom): 20, 30" },
@@ -149,6 +155,7 @@ const MODULE3_QUESTION_BANK = {
         {
             difficulty: "intermediate",
             topic: "Linked Lists",
+            category: "linkedList",
             prompt: "Trace each operation sequence and connect it to its correct resulting state.",
             pairs: [
                 { id: "p1", term: "List: 10 -> 20 -> 30 -> NULL. Operation: Delete the node with value 20.", definition: "Result: 10 -> 30 -> NULL" },
@@ -160,6 +167,7 @@ const MODULE3_QUESTION_BANK = {
         {
             difficulty: "intermediate",
             topic: "Arrays",
+            category: "array",
             prompt: "Trace each operation sequence and connect it to its correct resulting state.",
             pairs: [
                 { id: "p1", term: "Array: [8, 3, 5, 1]. Operation: One bubble-sort pass (adjacent swaps, left to right).", definition: "Result: [3, 5, 1, 8]" },
@@ -174,6 +182,7 @@ const MODULE3_QUESTION_BANK = {
         {
             difficulty: "hard",
             topic: "Linked Lists & Trees",
+            category: ["linkedList", "tree"],
             prompt: "Trace each operation sequence and connect it to its correct resulting state.",
             pairs: [
                 { id: "p1", term: "List: 10 -> 20 -> 30 -> 40 -> NULL. Operations: Delete 20, then insert 25 after 30.", definition: "Result: 10 -> 30 -> 25 -> 40 -> NULL" },
@@ -185,6 +194,7 @@ const MODULE3_QUESTION_BANK = {
         {
             difficulty: "hard",
             topic: "Trees & Queues",
+            category: ["tree", "queue"],
             prompt: "Trace each operation sequence and connect it to its correct resulting state.",
             pairs: [
                 { id: "p1", term: "BST insert order: 50, 30, 70, 20, 40. Operation: In-order traversal.", definition: "Result: 20, 30, 40, 50, 70" },
@@ -196,6 +206,7 @@ const MODULE3_QUESTION_BANK = {
         {
             difficulty: "hard",
             topic: "Graphs & Lists",
+            category: ["graph", "linkedList"],
             prompt: "Trace each operation sequence and connect it to its correct resulting state.",
             pairs: [
                 { id: "p1", term: "Graph edges: A-B, A-C, B-D, C-D. Operation: BFS starting at A (visit neighbors alphabetically).", definition: "Visit order: A, B, C, D" },
@@ -210,6 +221,7 @@ const MODULE3_QUESTION_BANK = {
         {
             difficulty: "expert",
             topic: "Sorting & Graphs",
+            category: ["array", "graph"],
             prompt: "Trace each operation sequence and connect it to its correct resulting state.",
             pairs: [
                 { id: "p1", term: "Array: [5, 2, 9, 1, 5, 6]. Operation: First TWO passes of bubble sort (adjacent swaps, left to right).", definition: "Result: [2, 1, 5, 5, 6, 9]" },
@@ -221,6 +233,7 @@ const MODULE3_QUESTION_BANK = {
         {
             difficulty: "expert",
             topic: "Queues & Lists",
+            category: ["queue", "linkedList"],
             prompt: "Trace each operation sequence and connect it to its correct resulting state.",
             pairs: [
                 { id: "p1", term: "A queue is built from two stacks. Stack A (top->bottom): 4, 3, 2, 1. All elements are moved onto stack B, then DEQUEUE is called three times.", definition: "Dequeued values, in order: 1, 2, then 3" },
@@ -232,6 +245,7 @@ const MODULE3_QUESTION_BANK = {
         {
             difficulty: "expert",
             topic: "Trees & Sorting",
+            category: ["tree", "array"],
             prompt: "Trace each operation sequence and connect it to its correct resulting state.",
             pairs: [
                 { id: "p1", term: "BST insert order: 8, 3, 10, 1, 6, 14, 4, 7, 13. Operation: In-order traversal.", definition: "Result: 1, 3, 4, 6, 7, 8, 10, 13, 14" },

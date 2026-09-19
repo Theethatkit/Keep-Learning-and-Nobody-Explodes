@@ -75,30 +75,35 @@ const MODULE2_QUESTION_BANK = {
         {
             difficulty: "easy",
             topic: "Stacks",
+            category: "stack",
             prompt: "Stack (top to bottom): 30, 20, 10. You need to remove the top element. What operation do you perform?",
             answer: "POP"
         },
         {
             difficulty: "easy",
             topic: "Queues",
+            category: "queue",
             prompt: "Queue (front to back): A, B, C. You need to remove the element at the front. What operation do you perform?",
             answer: "DEQUEUE"
         },
         {
             difficulty: "easy",
             topic: "Stacks",
+            category: "stack",
             prompt: "You want to add a new element to the top of a stack. What operation do you perform?",
             answer: "PUSH"
         },
         {
             difficulty: "easy",
             topic: "Queues",
+            category: "queue",
             prompt: "You want to add a new element to the back of a queue. What operation do you perform?",
             answer: "ENQUEUE"
         },
         {
             difficulty: "easy",
             topic: "Arrays",
+            category: "array",
             prompt: "You want to add a new element to the end of an array. What operation do you perform?",
             answer: "APPEND"
         },
@@ -108,30 +113,35 @@ const MODULE2_QUESTION_BANK = {
         {
             difficulty: "intermediate",
             topic: "Stacks",
+            category: "stack",
             prompt: "You want to see the top element of a stack WITHOUT removing it. What operation do you perform?",
             answer: "PEEK"
         },
         {
             difficulty: "intermediate",
             topic: "Linked Lists",
+            category: "linkedList",
             prompt: "You want to add a new node at the very beginning of a linked list. What operation do you perform?",
             answer: "PREPEND"
         },
         {
             difficulty: "intermediate",
             topic: "Linked Lists",
+            category: "linkedList",
             prompt: "You want to remove the very first node of a linked list. What operation do you perform?",
             answer: "REMOVE HEAD"
         },
         {
             difficulty: "intermediate",
             topic: "Queues",
+            category: "queue",
             prompt: "You want to check the value at the front of a queue WITHOUT removing it. What operation do you perform?",
             answer: "PEEK"
         },
         {
             difficulty: "intermediate",
             topic: "Trees",
+            category: "tree",
             prompt: "You want to visit a node, then its left subtree, then its right subtree. What traversal do you perform?",
             answer: "PREORDER"
         },
@@ -141,30 +151,35 @@ const MODULE2_QUESTION_BANK = {
         {
             difficulty: "hard",
             topic: "Trees",
+            category: "tree",
             prompt: "You want to visit the left subtree, then the node itself, then the right subtree. What traversal do you perform?",
             answer: "INORDER"
         },
         {
             difficulty: "hard",
             topic: "Trees",
+            category: "tree",
             prompt: "You want to visit the left subtree, then the right subtree, then the node itself. What traversal do you perform?",
             answer: "POSTORDER"
         },
         {
             difficulty: "hard",
             topic: "Graphs",
+            category: "graph",
             prompt: "You want to explore a graph level by level, visiting all neighbors before going deeper. What traversal do you perform (acronym)?",
             answer: "BFS"
         },
         {
             difficulty: "hard",
             topic: "Graphs",
+            category: "graph",
             prompt: "You want to explore a graph by going as deep as possible along a branch before backtracking. What traversal do you perform (acronym)?",
             answer: "DFS"
         },
         {
             difficulty: "hard",
             topic: "Hash Tables",
+            category: "hash",
             prompt: "Two keys hash to the same bucket. What technique resolves this by storing every entry that lands there in a list at that bucket?",
             answer: "CHAINING"
         },
@@ -174,24 +189,28 @@ const MODULE2_QUESTION_BANK = {
         {
             difficulty: "expert",
             topic: "Hash Tables",
+            category: "hash",
             prompt: "A hash table has grown too full and needs a larger underlying array with every element reinserted. What operation do you perform?",
             answer: "REHASHING"
         },
         {
             difficulty: "expert",
             topic: "Trees",
+            category: "tree",
             prompt: "You just removed the root of a max-heap and moved the last element there. It now violates the heap property, so it must be moved downward until the property holds again. What operation do you perform?",
             answer: "SIFT DOWN"
         },
         {
             difficulty: "expert",
             topic: "Trees",
+            category: "tree",
             prompt: "An AVL node's left subtree is taller than its right subtree by more than one after an insertion that went left, then left again (a left-left case). What single operation restores balance?",
             answer: "RIGHT ROTATION"
         },
         {
             difficulty: "expert",
             topic: "Arrays",
+            category: "array",
             prompt: "An array-backed dynamic list is completely full and needs more capacity before the next append can happen. What operation do you perform first?",
             answer: "RESIZE"
         }
