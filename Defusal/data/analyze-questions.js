@@ -109,6 +109,34 @@ const ANALYZE_QUESTION_BANK = {
             answer: "20",
             explanation: "The array is initialized with values [5, 10, 15]. The second element (index 1) is then updated to 20, so arr[1] is now 20."
         },
+        {
+            topic: "Stacks",
+            category: "stack",
+            difficulty: "easy",
+            operations: ["push(10)", "push(20)", "push(30)", "pop()", "push(40)"],
+            prompt: "What value is currently at the TOP of the stack?",
+            answer: "40",
+            explanation: "Since a stack follows LIFO (Last In, First Out), the most recently added item sits at the top, leaving 40 at the TOP."
+        },
+        {
+            topic: "Queues",
+            category: "queue",
+            difficulty: "easy",
+            operations: ["enqueue(5)", "enqueue(15)", "enqueue(25)", "dequeue()", "peek()"],
+            prompt: "What value is returned by peek()?",
+            answer: "15",
+            explanation: "the peek() operation returns the value at the front of the queue without removing it. After dequeuing 5, the front of the queue is now 15, so peek() returns 15.",
+
+        },
+        {
+            topic: "Arrays",
+            category: "array",
+            difficulty: "easy",
+            operations: ["arr = [4, 8, 15, 16]", "update arr[2] = 99", "access arr[2]"],
+            prompt: "What value is returned?",
+            answer: "99",
+            explanation: "The array is initialized with values [4, 8, 15, 16]. The third element (index 2) is updated to 99. Accessing arr[2] returns the updated value, which is 99."
+        },
 
         // -------------------------- intermediate --------------------------
         {
@@ -165,6 +193,37 @@ const ANALYZE_QUESTION_BANK = {
             answer: "B",
             explanation: "The queue operations result in the following sequence: enqueue A, enqueue B, dequeue (removes A), enqueue C, enqueue D, dequeue (removes B). The final value returned is B."
         },
+        {
+            topic: "Queues & Stacks",
+            category: ["queue", "stack"],
+            difficulty: "intermediate",
+            operations: ["Queue Q = [A, B, C] (front -> back)", "Stack S = []", "S.push(Q.dequeue())", "S.push(Q.dequeue())", "Q.enqueue(S.pop())"],
+            prompt: "What item is now at the BACK of Queue Q?",
+            answer: "B",
+            explanation: "The queue starts as [A, B, C]. The first dequeue removes A and pushes it onto the stack S. The second dequeue removes B and pushes it onto S. Then popping from S returns B, which is enqueued back to Q. The final state of Q is [C, B], so the BACK of Q is now B."
+
+        },
+        {
+            topic: "Arrays",
+            category: "array",
+            difficulty: "intermediate",
+            operations: ["arr[A] = [10,20,30,40]", "delete element at index 1 (requires left shift)", "insert 99 at index 1"],
+            prompt: "What value is stored at index 2?",
+            answer: "30",
+            explanation: "The array starts as [10, 20, 30, 40]. Deleting the element at index 1 (20) shifts the elements left, resulting in [10, 30, 40]. Inserting 99 at index 1 results in [10, 99, 30, 40]. The value at index 2 is now 30."
+
+        },
+        {
+            topic: "Linked Lists",
+            category: "linkedList",
+            difficulty: "intermediate",
+            operations: ["list: Head -> 5 -> 12 -> 8 -> NULL", "Delete front (head) node", "Insert 42 at front"],
+            prompt: "What value does Head.next.value evaluate to?",
+            answer: "5",
+            explanation: "The linked list starts as Head -> 5 -> 12 -> 8 -> NULL. Deleting the front node (5) results in Head -> 12 -> 8 -> NULL. Inserting 42 at the front results in Head -> 42 -> 12 -> 8 -> NULL. Therefore, Head.next.value evaluates to 12."
+
+        },
+
 
         // ------------------------------ hard ------------------------------
         {
@@ -229,6 +288,33 @@ const ANALYZE_QUESTION_BANK = {
             prompt: "What is the final value returned?",
             answer: "A",
             explanation: "The stack operations result in the following sequence: push A, push B, pop (removes B), push C, push D, pop (removes D), pop (removes C). The final value returned is A."
+        },
+        {
+            topic: "Linked Lists",
+            category: "linkedList",
+            difficulty: "hard",
+            operations: ["Circular linked list (Tail pointer tracks last node [30] which points to Head [10]): Initial State: [10] -> [20] -> [30] -> (back to 10))", "insert front (5)", "delete back()"],
+            prompt: "What value does Tail.value equal now?",
+            answer: "20",
+            explanation: "The circular linked list starts as [10] -> [20] -> [30] -> (back to 10). Inserting 5 at the front results in [5] -> [10] -> [20] -> [30] -> (back to 5). Deleting the back node (30) results in [5] -> [10] -> [20] -> (back to 5). The Tail pointer now points to the last node, which has the value 20."
+        },
+        {
+            topic: "Stacks & Queues",
+            category: ["stack", "queue"],
+            difficulty: "hard",
+            operations: ["Stack S: push(1), push(2), push(3)", "Queue Q: enqueue(S.pop())", "Queue Q: enqueue(S.pop())", "Stack S: push(10) 5. X = Q.dequeue() + S.pop()"],
+            prompt: "What is the numeric value of X?",
+            answer: "12",
+            explanation: "The stack S starts with 1, 2, 3. Popping twice gives 3 and 2, which are enqueued into Q. The stack S now has 1. Pushing 10 onto S makes it [1, 10]. Dequeuing from Q gives 3 (the first element), and popping from S gives 10. Therefore, X = 3 + 10 = 13."
+        },
+        {
+            topic: "Linked Lists",
+            category: "linkedList",
+            difficulty: "hard",
+            operations: ["Head -> [A] <-> [B] <-> [C] <- Tail", "Delete Node B (given direct reference to B)", "Insert Node X after A"], 
+            prompt: "Starting from Head to Tail, what is the exact 3-letter node sequence? (Format: XYZ)",
+            answer: "AXC",
+            explanation: "The doubly linked list starts as A <-> B <-> C. Deleting node B results in A <-> C. Inserting node X after A results in A <-> X <-> C. The sequence from Head to Tail is now A, X, C."
         },
 
         // ----------------------------- expert -----------------------------
@@ -304,6 +390,26 @@ const ANALYZE_QUESTION_BANK = {
             prompt: "What is the value of the last node?",
             answer: "V",
             explanation: "The linked list starts as X -> Y -> Z. Inserting W after X results in X -> W -> Y -> Z. Deleting Z results in X -> W -> Y. Inserting V after W results in X -> W -> V -> Y. The last node's value is now V."
+        },
+        {
+            topic: "multi data structures",
+            category: ["stack", "queue", "arrays"],
+            difficulty: "expert",
+            operations: ["Array A = [2, 4, 6]", "Stack S = []", "Queue Q = []", "Push A[0] and A[2] onto Stack S", "Pop top of Stack S and Enqueue it into Queue Q", "Enqueue (A[1] + S.pop()) into Queue Q"],
+            prompt: "What is the final value at the FRONT of Queue Q?",
+            answer: "6",
+            explanation: "The array A is [2, 4, 6]. Pushing A[0] (2) and A[2] (6) onto Stack S results in S = [2, 6]. Popping the top of Stack S (6) and enqueuing it into Queue Q results in Q = [6]. Popping the next top of Stack S (2) and adding it to A[1] (4) gives 4 + 2 = 6, which is enqueued into Queue Q. The final state of Queue Q is [6, 6], so the FRONT of Queue Q is now 6."
+        },
+        {
+            topic: "Linked Lists",
+            category: "linkedList",
+            difficulty: "expert",
+            operations: ["Head -> [10] -> [20] -> [30] -> [40] -> NULL", "Target = Head.next (Node 20)", "Target.next = Target.next.next (bypassing Node 30)", "Head = Head.next"],
+            prompt: "What value does Head.next.value evaluate to now?",
+            answer: "30",
+            explanation: "The linked list starts as Head -> [10] -> [20] -> [30] -> [40] -> NULL. Target is set to Node 20. Bypassing Node 30 results in the list: Head -> [10] -> [20] -> [40] -> NULL. Moving Head to Head.next makes Head point to Node 20. Therefore, Head.next.value now evaluates to 40."
         }
     ]
 };
+        
+    

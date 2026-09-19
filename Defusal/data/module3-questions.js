@@ -137,6 +137,17 @@ const MODULE3_QUESTION_BANK = {
                 { id: "p3", term: "List: 1 -> 2 -> NULL. Operation: Insert 0 at the head.", definition: "Result: 0 -> 1 -> 2 -> NULL" }
             ]
         },
+        {
+            difficulty: "easy",
+            topic: "Queues & Stacks",
+            category: ["queue", "stack"],
+            prompt: "Match each single operation to its resulting state shift:",
+            pairs:[
+                { id: "p1", term: "Queue (front->back): A, B, C. Operation: DEQUEUE.", definition: "Result (front->back): B, C" },
+                { id: "p2", term: "Stack (top->bottom): A, B. Operation: PUSH C", definition: "Result (top->bottom): Result (top->bottom): C, A, B "},
+                { id: "p3", term: "Queue (front->back): A, B. Operation: ENQUEUE C.", definition: "Result (front->back): A, B, C" }
+            ]
+        },
 
         // ------------------------- INTERMEDIATE -------------------------
         // Multiple chained operations per pair.
@@ -176,8 +187,18 @@ const MODULE3_QUESTION_BANK = {
                 { id: "p4", term: "Queue (front->back): 1, 2, 3. Operations: ENQUEUE 4, then DEQUEUE.", definition: "Result (front->back): 2, 3, 4" }
             ]
         },
+        {
+            difficulty: "intermediate",
+            topic: "Linked Lists",
+            category: "linkedList",
+            prompt: "Match each operation with its time complexity according to the learning material:",
+            pairs: [
+                { id: "p1", term: "Singly Linked List: Access element at index 5", definition: "O(1)" },
+                { id: "p2", term: "Doubly Linked List: Insert an arbitrary node", definition: "O(n)" },
+                { id: "p3", term: "Circular Linked List: Insert at back (tail stored)", definition: "O(1)" },
+            ]
+        },
 
-        // ----------------------------- HARD -----------------------------
         // Structural changes on lists, plus trees and graphs introduced.
         {
             difficulty: "hard",
@@ -213,6 +234,17 @@ const MODULE3_QUESTION_BANK = {
                 { id: "p2", term: "List: 10 -> 20 -> 30 -> NULL. Operation: Delete the tail node.", definition: "Result: 10 -> 20 -> NULL" },
                 { id: "p3", term: "Stack (top->bottom): empty. Operations: PUSH 1, PUSH 2, PUSH 3, POP, POP.", definition: "Result (top->bottom): 1" },
                 { id: "p4", term: "Array: [3, 6, 1, 8, 2, 4]. Operations: Sort ascending, then remove the first element.", definition: "Result: [2, 3, 4, 6, 8]" }
+            ]
+        },
+        {
+            difficulty: "hard",
+            topic: "Linked Lists & Queues",
+            category: ["linkedList", "queue"],
+            prompt: "Match the data structure setup to its specific operation bottleneck:",
+            pairs: [
+                { id: "p1", term: "Array Queue: Front at Index 0", definition: "Dequeue requires O(n) element shifting"},
+                { id: "p2", term: "Singly Linked List Queue: Enqueue at Head, Dequeue at Tail", definition: "Dequeue requires O(n) traversal to find previous node"},
+                { id: "p3", term: "Static Array Stack", definition: "Risk of Stack Overflow when full" }
             ]
         },
 
@@ -252,6 +284,17 @@ const MODULE3_QUESTION_BANK = {
                 { id: "p2", term: "Array: [9, 7, 5, 3, 1]. Operation: First pass of insertion sort (i = 1 only).", definition: "Result: [7, 9, 5, 3, 1]" },
                 { id: "p3", term: "Graph edges: A-B, A-C, B-D, C-D. Operation: BFS starting at A (visit neighbors alphabetically).", definition: "Visit order: A, B, C, D" },
                 { id: "p4", term: "List: 1 -> 2 -> 3 -> 4 -> NULL. Operation: Reverse the list.", definition: "Result: 4 -> 3 -> 2 -> 1 -> NULL" }
+            ]
+        },
+        {
+            difficulty: "expert",
+            topic: "All linear Data Structures",
+            category: ["stack", "queue", "linkedList", "array"],
+            prompt: "Match the memory layout characteristic to its linear data structure:",
+            pairs: [
+                { id: "p1", term: "Contiguous memory blocks with fast CPU cache performance", definition: "Array" },
+                { id: "p2", term: "Non-contiguous memory; nodes connected via single forward pointers", definition: "Linked List" },
+                { id: "p3", term: "Non-contiguous memory; highest per-node memory overhead due to two pointers", definition: "Doubly Linked List" },
             ]
         }
     ]

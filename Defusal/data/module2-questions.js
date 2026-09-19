@@ -107,6 +107,20 @@ const MODULE2_QUESTION_BANK = {
             prompt: "You want to add a new element to the end of an array. What operation do you perform?",
             answer: "APPEND"
         },
+        {
+            difficulty: "easy",
+            topic: "Linked Lists",
+            category: "linkedList",
+            prompt: "In a singly linked list, the pointer that references the very first node in the list is called the ______ pointer.",
+            answer: "HEAD"
+        },
+        {
+            difficulty: "easy",
+            topic: "Arrays",
+            category: "array",
+            prompt: "You need to retrieve the element stored at position arr[3]. What operation allows you to read this directly in O(1) time?",
+            answer: "INDEXING"
+        },
 
         // ------------------------- INTERMEDIATE -------------------------
         // Slightly less common operations - still one or two words.
@@ -144,6 +158,20 @@ const MODULE2_QUESTION_BANK = {
             category: "tree",
             prompt: "You want to visit a node, then its left subtree, then its right subtree. What traversal do you perform?",
             answer: "PREORDER"
+        },
+        {
+            difficulty: "intermediate",
+            topic: "Queues",
+            category: "queue",
+            prompt: "In a Circular Singly Linked List queue implementation, storing a pointer to the ______ node allows constant time O(1) access to both the front and back of the queue.",
+            answer: "TAIL"
+        },
+        {
+            difficulty: "intermediate",
+            topic: "Arrays",
+            category: "array",
+            prompt: "Removing an element from index 0 of a size-n array requires a time complexity of O(__) due to shifting elements left.",
+            answer: "N"
         },
 
         // ----------------------------- HARD -----------------------------
@@ -183,6 +211,21 @@ const MODULE2_QUESTION_BANK = {
             prompt: "Two keys hash to the same bucket. What technique resolves this by storing every entry that lands there in a list at that bucket?",
             answer: "CHAINING"
         },
+        {
+            difficulty: "hard",
+            topic: "Stacks",
+            category: "stack",
+            prompt: "Text editors implement Undo/Redo functionality. The primary operation that captures your most recent keystroke by pushing it onto the history stack occurs in O(__) time.",
+            answer: "1"
+        },
+        {
+            difficulty: "hard",
+            topic: "Queues",
+            category: "queue",
+            prompt: "If a queue is implemented using an array with Front = end and Back = beginning, which queue operation becomes inefficient at O(n) complexity?",
+            answer: "DEQUEUE"
+        },
+
 
         // ---------------------------- EXPERT ----------------------------
         // Less common operations, still unambiguous canonical names.
@@ -213,6 +256,27 @@ const MODULE2_QUESTION_BANK = {
             category: "array",
             prompt: "An array-backed dynamic list is completely full and needs more capacity before the next append can happen. What operation do you perform first?",
             answer: "RESIZE"
+        },
+        {
+            difficulty: "expert",
+            topic: "Linked Lists",
+            category: "linkedList",
+            prompt: "What pointer reference must be updated first when inserting a new node N between Node A and Node B in a singly linked list to prevent permanently losing the rest of the list?",
+            answer: "N.next"
+        },
+        {
+            difficulty: "expert",
+            topic: "Queues",
+            category: "queue",
+            prompt: "To implement an efficient O(1) Queue using a Singly Linked List, Dequeue MUST take place at the ______ pointer of the list.",
+            answer: "HEAD"
+        },
+        {
+            difficulty: "expert",
+            topic: "Stacks",
+            category: "stack",
+            prompt: "When a function calls another function, local variables and return addresses are pushed onto the system's runtime ______ stack.",
+            answer: "CALL"
         }
     ]
 };
