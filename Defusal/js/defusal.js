@@ -84,6 +84,7 @@ const analyzeAnswerDisplay = document.getElementById("analyzeAnswerDisplay");
 // ------------------- Module 3 (Connect the Dots) elements -------------------
 const module3QuestionTopic = document.getElementById("module3QuestionTopic");
 const module3QuestionPrompt = document.getElementById("module3QuestionPrompt");
+const module3InitialStateDisplay = document.getElementById("module3InitialStateDisplay");
 const module3ConnectBoard = document.getElementById("module3ConnectBoard");
 const module3TermsColumn = document.getElementById("module3TermsColumn");
 const module3DefinitionsColumn = document.getElementById("module3DefinitionsColumn");
@@ -291,8 +292,8 @@ const MODULE_REGISTRY = {
         resetInputs: resetFillBlankInputs
     },
     module3: {
-        moduleName: "module3-connectTheDots",
-        label: "Module 3: Connect the Dots",
+        moduleName: "module3-trace",
+        label: "Module 3: Trace",
         slot: document.getElementById("module3Slot"),
         screen: document.getElementById("module3GameScreen"),
         bombShell: document.getElementById("module3BombShell"),
@@ -762,9 +763,39 @@ function renderAnalyzeAnswerDisplay() {
 let module3Pairings = {};
 let module3ActiveTermId = null;
 
+// Module 3's question data (module3-questions.js) no longer supplies
+// ready-made {term, definition} pairs directly - it supplies a single
+// starting state (question.initialState) plus an ORDERED chain of
+// operations/states (question.operations / question.states, same
+// length, index-aligned: states[i] is the result after operations[i]
+// is applied to whatever state came before it). That's what makes
+// this a real trace rather than independent trivia: states[2] can
+// only be figured out by having already traced through states[0] and
+// states[1] in your head, even though the board only asks you to
+// place states[2] in its own slot.
+//
+// Rather than rewriting the whole matching engine for that, this
+// derives the same {id, term, definition} pairs the old engine
+// always expected - term is the fixed, ordered step slot ("Step 2:
+// PUSH(50)"), definition is that step's resulting state - and stores
+// them back onto the question object. Every other function below
+// (submitConnectAnswer, resetConnectInputs, redrawConnectLines, the
+// click handlers) still just reads question.pairs and has no idea
+// the content is a trace rather than a vocab list.
 function renderConnectQuestion(question) {
     module3QuestionTopic.textContent = question.topic;
-    module3QuestionPrompt.textContent = question.prompt;
+    module3QuestionPrompt.textContent =
+        question.prompt || "Trace each step and connect it to the resulting state.";
+
+    module3InitialStateDisplay.textContent = question.initialState;
+
+    question.pairs = question.operations.map(function (operationLabel, index) {
+        return {
+            id: "step" + index,
+            term: "Step " + (index + 1) + ": " + operationLabel,
+            definition: question.states[index]
+        };
+    });
 
     const shuffledPairsForDefinitions = question.pairs.slice().sort(function () {
         return Math.random() - 0.5;
@@ -1250,11 +1281,13 @@ document.addEventListener("keydown", function (event) {
 function typeAnalyzeCharacter(character) {
     module4TypedAnswer += character.toLowerCase();
     renderAnalyzeAnswerDisplay();
+    SFX.playKeyTap()
 }
 
 function backspaceAnalyzeAnswer() {
     module4TypedAnswer = module4TypedAnswer.slice(0, -1);
     renderAnalyzeAnswerDisplay();
+    SFX.playKeyTap()
 }
 
 function submitAnalyzeAnswer() {

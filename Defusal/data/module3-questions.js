@@ -2,17 +2,14 @@
 // data/module3-questions.js
 //
 // Module 3 - TRACE. Reuses the existing Connect-the-Dots matching
-// engine in defusal.js (renderConnectQuestion / submitConnectAnswer)
-// completely unmodified - only the CONTENT changes.
-//
-// The educational shift from the old "vocabulary term -> definition"
-// version of this module: each pair.term is now a starting state
-// plus one or more operations, and pair.definition is the correct
-// resulting state after tracing those operations through. When a
-// question has several pairs, the other pairs' correct results act
-// as the shuffled distractors on the right-hand column - the player
-// has to actually trace each one to avoid connecting it to a
-// DIFFERENT pair's answer.
+// engine in defusal.js (renderConnectQuestion / submitConnectAnswer),
+// but the CONTENT is no longer independent vocab-style pairs - each
+// question is now a single continuous trace: one starting state, an
+// ORDERED sequence of operations applied to it one after another, and
+// the resulting state after each operation. The player has to follow
+// the whole chain to place any one step correctly, since each result
+// depends on the one before it - that's what makes this "tracing"
+// rather than "matching known facts".
 //
 // Schema (matches MODULE3_QUESTION_BANK as read by defusal.js):
 //
@@ -24,15 +21,27 @@
 //   },
 //   questions: [
 //     {
+//       id: "<unique within this bank>",
 //       difficulty: "<difficultyId>",
 //       topic: string,
-//       prompt: string,
-//       pairs: [
-//         { id: "p1", term: "<starting state + operation(s)>", definition: "<resulting state>" },
-//         ...
-//       ]
+//       category: string | string[],       // see CATEGORY_NAMES in defusal.js
+//       prompt: string,                    // optional, instructions shown above the board
+//       initialState: string,              // the fixed starting readout ("Signal Origin")
+//       operations: string[],              // ordered - operations[i] is applied to the
+//                                           // state that existed just before it
+//       states: string[]                   // ordered, same length as operations -
+//                                           // states[i] is the result of operations[i]
 //     }
 //   ]
+//
+// renderConnectQuestion() in defusal.js turns operations/states into
+// the {id, term, definition} pairs the matching engine expects: term
+// is the fixed, ordered step slot ("Step 2: PUSH(50)"), definition is
+// that step's resulting state, shuffled on the right-hand column. The
+// step slots stay in order on the left (there's no puzzle in knowing
+// WHICH operation came second - the puzzle is computing what state it
+// produced), while the resulting states are what the player has to
+// route back to the correct step.
 //
 // Notation used throughout, kept consistent so results are
 // unambiguous to trace:
@@ -81,220 +90,310 @@ const MODULE3_QUESTION_BANK = {
     questions: [
 
         // ----------------------------- EASY -----------------------------
-        // Single-operation traces only.
+        // One or two simple operations, small structures, obvious
+        // single-step state changes.
         {
+            id: "m3-easy-1",
             difficulty: "easy",
-            topic: "Stacks & Queues",
-            category: ["stack", "queue"],
-            prompt: "Trace each operation and connect it to its correct resulting state.",
-            pairs: [
-                { id: "p1", term: "Stack (top->bottom): 10. Operation: PUSH 20.", definition: "Result (top->bottom): 20, 10" },
-                { id: "p2", term: "Stack (top->bottom): 15, 5. Operation: POP.", definition: "Result (top->bottom): 5" },
-                { id: "p3", term: "Queue (front->back): A, B. Operation: ENQUEUE C.", definition: "Result (front->back): A, B, C" }
-            ]
+            topic: "Stacks",
+            category: "stack",
+            initialState: "Stack (top->bottom): 5, 2",
+            operations: ["PUSH(9)", "POP"],
+            states: ["Stack (top->bottom): 9, 5, 2", "Stack (top->bottom): 5, 2"]
         },
         {
+            id: "m3-easy-2",
             difficulty: "easy",
-            topic: "Queues & Stacks",
-            category: ["queue", "stack"],
-            prompt: "Trace each operation and connect it to its correct resulting state.",
-            pairs: [
-                { id: "p1", term: "Queue (front->back): A, B, C. Operation: DEQUEUE.", definition: "Result (front->back): B, C" },
-                { id: "p2", term: "Queue (front->back): X, Y. Operation: ENQUEUE Z.", definition: "Result (front->back): X, Y, Z" },
-                { id: "p3", term: "Stack (top->bottom): 1. Operation: PUSH 2.", definition: "Result (top->bottom): 2, 1" }
-            ]
+            topic: "Queues",
+            category: "queue",
+            initialState: "Queue (front->back): A, B",
+            operations: ["ENQUEUE(C)", "DEQUEUE"],
+            states: ["Queue (front->back): A, B, C", "Queue (front->back): B, C"]
         },
         {
+            id: "m3-easy-3",
+            difficulty: "easy",
+            topic: "Arrays",
+            category: "array",
+            initialState: "[1, 2, 3]",
+            operations: ["Append 4", "Remove the first element"],
+            states: ["[1, 2, 3, 4]", "[2, 3, 4]"]
+        },
+        {
+            id: "m3-easy-4",
             difficulty: "easy",
             topic: "Linked Lists",
             category: "linkedList",
-            prompt: "Trace each operation and connect it to its correct resulting state.",
-            pairs: [
-                { id: "p1", term: "List: 10 -> 20 -> NULL. Operation: Insert 30 at the end.", definition: "Result: 10 -> 20 -> 30 -> NULL" },
-                { id: "p2", term: "List: 5 -> 10 -> 15 -> NULL. Operation: Delete the head node.", definition: "Result: 10 -> 15 -> NULL" },
-                { id: "p3", term: "Stack (top->bottom): 7. Operation: POP.", definition: "Result: Stack is empty" }
-            ]
+            initialState: "10 -> 20 -> NULL",
+            operations: ["Insert 30 at the end", "Delete the head node"],
+            states: ["10 -> 20 -> 30 -> NULL", "20 -> 30 -> NULL"]
         },
         {
+            id: "m3-easy-5",
             difficulty: "easy",
-            topic: "Arrays & Queues",
-            category: ["array", "queue"],
-            prompt: "Trace each operation and connect it to its correct resulting state.",
-            pairs: [
-                { id: "p1", term: "Array: [1, 2, 3]. Operation: Append 4.", definition: "Result: [1, 2, 3, 4]" },
-                { id: "p2", term: "Array: [1, 2, 3, 4]. Operation: Remove the last element.", definition: "Result: [1, 2, 3]" },
-                { id: "p3", term: "Queue (front->back): P, Q, R. Operation: DEQUEUE.", definition: "Result (front->back): Q, R" }
-            ]
+            topic: "Stacks",
+            category: "stack",
+            initialState: "Stack (top->bottom): (empty)",
+            operations: ["PUSH(1)", "PUSH(2)"],
+            states: ["Stack (top->bottom): 1", "Stack (top->bottom): 2, 1"]
         },
         {
+            id: "m3-easy-6",
             difficulty: "easy",
-            topic: "Stacks & Lists",
-            category: ["stack", "linkedList"],
-            prompt: "Trace each operation and connect it to its correct resulting state.",
-            pairs: [
-                { id: "p1", term: "Stack (top->bottom): 6, 3. Operations: POP, then PUSH 9.", definition: "Result (top->bottom): 9, 3" },
-                { id: "p2", term: "Queue (front->back): M, N. Operations: DEQUEUE, then ENQUEUE O.", definition: "Result (front->back): N, O" },
-                { id: "p3", term: "List: 1 -> 2 -> NULL. Operation: Insert 0 at the head.", definition: "Result: 0 -> 1 -> 2 -> NULL" }
-            ]
-        },
-        {
-            difficulty: "easy",
-            topic: "Queues & Stacks",
-            category: ["queue", "stack"],
-            prompt: "Match each single operation to its resulting state shift:",
-            pairs:[
-                { id: "p1", term: "Queue (front->back): A, B, C. Operation: DEQUEUE.", definition: "Result (front->back): B, C" },
-                { id: "p2", term: "Stack (top->bottom): A, B. Operation: PUSH C", definition: "Result (top->bottom): Result (top->bottom): C, A, B "},
-                { id: "p3", term: "Queue (front->back): A, B. Operation: ENQUEUE C.", definition: "Result (front->back): A, B, C" }
-            ]
+            topic: "Queues",
+            category: "queue",
+            initialState: "Queue (front->back): X, Y, Z",
+            operations: ["DEQUEUE", "DEQUEUE"],
+            states: ["Queue (front->back): Y, Z", "Queue (front->back): Z"]
         },
 
         // ------------------------- INTERMEDIATE -------------------------
-        // Multiple chained operations per pair.
+        // Three chained operations, mixing structures or introducing a
+        // simple combination of operations.
         {
+            id: "m3-intermediate-1",
             difficulty: "intermediate",
-            topic: "Stacks & Queues",
-            category: ["stack", "queue"],
-            prompt: "Trace each operation sequence and connect it to its correct resulting state.",
-            pairs: [
-                { id: "p1", term: "Stack (top->bottom): 10, 20, 30. Operations: POP, PUSH 50, POP.", definition: "Result (top->bottom): 20, 30" },
-                { id: "p2", term: "Stack (top->bottom): 3, 2, 1. Operations: POP, POP, PUSH 9.", definition: "Result (top->bottom): 9, 1" },
-                { id: "p3", term: "Queue (front->back): 1, 2, 3, 4. Operations: DEQUEUE, DEQUEUE, ENQUEUE 5.", definition: "Result (front->back): 3, 4, 5" },
-                { id: "p4", term: "Queue (front->back): A, B, C. Operations: DEQUEUE, then ENQUEUE D.", definition: "Result (front->back): B, C, D" }
+            topic: "Stacks",
+            category: "stack",
+            initialState: "Stack (top->bottom): 10, 20, 30",
+            operations: ["POP", "PUSH(50)", "POP"],
+            states: [
+                "Stack (top->bottom): 20, 30",
+                "Stack (top->bottom): 50, 20, 30",
+                "Stack (top->bottom): 20, 30"
             ]
         },
         {
+            id: "m3-intermediate-2",
+            difficulty: "intermediate",
+            topic: "Queues",
+            category: "queue",
+            initialState: "Queue (front->back): A, B, C",
+            operations: ["DEQUEUE", "ENQUEUE(D)", "DEQUEUE"],
+            states: [
+                "Queue (front->back): B, C",
+                "Queue (front->back): B, C, D",
+                "Queue (front->back): C, D"
+            ]
+        },
+        {
+            id: "m3-intermediate-3",
             difficulty: "intermediate",
             topic: "Linked Lists",
             category: "linkedList",
-            prompt: "Trace each operation sequence and connect it to its correct resulting state.",
-            pairs: [
-                { id: "p1", term: "List: 10 -> 20 -> 30 -> NULL. Operation: Delete the node with value 20.", definition: "Result: 10 -> 30 -> NULL" },
-                { id: "p2", term: "List: 1 -> 2 -> 3 -> NULL. Operations: Insert 4 after 2, then delete 1.", definition: "Result: 2 -> 4 -> 3 -> NULL" },
-                { id: "p3", term: "Stack (top->bottom): 5. Operations: PUSH 10, PUSH 15, POP.", definition: "Result (top->bottom): 10, 5" },
-                { id: "p4", term: "Queue (front->back): X, Y, Z. Operations: DEQUEUE, DEQUEUE.", definition: "Result (front->back): Z" }
+            initialState: "1 -> 2 -> 3 -> NULL",
+            operations: ["Insert 4 after 2", "Delete the head node (1)", "Insert 0 at the head"],
+            states: [
+                "1 -> 2 -> 4 -> 3 -> NULL",
+                "2 -> 4 -> 3 -> NULL",
+                "0 -> 2 -> 4 -> 3 -> NULL"
             ]
         },
         {
+            id: "m3-intermediate-4",
             difficulty: "intermediate",
-            topic: "Arrays",
-            category: "array",
-            prompt: "Trace each operation sequence and connect it to its correct resulting state.",
-            pairs: [
-                { id: "p1", term: "Array: [8, 3, 5, 1]. Operation: One bubble-sort pass (adjacent swaps, left to right).", definition: "Result: [3, 5, 1, 8]" },
-                { id: "p2", term: "Array: [4, 2, 7, 1]. Operation: Sort in ascending order.", definition: "Result: [1, 2, 4, 7]" },
-                { id: "p3", term: "Stack (top->bottom): 6, 4, 2. Operations: POP, POP.", definition: "Result (top->bottom): 2" },
-                { id: "p4", term: "Queue (front->back): 1, 2, 3. Operations: ENQUEUE 4, then DEQUEUE.", definition: "Result (front->back): 2, 3, 4" }
-            ]
+            topic: "Sorting",
+            category: ["array", "sorting"],
+            prompt: "Trace one full bubble-sort pass, one adjacent comparison at a time.",
+            initialState: "[8, 3, 5, 1]",
+            operations: [
+                "Compare index 0,1 (8, 3): out of order, swap",
+                "Compare index 1,2 (8, 5): out of order, swap",
+                "Compare index 2,3 (8, 1): out of order, swap"
+            ],
+            states: ["[3, 8, 5, 1]", "[3, 5, 8, 1]", "[3, 5, 1, 8]"]
         },
         {
+            id: "m3-intermediate-5",
             difficulty: "intermediate",
-            topic: "Linked Lists",
-            category: "linkedList",
-            prompt: "Match each operation with its time complexity according to the learning material:",
-            pairs: [
-                { id: "p1", term: "Singly Linked List: Access element at index 5", definition: "O(1)" },
-                { id: "p2", term: "Doubly Linked List: Insert an arbitrary node", definition: "O(n)" },
-                { id: "p3", term: "Circular Linked List: Insert at back (tail stored)", definition: "O(1)" },
+            topic: "Trees",
+            category: "tree",
+            prompt: "Trace the search path step by step, one comparison at a time.",
+            initialState: "BST: root 50, left child 30, right child 70 (70 has left child 60, right child 80). Searching for 60.",
+            operations: [
+                "Compare 60 with root (50)",
+                "Compare 60 with 70",
+                "Compare 60 with 60"
+            ],
+            states: [
+                "60 > 50, so move right to 70",
+                "60 < 70, so move left to 60",
+                "60 = 60, target found"
             ]
         },
 
-        // Structural changes on lists, plus trees and graphs introduced.
+        // ---------------------------- HARD ----------------------------
+        // Four chained operations, structural changes, more states to
+        // keep track of at once.
         {
+            id: "m3-hard-1",
             difficulty: "hard",
-            topic: "Linked Lists & Trees",
-            category: ["linkedList", "tree"],
-            prompt: "Trace each operation sequence and connect it to its correct resulting state.",
-            pairs: [
-                { id: "p1", term: "List: 10 -> 20 -> 30 -> 40 -> NULL. Operations: Delete 20, then insert 25 after 30.", definition: "Result: 10 -> 30 -> 25 -> 40 -> NULL" },
-                { id: "p2", term: "List: 1 -> 2 -> 3 -> NULL. Operation: Reverse the list.", definition: "Result: 3 -> 2 -> 1 -> NULL" },
-                { id: "p3", term: "BST: root 50, left child 30, right child 70 (70 has left 60, right 80). Operation: Search for 60.", definition: "Nodes visited: 50 -> 70 -> 60" },
-                { id: "p4", term: "Stack (top->bottom): 3, 2, 1. Operations: POP, POP, PUSH 9, PUSH 8.", definition: "Result (top->bottom): 8, 9, 1" }
+            topic: "Linked Lists",
+            category: "linkedList",
+            initialState: "10 -> 20 -> 30 -> 40 -> NULL",
+            operations: [
+                "Delete the node with value 20",
+                "Insert 25 after 30",
+                "Reverse the list",
+                "Delete the new head node"
+            ],
+            states: [
+                "10 -> 30 -> 40 -> NULL",
+                "10 -> 30 -> 25 -> 40 -> NULL",
+                "40 -> 25 -> 30 -> 10 -> NULL",
+                "25 -> 30 -> 10 -> NULL"
             ]
         },
         {
+            id: "m3-hard-2",
             difficulty: "hard",
-            topic: "Trees & Queues",
-            category: ["tree", "queue"],
-            prompt: "Trace each operation sequence and connect it to its correct resulting state.",
-            pairs: [
-                { id: "p1", term: "BST insert order: 50, 30, 70, 20, 40. Operation: In-order traversal.", definition: "Result: 20, 30, 40, 50, 70" },
-                { id: "p2", term: "BST: root 50, left child 30, right child 70 (70 has left 60, right 80). Operation: Search for 80.", definition: "Nodes visited: 50 -> 70 -> 80" },
-                { id: "p3", term: "Queue (front->back): A, B, C, D. Operations: DEQUEUE, ENQUEUE E, DEQUEUE, ENQUEUE F.", definition: "Result (front->back): C, D, E, F" },
-                { id: "p4", term: "Array: [5, 1, 4, 2]. Operation: One selection-sort pass (place the minimum at index 0).", definition: "Result: [1, 5, 4, 2]" }
+            topic: "Graphs",
+            category: "graph",
+            prompt: "Trace a queue-based BFS from A, one dequeue/enqueue step at a time (alphabetical neighbor order).",
+            initialState: "Graph edges: A-B, A-C, B-D, C-D. Queue: A. Visited: (none)",
+            operations: [
+                "Dequeue A, visit it, enqueue its unvisited neighbors (B, C)",
+                "Dequeue B, visit it, enqueue its unvisited neighbor (D)",
+                "Dequeue C, visit it - D is already queued",
+                "Dequeue D, visit it - queue is now empty"
+            ],
+            states: [
+                "Visited: A. Queue (front->back): B, C",
+                "Visited: A, B. Queue (front->back): C, D",
+                "Visited: A, B, C. Queue (front->back): D",
+                "Visited: A, B, C, D. Queue: empty"
             ]
         },
         {
+            id: "m3-hard-3",
             difficulty: "hard",
-            topic: "Graphs & Lists",
-            category: ["graph", "linkedList"],
-            prompt: "Trace each operation sequence and connect it to its correct resulting state.",
-            pairs: [
-                { id: "p1", term: "Graph edges: A-B, A-C, B-D, C-D. Operation: BFS starting at A (visit neighbors alphabetically).", definition: "Visit order: A, B, C, D" },
-                { id: "p2", term: "List: 10 -> 20 -> 30 -> NULL. Operation: Delete the tail node.", definition: "Result: 10 -> 20 -> NULL" },
-                { id: "p3", term: "Stack (top->bottom): empty. Operations: PUSH 1, PUSH 2, PUSH 3, POP, POP.", definition: "Result (top->bottom): 1" },
-                { id: "p4", term: "Array: [3, 6, 1, 8, 2, 4]. Operations: Sort ascending, then remove the first element.", definition: "Result: [2, 3, 4, 6, 8]" }
+            topic: "Sorting",
+            category: ["array", "sorting"],
+            prompt: "Trace selection sort, one full pass (find the minimum, then swap it into place) at a time.",
+            initialState: "[29, 10, 14, 37, 13]",
+            operations: [
+                "Pass 1: minimum of the whole array is 10 - swap into index 0",
+                "Pass 2: minimum of indices 1-4 is 13 - swap into index 1",
+                "Pass 3: minimum of indices 2-4 is 14 - already in place",
+                "Pass 4: minimum of indices 3-4 is 29 - swap into index 3"
+            ],
+            states: [
+                "[10, 29, 14, 37, 13]",
+                "[10, 13, 14, 37, 29]",
+                "[10, 13, 14, 37, 29]",
+                "[10, 13, 14, 29, 37]"
             ]
         },
         {
+            id: "m3-hard-4",
             difficulty: "hard",
-            topic: "Linked Lists & Queues",
-            category: ["linkedList", "queue"],
-            prompt: "Match the data structure setup to its specific operation bottleneck:",
-            pairs: [
-                { id: "p1", term: "Array Queue: Front at Index 0", definition: "Dequeue requires O(n) element shifting"},
-                { id: "p2", term: "Singly Linked List Queue: Enqueue at Head, Dequeue at Tail", definition: "Dequeue requires O(n) traversal to find previous node"},
-                { id: "p3", term: "Static Array Stack", definition: "Risk of Stack Overflow when full" }
+            topic: "Stacks & Queues",
+            category: ["stack", "queue"],
+            prompt: "Trace both structures together - each step only changes the one it names.",
+            initialState: "Stack (top->bottom): 3, 2, 1. Queue (front->back): X, Y.",
+            operations: [
+                "POP the stack",
+                "ENQUEUE the popped value (3) into the queue",
+                "PUSH(9) onto the stack",
+                "DEQUEUE the queue"
+            ],
+            states: [
+                "Stack (top->bottom): 2, 1 (popped 3). Queue unchanged: X, Y.",
+                "Queue (front->back): X, Y, 3. Stack unchanged: 2, 1.",
+                "Stack (top->bottom): 9, 2, 1. Queue unchanged: X, Y, 3.",
+                "Queue (front->back): Y, 3 (dequeued X). Stack unchanged: 9, 2, 1."
             ]
         },
 
         // ---------------------------- EXPERT ----------------------------
-        // Algorithm tracing, longer chains, multiple interacting structures.
+        // Five chained steps, algorithm tracing, larger or less obvious
+        // sequences, pointer/reference-level changes.
         {
+            id: "m3-expert-1",
             difficulty: "expert",
-            topic: "Sorting & Graphs",
-            category: ["array", "graph"],
-            prompt: "Trace each operation sequence and connect it to its correct resulting state.",
-            pairs: [
-                { id: "p1", term: "Array: [5, 2, 9, 1, 5, 6]. Operation: First TWO passes of bubble sort (adjacent swaps, left to right).", definition: "Result: [2, 1, 5, 5, 6, 9]" },
-                { id: "p2", term: "Array: [8, 3, 5, 1]. Operation: Full selection sort to completion.", definition: "Result: [1, 3, 5, 8]" },
-                { id: "p3", term: "BST insert order: 40, 20, 60, 10, 30, 50, 70. Operation: Determine the height of the resulting tree (root at height 0).", definition: "Result: Height = 2" },
-                { id: "p4", term: "Graph edges: A-B, A-C, B-D, C-D. Operation: DFS starting at A, visiting the alphabetically smallest unvisited neighbor first.", definition: "Visit order: A, B, D, C" }
+            topic: "Sorting",
+            category: ["array", "sorting"],
+            prompt: "Trace bubble sort comparison by comparison, across as many passes as it takes.",
+            initialState: "[8, 3, 5, 1]",
+            operations: [
+                "Pass 1 - compare index 0,1 (8, 3): swap",
+                "Pass 1 - compare index 1,2 (8, 5): swap",
+                "Pass 1 - compare index 2,3 (8, 1): swap",
+                "Pass 2 - compare index 0,1 (3, 5): already in order",
+                "Pass 2 - compare index 1,2 (5, 1): swap"
+            ],
+            states: [
+                "[3, 8, 5, 1]",
+                "[3, 5, 8, 1]",
+                "[3, 5, 1, 8]",
+                "[3, 5, 1, 8]",
+                "[3, 1, 5, 8]"
             ]
         },
         {
+            id: "m3-expert-2",
             difficulty: "expert",
-            topic: "Queues & Lists",
-            category: ["queue", "linkedList"],
-            prompt: "Trace each operation sequence and connect it to its correct resulting state.",
-            pairs: [
-                { id: "p1", term: "A queue is built from two stacks. Stack A (top->bottom): 4, 3, 2, 1. All elements are moved onto stack B, then DEQUEUE is called three times.", definition: "Dequeued values, in order: 1, 2, then 3" },
-                { id: "p2", term: "List: 1 -> 2 -> 3 -> 4 -> 5 -> NULL. Operations: Reverse the list, then delete the new head.", definition: "Result: 4 -> 3 -> 2 -> 1 -> NULL" },
-                { id: "p3", term: "BST: root 50, left child 30 (30 has left 20, right 40), right child 70. Operation: In-order traversal.", definition: "Result: 20, 30, 40, 50, 70" },
-                { id: "p4", term: "Array: [3, 1, 4, 1, 5, 9, 2, 6]. Operation: Sort ascending (needed before binary search can be used).", definition: "Result: [1, 1, 2, 3, 4, 5, 6, 9]" }
+            topic: "Graphs",
+            category: "graph",
+            prompt: "Trace a recursive DFS from A, always visiting the alphabetically smallest unvisited neighbor first.",
+            initialState: "Graph edges: A-B, A-C, B-D, C-D. Visited: (none)",
+            operations: [
+                "Visit A",
+                "Visit A's alphabetically smallest unvisited neighbor (B)",
+                "Visit B's alphabetically smallest unvisited neighbor (D)",
+                "D's only neighbors (B, C) - backtrack to A, visit its next unvisited neighbor (C)",
+                "C's neighbors (A, D) are both already visited - DFS complete"
+            ],
+            states: [
+                "Visited: A",
+                "Visited: A, B",
+                "Visited: A, B, D",
+                "Visited: A, B, D, C",
+                "Visited: A, B, D, C (done)"
             ]
         },
         {
+            id: "m3-expert-3",
             difficulty: "expert",
-            topic: "Trees & Sorting",
-            category: ["tree", "array"],
-            prompt: "Trace each operation sequence and connect it to its correct resulting state.",
-            pairs: [
-                { id: "p1", term: "BST insert order: 8, 3, 10, 1, 6, 14, 4, 7, 13. Operation: In-order traversal.", definition: "Result: 1, 3, 4, 6, 7, 8, 10, 13, 14" },
-                { id: "p2", term: "Array: [9, 7, 5, 3, 1]. Operation: First pass of insertion sort (i = 1 only).", definition: "Result: [7, 9, 5, 3, 1]" },
-                { id: "p3", term: "Graph edges: A-B, A-C, B-D, C-D. Operation: BFS starting at A (visit neighbors alphabetically).", definition: "Visit order: A, B, C, D" },
-                { id: "p4", term: "List: 1 -> 2 -> 3 -> 4 -> NULL. Operation: Reverse the list.", definition: "Result: 4 -> 3 -> 2 -> 1 -> NULL" }
+            topic: "Trees",
+            category: "tree",
+            prompt: "Trace where a new value would land in this BST, one comparison at a time.",
+            initialState: "BST: root 40 (left 20, right 60); 20 has children 10, 30; 60 has children 50, 70. Inserting 35.",
+            operations: [
+                "Compare 35 with root (40)",
+                "Compare 35 with 20",
+                "Compare 35 with 30",
+                "Check whether 30 has a right child",
+                "Place the new node"
+            ],
+            states: [
+                "35 < 40, so move to the left child (20)",
+                "35 > 20, so move to the right child (30)",
+                "35 > 30, so move to 30's right child",
+                "30 has no right child - this is the insertion point",
+                "35 is inserted as the right child of 30"
             ]
         },
         {
+            id: "m3-expert-4",
             difficulty: "expert",
-            topic: "All linear Data Structures",
-            category: ["stack", "queue", "linkedList", "array"],
-            prompt: "Match the memory layout characteristic to its linear data structure:",
-            pairs: [
-                { id: "p1", term: "Contiguous memory blocks with fast CPU cache performance", definition: "Array" },
-                { id: "p2", term: "Non-contiguous memory; nodes connected via single forward pointers", definition: "Linked List" },
-                { id: "p3", term: "Non-contiguous memory; highest per-node memory overhead due to two pointers", definition: "Doubly Linked List" },
+            topic: "Stacks & Queues",
+            category: ["stack", "queue"],
+            prompt: "Trace a queue built from two stacks: every element is moved from Stack A to Stack B before any DEQUEUE.",
+            initialState: "Stack A (top->bottom): 1, 2, 3, 4 (used as the inbox). Stack B: empty (used as the outbox).",
+            operations: [
+                "Pop 1 from A, push it onto B",
+                "Pop 2 from A, push it onto B",
+                "Pop 3 from A, push it onto B",
+                "Pop 4 from A, push it onto B",
+                "DEQUEUE by popping from B"
+            ],
+            states: [
+                "Stack A: 2, 3, 4 | Stack B (top->bottom): 1",
+                "Stack A: 3, 4 | Stack B (top->bottom): 2, 1",
+                "Stack A: 4 | Stack B (top->bottom): 3, 2, 1",
+                "Stack A: empty | Stack B (top->bottom): 4, 3, 2, 1",
+                "Dequeued value: 4 | Stack B (top->bottom): 3, 2, 1"
             ]
         }
     ]
