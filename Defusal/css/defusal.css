@@ -150,45 +150,112 @@ a {
     }
 
 /* ================= Bomb overview screen (the whole bomb) ================= */
+/* THEME: military ordnance / retro spy-thriller. Brushed-steel casing,
+   yellow/black hazard stripe at the cap seam, hex-bolt rivets, extra
+   corner bolts baked into the body's background (no new markup), a
+   stenciled unit serial, and a carry-handle arc on the cap. */
 
 .bomb-casing {
-    margin-top: 16px;
+    margin-top: 28px;
 }
 
+/* Carry-handle arc sits above the cap - pure CSS half-ring, no markup */
 .bomb-cap {
+    position: relative;
     height: 44px;
     margin: 0 auto;
     max-width: 640px;
     background-color: #000;
+    background-image: repeating-linear-gradient(45deg, #facc15 0, #facc15 14px, #18181b 14px, #18181b 28px);
+    background-size: 100% 8px;
+    background-position: bottom;
+    background-repeat: no-repeat;
     border-radius: 18px 18px 0 0;
+    box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.6);
 }
+
+    .bomb-cap::before {
+        content: "";
+        position: absolute;
+        top: -22px;
+        left: 50%;
+        width: 120px;
+        height: 44px;
+        border: 10px solid #27272a;
+        border-bottom: none;
+        border-radius: 60px 60px 0 0;
+        box-shadow: inset 0 3px 0 rgba(255, 255, 255, 0.06);
+        transform: translateX(-50%);
+    }
 
 .bomb-body {
     position: relative;
     max-width: 640px;
     margin: 0 auto;
     padding: 28px 40px;
-    background-color: #27272a;
+    background-color: #3f3f46;
+    background-image: radial-gradient(circle 6px at 20px 20px, #a1a1aa, #52525b 55%, transparent 60%), radial-gradient(circle 6px at calc(100% - 20px) 20px, #a1a1aa, #52525b 55%, transparent 60%), radial-gradient(circle 6px at 20px calc(100% - 20px), #a1a1aa, #52525b 55%, transparent 60%), radial-gradient(circle 6px at calc(100% - 20px) calc(100% - 20px), #a1a1aa, #52525b 55%, transparent 60%), repeating-linear-gradient(115deg, rgba(255, 255, 255, 0.035) 0, rgba(255, 255, 255, 0.035) 1px, transparent 1px, transparent 3px), linear-gradient(160deg, #52525b 0%, #3f3f46 35%, #46464d 60%, #35353a 100%);
+    border: 1px solid #18181b;
     border-radius: 0 0 22px 22px;
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
+    /* Stenciled unit serial - flavor text, bottom-right of the casing */
+    .bomb-body::after {
+        content: "UNIT-07 \00b7 MK-II";
+        position: absolute;
+        right: 14px;
+        bottom: 8px;
+        color: #a1a1aa;
+        font-family: "Courier New", monospace;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        opacity: 0.4;
+    }
+
+/* Hex-bolt side rivets, replacing the plain black pills */
 .bomb-rivet {
     position: absolute;
     top: 50%;
-    width: 22px;
-    height: 72px;
-    background-color: #000;
+    width: 26px;
+    height: 76px;
+    background-color: #18181b;
+    background-image: radial-gradient(circle 8px at 50% 20%, #a1a1aa, #52525b 55%, #18181b 70%), radial-gradient(circle 8px at 50% 50%, #a1a1aa, #52525b 55%, #18181b 70%), radial-gradient(circle 8px at 50% 80%, #a1a1aa, #52525b 55%, #18181b 70%);
     border-radius: 9999px;
+    box-shadow: inset 0 2px 3px rgba(0, 0, 0, 0.6);
     transform: translateY(-50%);
 }
 
+    /* hex-slot detail on each bolt head, drawn with a conic gradient
+       so it reads as a 6-sided socket rather than a flat circle */
+    .bomb-rivet::before,
+    .bomb-rivet::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        width: 10px;
+        height: 10px;
+        background: conic-gradient( #18181b 0 10%, transparent 0 23%, #18181b 0 33%, transparent 0 46%, #18181b 0 56%, transparent 0 70%, #18181b 0 80%, transparent 0 93%, #18181b 0 100%);
+        border-radius: 2px;
+        transform: translateX(-50%) rotate(10deg);
+    }
+
+    .bomb-rivet::before {
+        top: 13px;
+    }
+
+    .bomb-rivet::after {
+        top: 45px;
+    }
+
 .bomb-rivet-left {
-    left: -11px;
+    left: -13px;
 }
 
 .bomb-rivet-right {
-    right: -11px;
+    right: -13px;
 }
 
 .bomb-grid {
@@ -198,6 +265,7 @@ a {
     background-color: #000;
     border-radius: 6px;
     overflow: hidden;
+    counter-reset: bomb-module;
 }
 
 .bomb-cell {
@@ -210,24 +278,46 @@ a {
     min-height: 130px;
     padding: 16px 10px;
     background-color: #18181b;
+    background-image: repeating-linear-gradient(115deg, rgba(255, 255, 255, 0.02) 0, rgba(255, 255, 255, 0.02) 1px, transparent 1px, transparent 3px);
     border: none;
     font-family: inherit;
+    counter-increment: bomb-module;
 }
 
     .bomb-cell:disabled {
         cursor: default;
     }
 
+    /* stenciled "M1"-"M5" plate, top-left of every cell */
+    .bomb-cell::before {
+        content: "M" counter(bomb-module);
+        position: absolute;
+        top: 8px;
+        left: 10px;
+        padding: 1px 5px;
+        color: #71717a;
+        font-family: "Courier New", monospace;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        background-color: rgba(0, 0, 0, 0.35);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 3px;
+    }
+
+/* Recessed metal bezel around each status LED - amber while armed,
+   green once solved (green-for-solved kept exactly as before) */
 .cell-led {
     width: 70%;
-    height: 8px;
-    background-color: #3f3f46;
+    height: 10px;
+    background-color: #451a03;
     border-radius: 9999px;
+    box-shadow: inset 0 0 0 2px #18181b, inset 0 1px 3px rgba(0, 0, 0, 0.8), 0 0 6px rgba(217, 119, 6, 0.35);
 }
 
     .cell-led.active {
         background-color: #22c55e;
-        box-shadow: 0 0 10px rgba(34, 197, 94, 0.8);
+        box-shadow: inset 0 0 0 2px #18181b, 0 0 10px rgba(34, 197, 94, 0.8);
     }
 
 .cell-content {
@@ -309,7 +399,7 @@ a {
 
     .bomb-cell.solved .cell-led {
         background-color: #4ade80;
-        box-shadow: 0 0 10px rgba(74, 222, 128, 0.8);
+        box-shadow: inset 0 0 0 2px #18181b, 0 0 10px rgba(74, 222, 128, 0.8);
     }
 
     .bomb-cell.solved .cell-hint {
@@ -452,11 +542,17 @@ a {
     text-transform: uppercase;
 }
 
+/* Riveted metal plate housing the 7-segment digits, with a faint
+   scanline texture so the readout doesn't look flat/vector */
 .timer-lcd {
+    position: relative;
     padding: 6px 14px;
     color: #7a1f1f;
     background-color: #000;
-    border-radius: 8px;
+    background-image: repeating-linear-gradient( rgba(255, 255, 255, 0.05) 0, rgba(255, 255, 255, 0.05) 1px, transparent 1px, transparent 3px);
+    border: 2px solid #3f3f46;
+    border-radius: 6px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.8), 0 0 0 1px #18181b;
     font-family: "Courier New", monospace;
     font-size: 30px;
     font-weight: 700;
@@ -494,12 +590,17 @@ a {
 
 /* ================= Game screen ================= */
 
+/* Game-screen shell - same brushed-steel + corner-bolt language as
+   the overview casing, so the "bomb" reads as one object across
+   both screens */
 .bomb-shell {
+    position: relative;
     padding: 24px;
-    background-color: #0f172a;
-    border: 1px solid rgba(34, 211, 238, 0.2);
+    background-color: #3f3f46;
+    background-image: radial-gradient(circle 6px at 18px 18px, #a1a1aa, #52525b 55%, transparent 60%), radial-gradient(circle 6px at calc(100% - 18px) 18px, #a1a1aa, #52525b 55%, transparent 60%), radial-gradient(circle 6px at 18px calc(100% - 18px), #a1a1aa, #52525b 55%, transparent 60%), radial-gradient(circle 6px at calc(100% - 18px) calc(100% - 18px), #a1a1aa, #52525b 55%, transparent 60%), linear-gradient(160deg, #4b4b52 0%, #3f3f46 40%, #35353a 100%);
+    border: 1px solid #18181b;
     border-radius: 16px;
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.35);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
     /* shake animation when a wrong answer is submitted */
@@ -533,13 +634,17 @@ a {
     }
 }
 
+/* Recessed console plate for the timer + strikes readout */
 .bomb-display {
+    position: relative;
     display: flex;
     justify-content: space-between;
     margin-bottom: 20px;
     padding: 16px;
     background-color: #020617;
+    border: 1px solid #000;
     border-radius: 10px;
+    box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.6);
 }
 
 .display-block {
@@ -577,24 +682,35 @@ a {
     height: 14px;
     background-color: #1e293b;
     border-radius: 50%;
+    box-shadow: inset 0 0 0 2px #000, inset 0 1px 2px rgba(0, 0, 0, 0.8);
 }
 
     .strike-light.used {
         background-color: #ef4444;
+        box-shadow: inset 0 0 0 2px #000, 0 0 6px rgba(239, 68, 68, 0.7);
     }
 
+/* Module face panel - riveted-metal readout housing the shape grid /
+   keypad / etc. on the left and the question popup on the right */
 .module-face {
+    position: relative;
     padding: 20px;
     background-color: #111827;
+    background-image: radial-gradient(circle 5px at 14px 14px, #71717a, #3f3f46 55%, transparent 60%), radial-gradient(circle 5px at calc(100% - 14px) 14px, #71717a, #3f3f46 55%, transparent 60%), radial-gradient(circle 5px at 14px calc(100% - 14px), #71717a, #3f3f46 55%, transparent 60%), radial-gradient(circle 5px at calc(100% - 14px) calc(100% - 14px), #71717a, #3f3f46 55%, transparent 60%);
+    border: 1px solid #030712;
     border-radius: 10px;
 }
 
 .module-label {
     margin: 0 0 16px;
+    padding-bottom: 8px;
     color: #94a3b8;
+    font-family: "Courier New", monospace;
     font-size: 13px;
-    letter-spacing: 0.08em;
+    font-weight: 700;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.12);
 }
 
 /* Two-column layout: shape buttons on the left, the question panel
@@ -613,6 +729,9 @@ a {
     width: 260px;
 }
 
+/* Toggle-switch styling: chunky beveled housing, a small LED pip
+   (amber/idle -> green/correct -> red/wrong) instead of a flat
+   color-only tell */
 .shape-button {
     position: relative;
     display: flex;
@@ -620,16 +739,36 @@ a {
     justify-content: center;
     aspect-ratio: 1 / 1;
     padding: 0;
-    background-color: #1f2937;
-    border: 2px solid #334155;
-    border-radius: 12px;
+    background-color: #27272e;
+    background-image: linear-gradient(160deg, #313138 0%, #202024 100%);
+    border: 2px solid #3f3f46;
+    border-bottom-width: 4px;
+    border-radius: 8px;
     cursor: pointer;
-    transition: transform 0.15s, border-color 0.2s, background-color 0.2s;
+    transition: transform 0.1s, border-color 0.2s, background-color 0.2s;
 }
 
     .shape-button:hover:not(:disabled) {
         border-color: #22d3ee;
         transform: translateY(-2px);
+    }
+
+    .shape-button:active:not(:disabled) {
+        border-bottom-width: 2px;
+        transform: translateY(1px);
+    }
+
+    /* LED pip, top-right corner */
+    .shape-button::after {
+        content: "";
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        width: 8px;
+        height: 8px;
+        background-color: #78350f;
+        border-radius: 50%;
+        box-shadow: inset 0 0 0 1px #18181b, 0 0 4px rgba(217, 119, 6, 0.5);
     }
 
 /* Letter badge (A/B/C/D) pinned to the corner of each shape button,
@@ -669,10 +808,20 @@ a {
     border-color: #4ade80;
 }
 
+    .shape-button.correct::after {
+        background-color: #4ade80;
+        box-shadow: inset 0 0 0 1px #18181b, 0 0 6px rgba(74, 222, 128, 0.8);
+    }
+
 .shape-button.wrong {
     background-color: rgba(248, 113, 113, 0.25);
     border-color: #f87171;
 }
+
+    .shape-button.wrong::after {
+        background-color: #f87171;
+        box-shadow: inset 0 0 0 1px #18181b, 0 0 6px rgba(248, 113, 113, 0.8);
+    }
 
 .shape {
     display: block;
@@ -716,7 +865,10 @@ a {
     width: 260px;
 }
 
+/* Industrial rocker switches - heavier bevel, a highlight seam near
+   the top standing in for the rocker's pivot line */
 .truefalse-button {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -729,15 +881,31 @@ a {
     font-weight: 700;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    border: 2px solid #334155;
-    border-radius: 12px;
+    border: 2px solid #18181b;
+    border-radius: 8px;
+    box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.18), inset 0 -6px 10px rgba(0, 0, 0, 0.35);
     cursor: pointer;
-    transition: transform 0.15s, border-color 0.2s, background-color 0.2s;
+    transition: transform 0.1s, border-color 0.2s, background-color 0.2s;
 }
+
+    .truefalse-button::before {
+        content: "";
+        position: absolute;
+        top: 16px;
+        left: 12px;
+        right: 12px;
+        height: 1px;
+        background-color: rgba(255, 255, 255, 0.15);
+    }
 
     .truefalse-button:hover:not(:disabled) {
         border-color: #22d3ee;
         transform: translateY(-2px);
+    }
+
+    .truefalse-button:active:not(:disabled) {
+        transform: translateY(1px);
+        box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.5);
     }
 
     .truefalse-button:disabled {
@@ -745,11 +913,11 @@ a {
     }
 
 .truefalse-true {
-    background-color: #6d28d9;
+    background-color: #5b21b6;
 }
 
 .truefalse-false {
-    background-color: #ef4444;
+    background-color: #b91c1c;
 }
 
 .truefalse-icon {
@@ -785,6 +953,8 @@ a {
     justify-content: center;
 }
 
+/* Rubber-membrane keys - heavier border + inset shadow so each key
+   reads as pressed into the panel rather than a flat chip */
 .keypad-key {
     flex: 1 1 0;
     height: 42px;
@@ -793,25 +963,26 @@ a {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #1e293b;
-    color: white;
+    background-color: #27272e;
+    color: #e4e4e7;
     font-family: inherit;
     font-size: 14px;
     font-weight: 700;
     text-transform: uppercase;
-    border: 2px solid #334155;
-    border-radius: 8px;
+    border: 2px solid #18181b;
+    border-radius: 6px;
+    box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
     cursor: pointer;
-    transition: transform 0.1s, border-color 0.15s, background-color 0.15s;
+    transition: transform 0.1s, border-color 0.15s, background-color 0.15s, box-shadow 0.1s;
 }
 
     .keypad-key:hover:not(:disabled) {
         border-color: #22d3ee;
-        transform: translateY(-1px);
     }
 
     .keypad-key:active:not(:disabled) {
-        transform: translateY(0);
+        transform: translateY(2px);
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.6);
     }
 
     .keypad-key:disabled {
@@ -826,8 +997,9 @@ a {
 }
 
 .keypad-key-submit {
-    background-color: #6d28d9;
-    border-color: #6d28d9;
+    background-color: #5b21b6;
+    border-color: #18181b;
+    color: white;
 }
 
 .keypad-key.correct {
@@ -921,9 +1093,9 @@ a {
     align-items: center;
     gap: 10px;
     padding: 10px 14px;
-    background-color: #1f2937;
-    border: 2px solid #334155;
-    border-radius: 10px;
+    background-color: #27272e;
+    border: 2px solid #3f3f46;
+    border-radius: 6px;
     color: #e2e8f0;
     font-family: inherit;
     font-size: 14px;
@@ -956,12 +1128,15 @@ a {
     border-radius: 6px;
 }
 
+/* Binding-post terminal look: metal dome with a screw-slot line
+   instead of a flat dot */
 .connect-dot-marker {
     flex-shrink: 0;
-    width: 12px;
-    height: 12px;
-    background-color: #64748b;
-    border: 2px solid #64748b;
+    width: 14px;
+    height: 14px;
+    background-color: #71717a;
+    background-image: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.45), transparent 55%), linear-gradient(0deg, transparent 47%, #18181b 47%, #18181b 53%, transparent 53%);
+    border: 2px solid #3f3f46;
     border-radius: 50%;
     transition: background-color 0.15s, border-color 0.15s;
 }
@@ -1024,25 +1199,34 @@ a {
     width: 260px;
 }
 
+/* Same beveled toggle-switch housing as the shape buttons, just a
+   full-width row instead of a square */
 .scenario-button {
     display: flex;
     align-items: center;
     gap: 12px;
     padding: 14px 16px;
-    background-color: #1f2937;
-    border: 2px solid #334155;
-    border-radius: 12px;
+    background-color: #27272e;
+    background-image: linear-gradient(160deg, #313138 0%, #202024 100%);
+    border: 2px solid #3f3f46;
+    border-bottom-width: 4px;
+    border-radius: 8px;
     color: #e2e8f0;
     font-family: inherit;
     font-size: 15px;
     text-align: left;
     cursor: pointer;
-    transition: transform 0.15s, border-color 0.2s, background-color 0.2s;
+    transition: transform 0.1s, border-color 0.2s, background-color 0.2s;
 }
 
     .scenario-button:hover:not(:disabled) {
         border-color: #22d3ee;
         transform: translateY(-2px);
+    }
+
+    .scenario-button:active:not(:disabled) {
+        border-bottom-width: 2px;
+        transform: translateY(1px);
     }
 
     .scenario-button:disabled {
@@ -1108,8 +1292,9 @@ a {
     min-height: 24px;
     padding: 10px 14px;
     background-color: #05070a;
-    border: 2px solid #334155;
-    border-radius: 8px;
+    border: 2px solid #3f3f46;
+    border-radius: 6px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.7);
     font-family: "Courier New", monospace;
     font-size: 20px;
     letter-spacing: 0.08em;
@@ -1319,6 +1504,13 @@ a {
 }
 
 .result-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+.result-buttons-row {
     display: flex;
     justify-content: center;
     gap: 16px;
