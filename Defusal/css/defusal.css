@@ -1979,3 +1979,255 @@ a {
         flex-direction: row;
     }
 }
+
+/* ================= Module 3 - Construct ================= */
+/* Overview icon: two placed blocks and an empty (dashed) slot */
+.mock-construct {
+    gap: 5px;
+}
+
+.mock-construct-block {
+    display: block;
+    width: 14px;
+    height: 20px;
+    background-color: white;
+    border-radius: 3px;
+}
+
+.mock-construct-block-ghost {
+    background-color: transparent;
+    border: 2px dashed #4ade80;
+}
+
+/* Left column: the limited operation-block tray */
+.construct-tray-wrap {
+    flex: 0 0 auto;
+    width: 260px;
+}
+
+.construct-tray {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.construct-section-label {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin: 16px 0 6px;
+    color: #64748b;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.construct-tray-wrap .construct-section-label,
+.question-popup .construct-section-label:first-of-type {
+    margin-top: 0;
+}
+
+.construct-counter {
+    color: #22d3ee;
+    font-family: "Courier New", monospace;
+    letter-spacing: 0.04em;
+}
+
+/* Same beveled toggle-switch housing as the scenario buttons */
+.construct-block {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 11px 14px;
+    background-color: #27272e;
+    background-image: linear-gradient(160deg, #313138 0%, #202024 100%);
+    border: 2px solid #3f3f46;
+    border-bottom-width: 4px;
+    border-radius: 8px;
+    color: #e2e8f0;
+    font-family: "Courier New", monospace;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-align: left;
+    cursor: pointer;
+    transition: transform 0.1s, border-color 0.2s, opacity 0.2s;
+}
+
+    .construct-block:hover:not(:disabled) {
+        border-color: #22d3ee;
+        transform: translateY(-2px);
+    }
+
+    .construct-block:active:not(:disabled) {
+        border-bottom-width: 2px;
+        transform: translateY(1px);
+    }
+
+    /* already placed in the sequence */
+    .construct-block.used {
+        opacity: 0.3;
+        cursor: default;
+    }
+
+    .construct-block.placed {
+        width: auto;
+        padding: 6px 10px;
+        border-color: #22d3ee;
+        border-bottom-width: 2px;
+        font-size: 12px;
+    }
+
+/* CURRENT / TARGET readouts */
+.construct-state {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    min-height: 46px;
+    padding: 10px 12px;
+    background-color: #05070a;
+    border: 1px solid rgba(34, 211, 238, 0.25);
+    border-radius: 8px;
+}
+
+.construct-state-target {
+    border-color: rgba(250, 204, 21, 0.45);
+}
+
+.construct-state-caption {
+    flex-basis: 100%;
+    color: #475569;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+}
+
+.construct-chip {
+    padding: 4px 10px;
+    color: #a5f3fc;
+    background-color: #0f172a;
+    border: 1px solid #3f3f46;
+    border-radius: 6px;
+    font-family: "Courier New", monospace;
+    font-size: 14px;
+}
+
+.construct-state-target .construct-chip {
+    color: #fde68a;
+}
+
+.construct-chip-empty {
+    color: #475569 !important;
+    border-style: dashed;
+}
+
+.construct-chip-arrow {
+    color: #475569;
+    font-size: 13px;
+}
+
+/* Sequence slots */
+.construct-rule {
+    margin: 0 0 10px;
+    color: #94a3b8;
+    font-size: 13px;
+    line-height: 19px;
+}
+
+.construct-slots {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.construct-slot {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 104px;
+    min-height: 44px;
+    padding: 6px 10px;
+    border: 1px dashed #3f3f46;
+    border-radius: 8px;
+}
+
+    .construct-slot.filled {
+        border-style: solid;
+        border-color: rgba(34, 211, 238, 0.35);
+    }
+
+    .construct-slot.correct {
+        border-color: #4ade80;
+        background-color: rgba(74, 222, 128, 0.12);
+    }
+
+    .construct-slot.wrong {
+        border-color: #f87171;
+        background-color: rgba(248, 113, 113, 0.12);
+    }
+
+.construct-slot-number {
+    color: #64748b;
+    font-family: "Courier New", monospace;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.construct-slot-empty {
+    color: #475569;
+    font-size: 12px;
+}
+
+/* Preview / result */
+.construct-result {
+    margin-top: 4px;
+}
+
+    .construct-result.correct .construct-state {
+        border-color: #4ade80;
+    }
+
+    .construct-result.wrong .construct-state {
+        border-color: #f87171;
+    }
+
+.construct-result-note {
+    min-height: 18px;
+    margin: 8px 0 0;
+    color: #cbd5e1;
+    font-size: 13px;
+}
+
+.construct-result.correct .construct-result-note {
+    color: #4ade80;
+}
+
+.construct-result.wrong .construct-result-note {
+    color: #f87171;
+}
+
+.construct-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 18px;
+}
+
+    .construct-actions .primary-button:disabled,
+    .construct-actions .secondary-button:disabled {
+        opacity: 0.5;
+        cursor: default;
+    }
+
+/* Locked after Run Sequence */
+.construct-locked .construct-block {
+    pointer-events: none;
+}
+
+@media (max-width: 600px) {
+    .construct-tray-wrap {
+        width: 100%;
+        max-width: 260px;
+        margin: 0 auto;
+    }
+}

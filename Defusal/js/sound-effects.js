@@ -97,6 +97,39 @@ const SFX = (function () {
             fallbackFn();
         }
     }
+
+        // ---------------- Looping soundtrack ----------------
+    // One long-running <audio> element, separate from the one-shot
+    // custom clips above. startSoundtrack() is safe to call every
+    // tick - it does nothing if the track is already playing.
+    let soundtrack = null;
+
+    function loadSoundtrack(url, volume) {
+        soundtrack = new Audio(url);
+        soundtrack.loop = true;
+        soundtrack.preload = "auto";
+        soundtrack.volume = volume != null ? volume : 0.6;
+
+        soundtrack.addEventListener("error", function () {
+            console.error("SFX: couldn't load soundtrack from " + url);
+        });
+    }
+
+    function startSoundtrack() {
+        if (!soundtrack || !soundtrack.paused) {
+            return;
+        }
+        soundtrack.play().catch(function () {});
+    }
+
+    function stopSoundtrack() {
+        if (!soundtrack) {
+            return;
+        }
+        soundtrack.pause();
+        soundtrack.currentTime = 0;
+    }
+
     return {
         // Registers a real audio file to replace one event's
         // synthesized tone. See loadCustomSound() above for details.
@@ -104,6 +137,10 @@ const SFX = (function () {
         // "keyTap", "correct", "wrong", "moduleSolved", "defused",
         // "exploded", "timerWarningTick".
         loadCustomSound: loadCustomSound,
+        loadSoundtrack: loadSoundtrack,
+        startSoundtrack: startSoundtrack,
+        stopSoundtrack: stopSoundtrack,
+
         // Keypad tap / typing a character - short, quiet click
         playKeyTap: function () {
             playWithFallback("keyTap", function () {

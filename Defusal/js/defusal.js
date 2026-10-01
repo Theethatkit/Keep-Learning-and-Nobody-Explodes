@@ -1,7 +1,7 @@
 // ===================================================================
 // Bomb Defusal - shared shell + Identify (MC / True-False)
 //                                + Operate (Fill in the Blanks)
-//                                + Trace (Connect the Dots)
+//                                + Construct (Build an Operation Sequence)
 //                                + Analyze (Trace + Typed Output)
 //                                + Defuse (Scenario, single-select)
 //
@@ -35,6 +35,7 @@
 // listed here just keeps using SFX's built-in synthesized tone.
 SFX.loadCustomSound("exploded", "../audio/explosion.mp3");
 SFX.loadCustomSound("defused", "../audio/defused-fanfare.mp3");
+SFX.loadSoundtrack("../audio/clock_is_ticking_benny_hawes.mp3", 0.6);
 
 // ------------------- Screens -------------------
 const overviewScreen = document.getElementById("overviewScreen");
@@ -81,15 +82,21 @@ const analyzeTraceList = document.getElementById("analyzeTraceList");
 const analyzeQuestionPrompt = document.getElementById("analyzeQuestionPrompt");
 const analyzeAnswerDisplay = document.getElementById("analyzeAnswerDisplay");
 
-// ------------------- Module 3 (Connect the Dots) elements -------------------
+// ------------------- Module 3 (Construct) elements -------------------
 const module3QuestionTopic = document.getElementById("module3QuestionTopic");
 const module3QuestionPrompt = document.getElementById("module3QuestionPrompt");
-const module3InitialStateDisplay = document.getElementById("module3InitialStateDisplay");
-const module3ConnectBoard = document.getElementById("module3ConnectBoard");
-const module3TermsColumn = document.getElementById("module3TermsColumn");
-const module3DefinitionsColumn = document.getElementById("module3DefinitionsColumn");
-const module3ConnectLinesSvg = document.getElementById("module3ConnectLinesSvg");
-const module3CheckButton = document.getElementById("module3CheckButton");
+const module3CurrentDisplay = document.getElementById("module3CurrentDisplay");
+const module3TargetDisplay = document.getElementById("module3TargetDisplay");
+const module3BlockTray = document.getElementById("module3BlockTray");
+const module3SequenceSlots = document.getElementById("module3SequenceSlots");
+const module3SlotCounter = document.getElementById("module3SlotCounter");
+const module3RuleText = document.getElementById("module3RuleText");
+const module3ResultRow = document.getElementById("module3ResultRow");
+const module3ResultLabel = document.getElementById("module3ResultLabel");
+const module3ResultDisplay = document.getElementById("module3ResultDisplay");
+const module3ResultNote = document.getElementById("module3ResultNote");
+const module3ClearButton = document.getElementById("module3ClearButton");
+const module3RunButton = document.getElementById("module3RunButton");
 
 // ------------------- Module 5 (Scenario / Defuse) elements -------------------
 // Single-select now, not multi: one scenario, pick the one best
@@ -292,8 +299,8 @@ const MODULE_REGISTRY = {
         resetInputs: resetFillBlankInputs
     },
     module3: {
-        moduleName: "module3-trace",
-        label: "Module 3: Trace",
+        moduleName: "module3-construct",
+        label: "Module 3: Construct",
         slot: document.getElementById("module3Slot"),
         screen: document.getElementById("module3GameScreen"),
         bombShell: document.getElementById("module3BombShell"),
@@ -302,8 +309,8 @@ const MODULE_REGISTRY = {
         progressDisplay: document.getElementById("module3ProgressDisplay"),
         backButton: document.getElementById("backToOverviewFromModule3"),
         questionBank: MODULE3_QUESTION_BANK,
-        renderQuestion: renderConnectQuestion,
-        resetInputs: resetConnectInputs
+        renderQuestion: renderConstructQuestion,
+        resetInputs: resetConstructInputs
     },
     analyze: {
         moduleName: "module4-analyze",
@@ -411,6 +418,10 @@ startButton.addEventListener("click", function () {
 });
 
 function armBomb(difficultyId, isPracticeMode) {
+    SFX.stopSoundtrack();
+    if (armedConfig && armedConfig.timerId) {
+        clearInterval(armedConfig.timerId); // safety: never leave an old clock ticking
+    }
     const bombDifficulty = IDENTIFY_QUESTION_BANK.difficulties[difficultyId];
 
     // The countdown itself lives here, on armedConfig, not on the
@@ -449,6 +460,7 @@ function armBomb(difficultyId, isPracticeMode) {
     renderModulesSolvedLabel();
 
     showScreen(overviewScreen);
+    resumeTimerIfNeeded(); // the clock now runs from arming, including on the overview
 }
 
 // Clears the "solved" mark on every module cell, so a fresh arm (or a
@@ -594,6 +606,26 @@ function renderTimer() {
         el.classList.toggle("timer-running", isRunning);
         el.classList.toggle("timer-warning", isWarning);
     });
+
+    updateSoundtrack();
+}
+
+// Starts the looping soundtrack the moment the shared clock drops
+// below 50s (so 0:49 and under). Called from renderTimer(), which
+// also runs after wrong-answer penalties, so a big time dock that
+// jumps the clock under 50 triggers it too. Stopped in armBomb() and
+// finishBomb(). Never plays in practice mode (no clock there).
+const SOUNDTRACK_THRESHOLD_SECONDS = 50;
+
+function updateSoundtrack() {
+    const shouldPlay =
+        !armedConfig.isPracticeMode &&
+        armedConfig.timeRemaining > 0 &&
+        armedConfig.timeRemaining < SOUNDTRACK_THRESHOLD_SECONDS;
+
+    if (shouldPlay) {
+        SFX.startSoundtrack();
+    }
 }
 
 // ------------------- Strikes -------------------
@@ -750,303 +782,479 @@ function renderAnalyzeAnswerDisplay() {
     analyzeAnswerDisplay.classList.toggle("answer-display-placeholder", !hasTyped);
 }
 
-// ----- Module 3 (Connect the Dots) rendering -----
-// Unlike the button-based modules, the "answer buttons" here are
-// rebuilt fresh every question (the number of terms/definitions
-// varies with the round), so clicks are handled with delegated
-// listeners on the two columns rather than a fixed NodeList.
+// ----- Module 3 (Construct) rendering + engine -----
+// The player is shown a CURRENT state, a TARGET state and a limited
+// tray of operation blocks (question.solution's ops plus a few
+// decoys, shuffled fresh every time the question is shown). Clicking
+// a tray block appends it to the sequence slots; clicking a placed
+// block takes it back out. "Run Sequence" SIMULATES the sequence on
+// the current state, so ANY sequence that reaches the target within
+// the difficulty's constraints is accepted, not just the authored
+// one. Constraints scale per difficulty (see module3-questions.js):
+//   slackSlots      - spare slots beyond the optimal length
+//   distractorCount - decoy blocks mixed into the tray
+//   exactCount      - must fill exactly every slot
+//   livePreview     - shows the running result while building
 //
-// module3Pairings maps a term's pair id to whichever definition's
-// pair id it's currently connected to. Since a term and its correct
-// definition share the same underlying pair id, a connection is
-// correct exactly when module3Pairings[pairId] === pairId.
-let module3Pairings = {};
-let module3ActiveTermId = null;
+// Every structure is an array with index 0 = top / front / head, so
+// one small op set (reverse, delHead, insTail, rotate, swap...) covers
+// stacks, queues, linked lists and arrays; `kind` only changes how
+// ops are labelled and how the state is drawn.
 
-// Module 3's question data (module3-questions.js) no longer supplies
-// ready-made {term, definition} pairs directly - it supplies a single
-// starting state (question.initialState) plus an ORDERED chain of
-// operations/states (question.operations / question.states, same
-// length, index-aligned: states[i] is the result after operations[i]
-// is applied to whatever state came before it). That's what makes
-// this a real trace rather than independent trivia: states[2] can
-// only be figured out by having already traced through states[0] and
-// states[1] in your head, even though the board only asks you to
-// place states[2] in its own slot.
-//
-// Rather than rewriting the whole matching engine for that, this
-// derives the same {id, term, definition} pairs the old engine
-// always expected - term is the fixed, ordered step slot ("Step 2:
-// PUSH(50)"), definition is that step's resulting state - and stores
-// them back onto the question object. Every other function below
-// (submitConnectAnswer, resetConnectInputs, redrawConnectLines, the
-// click handlers) still just reads question.pairs and has no idea
-// the content is a trace rather than a vocab list.
-function renderConnectQuestion(question) {
-    module3QuestionTopic.textContent = question.topic;
-    module3QuestionPrompt.textContent =
-        question.prompt || "Trace each step and connect it to the resulting state.";
+const CONSTRUCT_KIND_CAPTION = {
+    stack: "Stack \u00B7 top first",
+    queue: "Queue \u00B7 front first",
+    list: "Linked list \u00B7 head first",
+    array: "Array \u00B7 index 0 first"
+};
 
-    module3InitialStateDisplay.textContent = question.initialState;
+let module3CurrentQuestion = null;
+let module3Blocks = [];      // [{ id, op, label }] - the tray
+let module3Sequence = [];    // block ids, in the order the player placed them
+let module3MaxOps = 0;
+let module3IsExact = false;
+let module3ShowPreview = false;
 
-    question.pairs = question.operations.map(function (operationLabel, index) {
-        return {
-            id: "step" + index,
-            term: "Step " + (index + 1) + ": " + operationLabel,
-            definition: question.states[index]
-        };
-    });
-
-    const shuffledPairsForDefinitions = question.pairs.slice().sort(function () {
-        return Math.random() - 0.5;
-    });
-
-    module3TermsColumn.innerHTML = "";
-    question.pairs.forEach(function (pair, index) {
-        module3TermsColumn.appendChild(
-            buildConnectNode("term", pair.id, pair.term, String(index + 1))
-        );
-    });
-
-    module3DefinitionsColumn.innerHTML = "";
-    shuffledPairsForDefinitions.forEach(function (pair, index) {
-        const badgeLetter = String.fromCharCode(65 + index); // A, B, C...
-        module3DefinitionsColumn.appendChild(
-            buildConnectNode("definition", pair.id, pair.definition, badgeLetter)
-        );
-    });
+// ---- the simulator ----
+function parseConstructOp(opString) {
+    const colonIndex = opString.indexOf(":");
+    return colonIndex === -1
+        ? { name: opString, arg: "" }
+        : { name: opString.slice(0, colonIndex), arg: opString.slice(colonIndex + 1) };
 }
 
-function buildConnectNode(kind, pairId, labelText, badgeText) {
-    const node = document.createElement("button");
-    node.type = "button";
-    node.classList.add("connect-node", "connect-" + kind);
+// Returns the new state, or null if the op can't run on this state
+// (e.g. deleting from an empty structure, swapping a missing index).
+function applyConstructOp(state, opString) {
+    const op = parseConstructOp(opString);
+    const size = state.length;
 
-    if (kind === "term") {
-        node.dataset.termId = pairId;
-    } else {
-        node.dataset.definitionId = pairId;
-    }
-
-    const badge = document.createElement("span");
-    badge.classList.add("connect-node-badge");
-    badge.textContent = badgeText;
-
-    const label = document.createElement("span");
-    label.classList.add("connect-node-label");
-    label.textContent = labelText;
-
-    const dot = document.createElement("span");
-    dot.classList.add("connect-dot-marker");
-
-    node.appendChild(badge);
-    node.appendChild(label);
-    node.appendChild(dot);
-
-    return node;
-}
-
-function resetConnectInputs() {
-    module3Pairings = {};
-    module3ActiveTermId = null;
-
-    module3ConnectBoard.classList.remove("connect-board-locked");
-    module3CheckButton.disabled = false;
-
-    redrawConnectLines();
-}
-
-// A term click arms/disarms it as "waiting for a definition". A
-// definition click, while a term is armed, connects the two (bumping
-// off any previous connection either one had) and disarms.
-module3TermsColumn.addEventListener("click", function (event) {
-    if (!runState || runState.moduleId !== "module3" || runState.isAnswerLocked) {
-        return;
-    }
-
-    const node = event.target.closest(".connect-term");
-    if (!node) {
-        return;
-    }
-
-    const termId = node.dataset.termId;
-    module3ActiveTermId = module3ActiveTermId === termId ? null : termId;
-
-    updateConnectSelectionVisuals();
-});
-
-module3DefinitionsColumn.addEventListener("click", function (event) {
-    if (!runState || runState.moduleId !== "module3" || runState.isAnswerLocked) {
-        return;
-    }
-
-    const node = event.target.closest(".connect-definition");
-    if (!node || !module3ActiveTermId) {
-        return;
-    }
-
-    const definitionId = node.dataset.definitionId;
-
-    // a definition can only be used once - stealing it from whatever
-    // term it was previously connected to
-    Object.keys(module3Pairings).forEach(function (existingTermId) {
-        if (module3Pairings[existingTermId] === definitionId) {
-            delete module3Pairings[existingTermId];
+    switch (op.name) {
+        case "reverse":
+            return state.slice().reverse();
+        case "delHead":
+            return size > 0 ? state.slice(1) : null;
+        case "delTail":
+            return size > 0 ? state.slice(0, -1) : null;
+        case "insHead":
+            return [op.arg].concat(state);
+        case "insTail":
+            return state.concat([op.arg]);
+        case "rotate":
+            return size > 0 ? state.slice(1).concat([state[0]]) : null;
+        case "dup":
+            return size > 0 ? [state[0]].concat(state) : null;
+        case "swap": {
+            const pair = op.arg.split(",").map(Number);
+            if (pair.length !== 2 || pair[0] < 0 || pair[1] < 0 || pair[0] >= size || pair[1] >= size) {
+                return null;
+            }
+            const copy = state.slice();
+            const held = copy[pair[0]];
+            copy[pair[0]] = copy[pair[1]];
+            copy[pair[1]] = held;
+            return copy;
         }
+    }
+
+    return null;
+}
+
+// Runs every op in order. { ok, state, failedAt } - when an op can't
+// run, state is whatever it was just before that op.
+function runConstructSequence(startState, ops) {
+    let state = startState.slice();
+
+    for (let i = 0; i < ops.length; i++) {
+        const next = applyConstructOp(state, ops[i]);
+        if (!next) {
+            return { ok: false, state: state, failedAt: i };
+        }
+        state = next;
+    }
+
+    return { ok: true, state: state, failedAt: -1 };
+}
+
+// ---- labels / formatting ----
+function constructOpLabel(opString, kind) {
+    const op = parseConstructOp(opString);
+
+    switch (op.name) {
+        case "reverse":
+            return "REVERSE";
+        case "delHead":
+            return kind === "stack" ? "POP"
+                : kind === "queue" ? "DEQUEUE"
+                : kind === "array" ? "REMOVE FIRST"
+                : "DELETE HEAD";
+        case "delTail":
+            return kind === "array" ? "REMOVE LAST" : "DELETE TAIL";
+        case "insHead":
+            return kind === "stack" ? "PUSH " + op.arg
+                : kind === "array" ? "PREPEND " + op.arg
+                : "INSERT HEAD " + op.arg;
+        case "insTail":
+            return kind === "queue" ? "ENQUEUE " + op.arg
+                : kind === "array" ? "APPEND " + op.arg
+                : "INSERT TAIL " + op.arg;
+        case "rotate":
+            return kind === "array" ? "ROTATE LEFT" : "HEAD \u2192 TAIL";
+        case "dup":
+            return kind === "stack" ? "DUP TOP" : "DUPLICATE HEAD";
+        case "swap": {
+            const pair = op.arg.split(",");
+            return kind === "stack" && op.arg === "0,1"
+                ? "SWAP TOP 2"
+                : "SWAP " + pair[0] + " \u2194 " + pair[1];
+        }
+    }
+
+    return opString;
+}
+
+// Plain-text version, used by the review screen.
+function formatConstructState(state, kind) {
+    if (kind === "list") {
+        return state.length ? state.join(" \u2192 ") + " \u2192 NULL" : "NULL";
+    }
+    return state.length ? "[" + state.join(", ") + "]" : "(empty)";
+}
+
+function shuffleCopy(list) {
+    const copy = list.slice();
+    for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const held = copy[i];
+        copy[i] = copy[j];
+        copy[j] = held;
+    }
+    return copy;
+}
+
+// Draws a state as a row of chips (arrows between them for linked lists).
+function renderConstructState(containerEl, state, kind) {
+    containerEl.innerHTML = "";
+
+    const caption = document.createElement("span");
+    caption.classList.add("construct-state-caption");
+    caption.textContent = CONSTRUCT_KIND_CAPTION[kind] || "";
+    containerEl.appendChild(caption);
+
+    function addChip(text, extraClass) {
+        const chip = document.createElement("span");
+        chip.classList.add("construct-chip");
+        if (extraClass) {
+            chip.classList.add(extraClass);
+        }
+        chip.textContent = text;
+        containerEl.appendChild(chip);
+    }
+
+    function addArrow() {
+        const arrow = document.createElement("span");
+        arrow.classList.add("construct-chip-arrow");
+        arrow.textContent = "\u2192";
+        containerEl.appendChild(arrow);
+    }
+
+    if (!state.length) {
+        addChip(kind === "list" ? "NULL" : "(empty)", "construct-chip-empty");
+        return;
+    }
+
+    state.forEach(function (value, index) {
+        if (kind === "list" && index > 0) {
+            addArrow();
+        }
+        addChip(value);
     });
 
-    module3Pairings[module3ActiveTermId] = definitionId;
-    module3ActiveTermId = null;
+    if (kind === "list") {
+        addArrow();
+        addChip("NULL", "construct-chip-empty");
+    }
+}
 
-    updateConnectSelectionVisuals();
-    redrawConnectLines();
+function getConstructBlock(blockId) {
+    return module3Blocks.find(function (block) {
+        return block.id === blockId;
+    });
+}
+
+function getConstructSequenceOps() {
+    return module3Sequence.map(function (blockId) {
+        return getConstructBlock(blockId).op;
+    });
+}
+
+// ---- rendering a question ----
+function renderConstructQuestion(question) {
+    const difficulty = runState.difficulty;
+    module3CurrentQuestion = question;
+
+    module3QuestionTopic.textContent = question.topic;
+    module3QuestionPrompt.textContent = question.prompt;
+
+    renderConstructState(module3CurrentDisplay, question.current, question.kind);
+    renderConstructState(module3TargetDisplay, question.target, question.kind);
+
+    // What the Explanations screen shows as the question text - the
+    // prompt alone wouldn't say what the states were.
+    question.reviewPrompt = question.prompt +
+        " (Current: " + formatConstructState(question.current, question.kind) +
+        " | Target: " + formatConstructState(question.target, question.kind) + ")";
+
+    // The tray: every op the solution needs (duplicates stay separate
+    // blocks) plus this difficulty's number of decoys, shuffled.
+    const decoys = shuffleCopy(question.distractors).slice(0, difficulty.distractorCount);
+    module3Blocks = shuffleCopy(question.solution.concat(decoys)).map(function (op, index) {
+        return { id: "blk" + index, op: op, label: constructOpLabel(op, question.kind) };
+    });
+
+    module3MaxOps = question.solution.length + difficulty.slackSlots;
+    module3IsExact = !!difficulty.exactCount;
+    module3ShowPreview = !!difficulty.livePreview;
+    module3Sequence = [];
+
+    module3RuleText.textContent = module3IsExact
+        ? "Use exactly " + module3MaxOps + " operations. " + module3Blocks.length +
+          " blocks in the tray, each usable once - some are decoys."
+        : "Use at most " + module3MaxOps + " operations. " + module3Blocks.length +
+          " blocks in the tray, each usable once" +
+          (module3Blocks.length > question.solution.length ? " - some are decoys." : ".");
+}
+
+function resetConstructInputs() {
+    module3Sequence = [];
+
+    module3BlockTray.classList.remove("construct-locked");
+    module3SequenceSlots.classList.remove("construct-locked");
+    module3ResultRow.classList.remove("correct", "wrong");
+    module3ClearButton.disabled = false;
+    module3RunButton.disabled = false;
+
+    redrawConstructBoard();
+}
+
+function redrawConstructBoard() {
+    // tray
+    module3BlockTray.innerHTML = "";
+    module3Blocks.forEach(function (block) {
+        const isUsed = module3Sequence.indexOf(block.id) !== -1;
+
+        const button = document.createElement("button");
+        button.type = "button";
+        button.classList.add("construct-block");
+        button.classList.toggle("used", isUsed);
+        button.disabled = isUsed;
+        button.dataset.blockId = block.id;
+        button.textContent = block.label;
+        module3BlockTray.appendChild(button);
+    });
+
+    // slots
+    module3SequenceSlots.innerHTML = "";
+    for (let i = 0; i < module3MaxOps; i++) {
+        const slot = document.createElement("div");
+        slot.classList.add("construct-slot");
+
+        const number = document.createElement("span");
+        number.classList.add("construct-slot-number");
+        number.textContent = String(i + 1);
+        slot.appendChild(number);
+
+        const blockId = module3Sequence[i];
+        if (blockId) {
+            const placed = document.createElement("button");
+            placed.type = "button";
+            placed.classList.add("construct-block", "placed");
+            placed.dataset.seqIndex = String(i);
+            placed.textContent = getConstructBlock(blockId).label;
+            slot.classList.add("filled");
+            slot.appendChild(placed);
+        } else {
+            const empty = document.createElement("span");
+            empty.classList.add("construct-slot-empty");
+            empty.textContent = "empty";
+            slot.appendChild(empty);
+        }
+
+        module3SequenceSlots.appendChild(slot);
+    }
+
+    module3SlotCounter.textContent = module3Sequence.length + " / " + module3MaxOps;
+    module3RunButton.disabled = module3Sequence.length === 0;
+
+    updateConstructPreview();
+}
+
+// Easy/Intermediate only: shows what the sequence built so far would
+// produce, so the player can build incrementally. Hard/Expert hide it,
+// leaving the player to simulate in their head (and a wrong Run costs
+// a strike).
+function updateConstructPreview() {
+    if (!module3ShowPreview) {
+        module3ResultRow.classList.add("hidden");
+        return;
+    }
+
+    const result = runConstructSequence(module3CurrentQuestion.current, getConstructSequenceOps());
+
+    module3ResultRow.classList.remove("hidden");
+    module3ResultLabel.textContent = "Preview";
+    renderConstructState(module3ResultDisplay, result.state, module3CurrentQuestion.kind);
+
+    module3ResultNote.textContent = result.ok
+        ? ""
+        : "Step " + (result.failedAt + 1) + " can't run here - the structure is too small for that block.";
+}
+
+// ---- input handling (delegated, since tray/slots are rebuilt on every change) ----
+function isConstructInputOpen() {
+    return runState && runState.moduleId === "module3" && !runState.isAnswerLocked;
+}
+
+module3BlockTray.addEventListener("click", function (event) {
+    if (!isConstructInputOpen()) {
+        return;
+    }
+
+    const button = event.target.closest(".construct-block");
+    if (!button || button.disabled) {
+        return;
+    }
+
+    if (module3Sequence.length >= module3MaxOps) {
+        return; // slots are full - take a block back out first
+    }
+
+    SFX.playKeyTap();
+    module3Sequence.push(button.dataset.blockId);
+    redrawConstructBoard();
 });
 
-module3CheckButton.addEventListener("click", function () {
-    if (!runState || runState.moduleId !== "module3" || runState.isAnswerLocked) {
+module3SequenceSlots.addEventListener("click", function (event) {
+    if (!isConstructInputOpen()) {
+        return;
+    }
+
+    const placed = event.target.closest(".construct-block.placed");
+    if (!placed) {
+        return;
+    }
+
+    SFX.playKeyTap();
+    module3Sequence.splice(Number(placed.dataset.seqIndex), 1);
+    redrawConstructBoard();
+});
+
+module3ClearButton.addEventListener("click", function () {
+    if (!isConstructInputOpen() || !module3Sequence.length) {
+        return;
+    }
+
+    SFX.playKeyTap();
+    module3Sequence = [];
+    redrawConstructBoard();
+});
+
+module3RunButton.addEventListener("click", function () {
+    if (!isConstructInputOpen() || !module3Sequence.length) {
         return;
     }
 
     runState.isAnswerLocked = true;
-    submitConnectAnswer();
+    submitConstructAnswer();
 });
 
-// Reflects "armed" (active) and "already connected" (paired) states -
-// purely cosmetic, no correct/wrong judgement until Check is pressed.
-function updateConnectSelectionVisuals() {
-    module3TermsColumn.querySelectorAll(".connect-term").forEach(function (node) {
-        const termId = node.dataset.termId;
-        node.classList.toggle("active", termId === module3ActiveTermId);
-        node.classList.toggle("paired", !!module3Pairings[termId]);
+// ---- grading ----
+// Correct = the simulated result equals the target AND the sequence
+// obeys the count rule (at most N, or exactly N on Expert).
+function submitConstructAnswer() {
+    const question = module3CurrentQuestion;
+    const ops = getConstructSequenceOps();
+    const labels = module3Sequence.map(function (blockId) {
+        return getConstructBlock(blockId).label;
     });
 
-    const connectedDefinitionIds = Object.keys(module3Pairings).map(function (termId) {
-        return module3Pairings[termId];
-    });
+    const result = runConstructSequence(question.current, ops);
+    const reachedTarget = result.ok && result.state.join("|") === question.target.join("|");
+    const countOk = module3IsExact
+        ? ops.length === module3MaxOps
+        : ops.length > 0 && ops.length <= module3MaxOps;
+    const isCorrect = reachedTarget && countOk;
 
-    module3DefinitionsColumn.querySelectorAll(".connect-definition").forEach(function (node) {
-        node.classList.toggle(
-            "paired",
-            connectedDefinitionIds.indexOf(node.dataset.definitionId) !== -1
-        );
-    });
-}
+    // lock the board
+    module3BlockTray.classList.add("construct-locked");
+    module3SequenceSlots.classList.add("construct-locked");
+    module3ClearButton.disabled = true;
+    module3RunButton.disabled = true;
 
-// Draws one line per current pairing, from the term's dot marker to
-// its connected definition's dot marker, in coordinates relative to
-// the connect-board container (so it still lines up if the board
-// scrolls or the window resizes).
-function redrawConnectLines() {
-    module3ConnectLinesSvg.innerHTML = "";
-
-    if (!runState || runState.moduleId !== "module3") {
-        return;
+    // show what actually happened
+    let note;
+    if (!result.ok) {
+        note = "Step " + (result.failedAt + 1) + " (" + labels[result.failedAt] +
+            ") couldn't run - the structure was too small at that point.";
+    } else if (!reachedTarget) {
+        note = "That sequence ends at a different state than the target.";
+    } else if (!countOk) {
+        note = "Right state, wrong length: this bomb demands exactly " + module3MaxOps + " operations.";
+    } else {
+        note = "Target reached.";
     }
 
-    const boardRect = module3ConnectBoard.getBoundingClientRect();
+    module3ResultRow.classList.remove("hidden");
+    module3ResultRow.classList.add(isCorrect ? "correct" : "wrong");
+    module3ResultLabel.textContent = "Result";
+    renderConstructState(module3ResultDisplay, result.state, question.kind);
+    module3ResultNote.textContent = note;
 
-    Object.keys(module3Pairings).forEach(function (termId) {
-        const definitionId = module3Pairings[termId];
-
-        const termDot = module3TermsColumn.querySelector(
-            '.connect-term[data-term-id="' + termId + '"] .connect-dot-marker'
-        );
-        const definitionDot = module3DefinitionsColumn.querySelector(
-            '.connect-definition[data-definition-id="' + definitionId + '"] .connect-dot-marker'
-        );
-
-        if (!termDot || !definitionDot) {
-            return;
-        }
-
-        const line = drawConnectLine(termDot, definitionDot, boardRect);
-        line.dataset.termId = termId;
-        line.dataset.definitionId = definitionId;
-        module3ConnectLinesSvg.appendChild(line);
-    });
-}
-
-function drawConnectLine(fromDotEl, toDotEl, boardRect) {
-    const fromRect = fromDotEl.getBoundingClientRect();
-    const toRect = toDotEl.getBoundingClientRect();
-
-    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-    line.classList.add("connect-line");
-    line.setAttribute("x1", fromRect.left + fromRect.width / 2 - boardRect.left);
-    line.setAttribute("y1", fromRect.top + fromRect.height / 2 - boardRect.top);
-    line.setAttribute("x2", toRect.left + toRect.width / 2 - boardRect.left);
-    line.setAttribute("y2", toRect.top + toRect.height / 2 - boardRect.top);
-
-    return line;
-}
-
-// Redraw on resize too, so lines stay anchored to their dots if the
-// layout reflows (e.g. rotating a phone) while a round is active.
-window.addEventListener("resize", function () {
-    redrawConnectLines();
-});
-
-// Checks every pair at once: correct only if the term ended up
-// connected to the definition sharing its own pair id. Colors every
-// node (and line) green/red for feedback, then hands off to the
-// shared commitAnswer() just like every other module.
-function submitConnectAnswer() {
-    const question = runState.questions[runState.currentIndex];
-
-    const isCorrect = question.pairs.every(function (pair) {
-        return module3Pairings[pair.id] === pair.id;
-    });
-
-    module3ConnectBoard.classList.add("connect-board-locked");
-    module3CheckButton.disabled = true;
-
-    question.pairs.forEach(function (pair) {
-        const connectedDefinitionId = module3Pairings[pair.id];
-        const wasConnectedCorrectly = connectedDefinitionId === pair.id;
-        const feedbackClass = wasConnectedCorrectly ? "correct" : "wrong";
-
-        const termNode = module3TermsColumn.querySelector(
-            '.connect-term[data-term-id="' + pair.id + '"]'
-        );
-        if (termNode) {
-            termNode.classList.add(feedbackClass);
-        }
-
-        if (connectedDefinitionId) {
-            const definitionNode = module3DefinitionsColumn.querySelector(
-                '.connect-definition[data-definition-id="' + connectedDefinitionId + '"]'
-            );
-            if (definitionNode) {
-                definitionNode.classList.add(feedbackClass);
+    module3SequenceSlots.querySelectorAll(".construct-slot.filled").forEach(function (slot, index) {
+        if (isCorrect) {
+            slot.classList.add("correct");
+        } else if (!result.ok) {
+            if (index === result.failedAt) {
+                slot.classList.add("wrong");
             }
+        } else {
+            slot.classList.add("wrong");
         }
     });
 
-    module3ConnectLinesSvg.querySelectorAll(".connect-line").forEach(function (line) {
-        const wasConnectedCorrectly = line.dataset.termId === line.dataset.definitionId;
-        line.classList.add(wasConnectedCorrectly ? "correct" : "wrong");
+    const solutionLabels = question.solution.map(function (op) {
+        return constructOpLabel(op, question.kind);
     });
-
-    // Multiple pairs per question, so the "answer" is a summary line
-    // per term rather than one value - each term with whatever
-    // definition the player connected it to (or "(unanswered)").
-    const yourAnswerText = question.pairs.map(function (pair) {
-        const connectedDefinitionId = module3Pairings[pair.id];
-        const connectedPair = question.pairs.find(function (candidate) {
-            return candidate.id === connectedDefinitionId;
-        });
-        return pair.term + " \u2192 " + (connectedPair ? connectedPair.definition : "(unanswered)");
-    }).join("; ");
-
-    const correctAnswerText = question.pairs.map(function (pair) {
-        return pair.term + " \u2192 " + pair.definition;
-    }).join("; ");
 
     commitAnswer(isCorrect, {
-        yourAnswerText: yourAnswerText,
-        correctAnswerText: correctAnswerText
+        yourAnswerText: labels.join(" \u2192 ") + " \u21D2 " +
+            (result.ok ? formatConstructState(result.state, question.kind) : "(invalid sequence)"),
+        correctAnswerText: solutionLabels.join(" \u2192 ") + " (one valid solution)"
     });
 }
+
+// Dev safety net: warns in the console if a question's own authored
+// solution doesn't actually reach its target, or if the pool is too
+// small for a difficulty's question count.
+(function validateConstructBank() {
+    const poolSizes = {};
+
+    MODULE3_QUESTION_BANK.questions.forEach(function (question) {
+        poolSizes[question.difficulty] = (poolSizes[question.difficulty] || 0) + 1;
+
+        const result = runConstructSequence(question.current, question.solution);
+        if (!result.ok || result.state.join("|") !== question.target.join("|")) {
+            console.warn("[Construct] solution does not reach target:", question.id);
+        }
+    });
+
+    Object.keys(MODULE3_QUESTION_BANK.difficulties).forEach(function (difficultyId) {
+        const needed = MODULE3_QUESTION_BANK.difficulties[difficultyId].questionCount;
+        if ((poolSizes[difficultyId] || 0) < needed) {
+            console.warn("[Construct] not enough questions for", difficultyId);
+        }
+    });
+})();
 
 // Module 4 (Analyze) rendering is handled entirely by
 // createIdentifyStyleModule() above - it shares Identify's MC/True-False
@@ -1360,7 +1568,7 @@ function commitAnswer(isCorrect, answerDetails) {
     runState.answerLog.push({
         moduleLabel: MODULE_REGISTRY[runState.moduleId].label,
         topic: topic,
-        prompt: question.prompt,
+        prompt: question.reviewPrompt || question.prompt,
         isCorrect: isCorrect,
         yourAnswerText: answerDetails && answerDetails.yourAnswerText
             ? answerDetails.yourAnswerText
@@ -1503,7 +1711,6 @@ function completeModule(moduleId) {
     markModuleSolved(moduleId);
     SFX.playModuleSolved();
 
-    pauseTimer();
     runState = null;
 
     renderModulesSolvedLabel();
@@ -1538,6 +1745,7 @@ function markModuleSolved(moduleId) {
 
 // ------------------- Ending the bomb (defused or exploded) -------------------
 function finishBomb(isDefused) {
+    SFX.stopSoundtrack();
      if (isDefused) {
         SFX.playDefused();
     } else {
@@ -2316,12 +2524,7 @@ Object.keys(MODULE_REGISTRY).forEach(function (moduleId) {
     });
 
     moduleConfig.backButton.addEventListener("click", function () {
-        // "Back to Bomb Overview" mid-run - pause the clock while
-        // zoomed out, per the "Keep Talking" rule that only zoomed-in
-        // time counts against you. This module isn't solved, so its
-        // progress (current question, strikes so far) is simply
-        // dropped - re-entering it later starts that module over.
-        pauseTimer();
+        
         runState = null;
         showScreen(overviewScreen);
     });

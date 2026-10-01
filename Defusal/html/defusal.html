@@ -133,20 +133,13 @@
                             <span class="cell-hint">Tap to defuse</span>
                         </button>
 
-                        <!-- Module 3: Connect the Dots (active) -->
+                        <!-- Module 3: Construct (active) -->
                         <button id="module3Slot" class="bomb-cell playable-cell" type="button">
                             <span class="cell-led active"></span>
-                            <div class="cell-content mock-connect">
-                                <span class="connect-dots">
-                                    <span class="connect-dot"></span>
-                                    <span class="connect-dot"></span>
-                                    <span class="connect-dot"></span>
-                                </span>
-                                <span class="connect-pills">
-                                    <span class="connect-pill"></span>
-                                    <span class="connect-pill"></span>
-                                    <span class="connect-pill"></span>
-                                </span>
+                            <div class="cell-content mock-construct">
+                                <span class="mock-construct-block"></span>
+                                <span class="mock-construct-block"></span>
+                                <span class="mock-construct-block mock-construct-block-ghost"></span>
                             </div>
                             <span class="cell-hint">Tap to defuse</span>
                         </button>
@@ -546,11 +539,15 @@
         </section>
 
         <!-- ===================== MODULE 3 GAME SCREEN ===================== -->
-        <!-- Zoomed into Module 3: same shell/timer/strikes pattern as the
-             other modules, but the module face is a two-column matching
-             board instead of "buttons left, question right" - terms on
-             the left, shuffled definitions on the right, connected with
-             lines as the player clicks pairs together. -->
+        <!-- Zoomed into Module 3 - Construct: same shell/timer/strikes
+             pattern as the other modules. The left column is a LIMITED
+             tray of operation blocks (rebuilt by JS every question);
+             the right panel shows the CURRENT and TARGET states and a
+             row of sequence slots. The player clicks blocks into the
+             slots to build a sequence, then presses Run Sequence -
+             defusal.js simulates it and checks it reaches the target.
+             Slot count, decoy blocks, exact-count rule and the live
+             preview all scale with difficulty. -->
         <section id="module3GameScreen" class="screen game-screen hidden">
 
             <button id="backToOverviewFromModule3" class="back-link" type="button">
@@ -581,50 +578,52 @@
 
                 <div class="module-face">
 
-                    <p class="module-label">Module 3: Trace</p>
+                    <p class="module-label">Module 3: Construct</p>
 
-                    <p class="question-topic" id="module3QuestionTopic">Topic</p>
-                    <p class="question-prompt" id="module3QuestionPrompt">
-                        Trace each step and connect it to the resulting state.
-                    </p>
+                    <div class="module-face-columns">
 
-                    <!-- Signal origin: the starting state the operations
-                         below are applied to. Fixed/given, not part of
-                         the puzzle itself - the player traces forward
-                         from here through each step. -->
-                    <div class="trace-origin" id="module3TraceOrigin">
-                        <span class="trace-origin-label">Signal Origin</span>
-                        <span class="trace-origin-value" id="module3InitialStateDisplay">&mdash;</span>
-                    </div>
-
-                    <!-- The matching board: fixed, ordered step slots on
-                         the left (each naming the operation applied at
-                         that step), shuffled resulting states on the
-                         right - an SVG overlay draws the lines between
-                         whatever's currently paired. Reuses the same
-                         connect-the-dots engine as before; only the
-                         content plugged into it has changed (see
-                         renderConnectQuestion in defusal.js) so that
-                         connecting term->definition now means routing a
-                         step to its correct resulting state instead of
-                         a vocabulary term to its definition. -->
-                    <div class="connect-board" id="module3ConnectBoard">
-
-                        <svg id="module3ConnectLinesSvg" class="connect-lines-svg"></svg>
-
-                        <div class="connect-column connect-terms" id="module3TermsColumn">
-                            <!-- term nodes injected here by JS -->
+                        <!-- Operation block tray (limited; blocks injected by JS) -->
+                        <div class="construct-tray-wrap">
+                            <p class="construct-section-label">Operation blocks</p>
+                            <div class="construct-tray" id="module3BlockTray"></div>
                         </div>
 
-                        <div class="connect-column connect-definitions" id="module3DefinitionsColumn">
-                            <!-- definition nodes injected here by JS -->
+                        <div id="module3QuestionPopup" class="question-popup">
+
+                            <p class="question-topic" id="module3QuestionTopic">Topic</p>
+                            <p class="question-prompt" id="module3QuestionPrompt">
+                                Build a sequence of operations that turns CURRENT into TARGET.
+                            </p>
+
+                            <p class="construct-section-label">Current</p>
+                            <div class="construct-state" id="module3CurrentDisplay"></div>
+
+                            <p class="construct-section-label">Target</p>
+                            <div class="construct-state construct-state-target" id="module3TargetDisplay"></div>
+
+                            <p class="construct-section-label">
+                                Your sequence
+                                <span class="construct-counter" id="module3SlotCounter">0 / 0</span>
+                            </p>
+                            <p class="construct-rule" id="module3RuleText"></p>
+                            <div class="construct-slots" id="module3SequenceSlots"></div>
+
+                            <!-- Live preview on Easy/Intermediate, then the
+                                 graded result after Run Sequence -->
+                            <div class="construct-result hidden" id="module3ResultRow">
+                                <p class="construct-section-label" id="module3ResultLabel">Preview</p>
+                                <div class="construct-state" id="module3ResultDisplay"></div>
+                                <p class="construct-result-note" id="module3ResultNote"></p>
+                            </div>
+
+                            <div class="construct-actions">
+                                <button id="module3ClearButton" class="secondary-button" type="button">Clear</button>
+                                <button id="module3RunButton" class="primary-button" type="button">Run Sequence</button>
+                            </div>
+
                         </div>
 
                     </div>
-
-                    <button id="module3CheckButton" class="primary-button confirm-button" type="button">
-                        Check Connections
-                    </button>
 
                 </div>
 
