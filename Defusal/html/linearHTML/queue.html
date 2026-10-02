@@ -3,27 +3,16 @@
 
 <head>
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Queue | DataLab</title>
 
-    <!-- Shared Navigation CSS -->
     <link rel="stylesheet" href="../../css/navbar.css">
-
-    <!-- Queue Page CSS -->
-    <link rel="stylesheet" href="../../css/linearCSS/queue.css">
-
-    <!-- Global CSS -->
     <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/linearCSS/queue.css">
 </head>
 
-<body>
-
-    <!-- ================= Navigation Bar ================= -->
+<body class="queue-page">
 
     <header class="navbar">
 
@@ -35,38 +24,22 @@
             >
         </a>
 
-        <nav class="nav-links">
-
-            <a href="../../index.html" class="nav-link">
-                Home
-            </a>
-
-            <a href="../lessons.html" class="nav-link active">
-                Lessons
-            </a>
-
-            <a href="../defusal.html" class="nav-link">
-                Revision
-            </a>
-
-            <a href="../team.html" class="nav-link">
-                Team
-            </a>
-
+        <nav class="nav-links" aria-label="Main navigation">
+            <a href="../../index.html" class="nav-link">Home</a>
+            <a href="../lessons.html" class="nav-link active">Lessons</a>
+            <a href="../defusal.html" class="nav-link">Revision</a>
+            <a href="../team.html" class="nav-link">Team</a>
         </nav>
 
         <a href="../login.html" id="authButton" class="auth-button">
             Log in
         </a>
-        
+
     </header>
-
-
-    <!-- ================= Main Content ================= -->
 
     <main class="container">
 
-        <!-- Page Header -->
+        <!-- ================= Header ================= -->
 
         <section class="page-header">
 
@@ -74,51 +47,65 @@
                 ← Back to Linear Structures
             </a>
 
-            <p class="category">
-                LINEAR DATA STRUCTURE
-            </p>
+            <p class="category">LINEAR DATA STRUCTURE</p>
 
             <h1>Queue</h1>
 
-            <p>
-                Learn how a queue processes elements using the
-                First In, First Out principle.
+            <p class="page-description">
+                Understand FIFO and explore how a circular queue
+                reuses its available array slots.
             </p>
+
+            <div class="lesson-tags">
+                <span>Beginner → Intermediate</span>
+                <span>Circular queue</span>
+                <span>Interactive practice</span>
+            </div>
 
         </section>
 
+        <nav class="lesson-navigation" aria-label="Lesson sections">
+            <a href="#understand">01 Understand</a>
+            <a href="#operations">02 Operations</a>
+            <a href="#experiment">03 Experiment</a>
+            <a href="#code-examples">04 Code</a>
+            <a href="#practice">05 Practice</a>
+            <a href="#challenge">06 Apply</a>
+        </nav>
 
-        <!-- ================= Introduction ================= -->
+        <!-- ================= Understand ================= -->
 
-        <section class="lesson-card">
+        <section id="understand" class="lesson-card">
 
-            <h2>Introduction</h2>
+            <p class="small-heading">01 / UNDERSTAND</p>
+
+            <h2>The earliest arrival leaves first.</h2>
 
             <p>
-                A queue is a linear data structure that processes
-                elements in the order they are received. It follows
-                FIFO: First In, First Out.
+                A queue follows FIFO: First In, First Out. New elements
+                enter at the <strong>Rear</strong>, while the oldest
+                element leaves from the <strong>Front</strong>.
             </p>
 
             <p>
-                The first element added to the queue is the first
-                element to be removed.
+                Imagine people waiting for service. A new person joins
+                the end of the line, while the person waiting longest
+                is served first.
             </p>
 
-        </section>
+            <div class="learning-box">
 
+                <h3>By the end, you should be able to:</h3>
 
-        <!-- ================= FIFO Principle ================= -->
+                <ul class="information-list">
+                    <li>Explain FIFO using an operation sequence.</li>
+                    <li>Perform Enqueue, Dequeue and Peek.</li>
+                    <li>Recognize queue overflow and underflow.</li>
+                    <li>Trace Front and Rear in a circular queue.</li>
+                    <li>Compare simple-array, circular-array and linked queues.</li>
+                </ul>
 
-        <section class="lesson-card">
-
-            <h2>FIFO Principle</h2>
-
-            <p>
-                A queue works like a line of people waiting for service.
-                The first person to enter the line is the first person
-                to leave the line.
-            </p>
+            </div>
 
             <div class="static-queue">
 
@@ -129,21 +116,10 @@
 
                 <span class="flow-arrow">←</span>
 
-                <div class="queue-element first-element">
-                    10
-                </div>
-
-                <div class="queue-element">
-                    20
-                </div>
-
-                <div class="queue-element">
-                    30
-                </div>
-
-                <div class="queue-element newest-element">
-                    40
-                </div>
+                <div class="queue-element first-element">10</div>
+                <div class="queue-element">20</div>
+                <div class="queue-element">30</div>
+                <div class="queue-element newest-element">40</div>
 
                 <span class="flow-arrow">←</span>
 
@@ -155,131 +131,113 @@
             </div>
 
             <p class="example-caption">
-                Elements enter at the rear and leave from the front.
+                Dequeue returns 10 first because it entered before
+                20, 30 and 40.
             </p>
-
-        </section>
-
-
-        <!-- ================= Structure ================= -->
-
-        <section class="lesson-card">
-
-            <h2>Queue Structure</h2>
 
             <div class="structure-grid">
 
                 <article class="structure-item">
-
                     <h3>Front</h3>
-
-                    <p>
-                        The position of the next element to be removed.
-                    </p>
-
+                    <p>The position of the next value to be removed.</p>
                 </article>
 
                 <article class="structure-item">
-
                     <h3>Rear</h3>
-
                     <p>
-                        The position where a new element is inserted.
+                        In this lesson, Rear is the next position
+                        where a value will be inserted.
                     </p>
-
                 </article>
 
                 <article class="structure-item">
-
-                    <h3>FIFO</h3>
-
-                    <p>
-                        The first element inserted is removed first.
-                    </p>
-
+                    <h3>Size</h3>
+                    <p>The number of active values in the queue.</p>
                 </article>
 
                 <article class="structure-item">
-
-                    <h3>Flow</h3>
-
-                    <p>
-                        Insert at Rear → Queue → Remove from Front.
-                    </p>
-
+                    <h3>Capacity</h3>
+                    <p>The number of slots allocated to a fixed queue.</p>
                 </article>
 
             </div>
 
-        </section>
+            <details>
+                <summary>Why do we also store Size?</summary>
 
+                <p>
+                    In a circular queue, Front and Rear can be equal
+                    when the queue is empty or full. Size distinguishes
+                    those two states.
+                </p>
+            </details>
+
+        </section>
 
         <!-- ================= Operations ================= -->
 
-        <section class="lesson-card">
+        <section id="operations" class="lesson-card">
 
-            <h2>Basic Operations and Time Complexity</h2>
+            <p class="small-heading">02 / OPERATIONS</p>
+
+            <h2>Process data in arrival order.</h2>
 
             <div class="operation-grid">
 
                 <article class="operation-card">
-
-                    <h3>Enqueue</h3>
-
-                    <p>
-                        Add a new element to the rear of the queue.
-                    </p>
-
+                    <h3>Enqueue(value)</h3>
+                    <p>Add value at the Rear.</p>
                     <span class="complexity">O(1)</span>
-
                 </article>
 
                 <article class="operation-card">
-
-                    <h3>Dequeue</h3>
-
-                    <p>
-                        Remove the element at the front of the queue.
-                    </p>
-
+                    <h3>Dequeue()</h3>
+                    <p>Remove and return the Front value.</p>
                     <span class="complexity">O(1)</span>
-
                 </article>
 
                 <article class="operation-card">
-
-                    <h3>Peek / Front</h3>
-
-                    <p>
-                        Access the front element without removing it.
-                    </p>
-
+                    <h3>Peek()</h3>
+                    <p>Read Front without removing it.</p>
                     <span class="complexity">O(1)</span>
-
                 </article>
 
                 <article class="operation-card">
-
-                    <h3>isEmpty</h3>
-
-                    <p>
-                        Check whether the queue contains no elements.
-                    </p>
-
+                    <h3>isEmpty()</h3>
+                    <p>Check whether Size equals zero.</p>
                     <span class="complexity">O(1)</span>
+                </article>
 
+                <article class="operation-card">
+                    <h3>isFull()</h3>
+                    <p>Check whether Size equals Capacity.</p>
+                    <span class="complexity">O(1)</span>
+                </article>
+
+                <article class="operation-card">
+                    <h3>Size</h3>
+                    <p>Return the number of active values.</p>
+                    <span class="complexity">O(1)</span>
                 </article>
 
             </div>
 
-        </section>
+            <div class="learning-box">
 
+                <h3>Important errors</h3>
 
-        <!-- ================= Implementation ================= -->
+                <ul class="information-list">
+                    <li>
+                        <strong>Overflow:</strong> Enqueue is attempted
+                        when the fixed queue is full.
+                    </li>
+                    <li>
+                        <strong>Underflow:</strong> Dequeue or Peek is
+                        attempted when the queue is empty.
+                    </li>
+                </ul>
 
-        <section class="lesson-card">
-
-            <h2>Implementation</h2>
+            </div>
 
             <div class="implementation-table-container">
 
@@ -290,128 +248,98 @@
                             <th>Implementation</th>
                             <th>Enqueue</th>
                             <th>Dequeue</th>
-                            <th>Notes</th>
+                            <th>Important condition</th>
                         </tr>
                     </thead>
 
                     <tbody>
-
                         <tr>
-                            <td>Array: rear at the end</td>
-                            <td><span>O(1)</span></td>
-                            <td><span>O(n)</span></td>
-                            <td>
-                                Dequeue requires the remaining elements
-                                to be shifted.
-                            </td>
+                            <td>Simple array with shifting</td>
+                            <td>O(1)</td>
+                            <td>O(n)</td>
+                            <td>Remaining values shift after Dequeue.</td>
                         </tr>
 
                         <tr>
-                            <td>Array: rear at the beginning</td>
-                            <td><span>O(n)</span></td>
-                            <td><span>O(1)</span></td>
-                            <td>
-                                Enqueue requires the existing elements
-                                to be shifted.
-                            </td>
+                            <td>Circular array</td>
+                            <td>O(1)</td>
+                            <td>O(1)</td>
+                            <td>Front and Rear wrap using modulo.</td>
                         </tr>
 
                         <tr>
-                            <td>Singly Linked List</td>
-                            <td><span>O(1)</span></td>
-                            <td><span>O(1)</span></td>
-                            <td>
-                                Use the head as the front and the tail
-                                as the rear.
-                            </td>
+                            <td>Linked list</td>
+                            <td>O(1)</td>
+                            <td>O(1)</td>
+                            <td>Maintain both Head and Tail pointers.</td>
                         </tr>
-
                     </tbody>
 
                 </table>
 
             </div>
 
-            <p class="table-note">
-                With a simple array, one operation normally requires
-                O(n) shifting. A linked list with head and tail pointers
-                supports both operations in O(1).
-            </p>
-
         </section>
 
+        <!-- ================= Experiment ================= -->
 
-        <!-- ================= Interactive Visualization ================= -->
-
-        <section class="lesson-card">
+        <section id="experiment" class="lesson-card">
 
             <div class="visualization-heading">
 
                 <div>
-                    <p class="small-heading">
-                        INTERACTIVE LEARNING
-                    </p>
-
-                    <h2>Queue Visualization</h2>
+                    <p class="small-heading">03 / EXPERIMENT</p>
+                    <h2>Watch Front and Rear wrap around.</h2>
                 </div>
 
                 <span class="visualization-label">
-                    FIFO
+                    Circular capacity: 7
                 </span>
 
             </div>
 
+            <p>
+                Enqueue several values, Dequeue two, then Enqueue more.
+                The active order remains FIFO even when Rear returns
+                to a lower slot number.
+            </p>
 
-            <div class="queue-stage">
+            <div
+                id="queueContainer"
+                class="circular-queue"
+                role="group"
+                aria-label="Circular queue slots"
+            ></div>
 
-                <div class="stage-end">
-                    <span>Remove</span>
-                    <strong>Front</strong>
-                </div>
-
-                <span class="stage-arrow">←</span>
-
-                <div
-                    id="queueContainer"
-                    class="interactive-queue"
-                ></div>
-
-                <span class="stage-arrow">←</span>
-
-                <div class="stage-end">
-                    <span>Insert</span>
-                    <strong>Rear</strong>
-                </div>
-
-            </div>
-
+            <p id="queueState" class="queue-state"></p>
 
             <p
                 id="visualizationResult"
                 class="visualization-result"
+                role="status"
+                aria-live="polite"
             >
-                Select an operation to interact with the queue.
+                Select an operation to begin.
             </p>
-
 
             <div class="input-controls">
 
                 <div class="input-group">
 
-                    <label for="valueInput">
-                        Value
-                    </label>
+                    <label for="valueInput">Integer value</label>
 
                     <input
                         type="number"
                         id="valueInput"
+                        min="-999"
+                        max="999"
+                        step="1"
                         placeholder="Example: 40"
                     >
 
                 </div>
 
             </div>
-
 
             <div class="operation-buttons">
 
@@ -431,6 +359,10 @@
                     isEmpty
                 </button>
 
+                <button type="button" id="isFullButton">
+                    isFull
+                </button>
+
                 <button
                     type="button"
                     id="resetButton"
@@ -441,8 +373,194 @@
 
             </div>
 
+            <div class="operation-history">
+
+                <h3>Operation history</h3>
+
+                <ol id="operationHistory">
+                    <li>
+                        Initial queue: Front [10, 20, 30] Rear.
+                    </li>
+                </ol>
+
+            </div>
+
+            <p class="supporting-note">
+                Rear represents the next insertion slot.
+                Empty slots are shown as “—”.
+            </p>
+
         </section>
 
+        <!-- ================= Code ================= -->
+
+        <section id="code-examples" class="lesson-card">
+
+            <p class="small-heading">04 / CONNECT THE VISUAL TO C</p>
+
+            <h2>Circular Queue Operations in C</h2>
+
+            <p>
+                Open each operation to see its code, explanation
+                and complexity.
+            </p>
+
+            <div id="codeExamplesContainer">
+                <p>
+                    Examples will appear when queue-examples.js loads.
+                </p>
+            </div>
+
+            <noscript>
+                <p>Enable JavaScript to display the C examples.</p>
+            </noscript>
+
+        </section>
+
+        <!-- ================= Practice ================= -->
+
+        <section id="practice" class="lesson-card">
+
+            <p class="small-heading">05 / PRACTICE</p>
+
+            <h2>Predict before checking.</h2>
+
+            <article class="question-card" data-question="sequence">
+
+                <h3>1. Follow FIFO</h3>
+
+                <p>
+                    Enqueue 10, Enqueue 20, Dequeue, Enqueue 30.
+                    What will the next Dequeue return?
+                </p>
+
+                <div class="answer-buttons">
+                    <button type="button" data-answer="0">10</button>
+                    <button type="button" data-answer="1">20</button>
+                    <button type="button" data-answer="2">30</button>
+                </div>
+
+                <p class="question-feedback" aria-live="polite">
+                    Choose an answer.
+                </p>
+
+            </article>
+
+            <article class="question-card" data-question="rear">
+
+                <h3>2. Circular movement</h3>
+
+                <p>
+                    Capacity is 7 and Rear is slot 6. After a successful
+                    Enqueue, what is the next Rear slot?
+                </p>
+
+                <div class="answer-buttons">
+                    <button type="button" data-answer="0">0</button>
+                    <button type="button" data-answer="1">6</button>
+                    <button type="button" data-answer="2">7</button>
+                </div>
+
+                <p class="question-feedback" aria-live="polite">
+                    Choose an answer.
+                </p>
+
+            </article>
+
+            <article class="question-card" data-question="full">
+
+                <h3>3. Protect the queue</h3>
+
+                <p>
+                    Size equals Capacity. What should Enqueue do?
+                </p>
+
+                <div class="answer-buttons">
+
+                    <button type="button" data-answer="0">
+                        Overwrite Front
+                    </button>
+
+                    <button type="button" data-answer="1">
+                        Reject the operation
+                    </button>
+
+                    <button type="button" data-answer="2">
+                        Shift all values
+                    </button>
+
+                </div>
+
+                <p class="question-feedback" aria-live="polite">
+                    Choose an answer.
+                </p>
+
+            </article>
+
+            <p id="practiceStatus">
+                Questions solved: 0 / 3
+            </p>
+
+        </section>
+
+        <!-- ================= Challenge ================= -->
+
+        <section id="challenge" class="lesson-card">
+
+            <p class="small-heading">06 / APPLY</p>
+
+            <h2>Process the repair requests.</h2>
+
+            <p>
+                Requests arrived in the order A → B → C.
+                Serve all requests using only Enqueue Next and
+                Serve Front. The required service order is A → B → C.
+            </p>
+
+            <div class="challenge-board">
+
+                <article>
+                    <span>INCOMING</span>
+                    <p id="incomingRequests">A → B → C</p>
+                </article>
+
+                <article>
+                    <span>QUEUE · FRONT → REAR</span>
+                    <p id="requestQueue">Empty</p>
+                </article>
+
+                <article>
+                    <span>SERVED</span>
+                    <p id="servedRequests">Empty</p>
+                </article>
+
+            </div>
+
+            <div class="challenge-buttons">
+
+                <button type="button" id="requestEnqueueButton">
+                    Enqueue Next
+                </button>
+
+                <button type="button" id="requestServeButton">
+                    Serve Front
+                </button>
+
+                <button type="button" id="challengeResetButton">
+                    Restart Challenge
+                </button>
+
+            </div>
+
+            <p
+                id="challengeResult"
+                class="visualization-result"
+                aria-live="polite"
+            >
+                Preserve the arrival order.
+            </p>
+
+        </section>
 
         <!-- ================= Applications ================= -->
 
@@ -453,44 +571,30 @@
             <div class="application-grid">
 
                 <article class="small-card">
-
-                    <h3>Server Requests</h3>
-
-                    <p>
-                        Requests can be processed one by one in their
-                        order of arrival.
-                    </p>
-
+                    <h3>Server requests</h3>
+                    <p>Process requests in arrival order.</p>
                 </article>
 
                 <article class="small-card">
-
-                    <h3>Music Player</h3>
-
-                    <p>
-                        Songs can be played according to their order
-                        in the queue.
-                    </p>
-
+                    <h3>Print jobs</h3>
+                    <p>The earliest waiting document prints first.</p>
                 </article>
 
                 <article class="small-card">
+                    <h3>Breadth-first search</h3>
+                    <p>Store vertices waiting to be explored.</p>
+                </article>
 
-                    <h3>Waiting Lines</h3>
-
-                    <p>
-                        The first person to enter the line is served
-                        first.
-                    </p>
-
+                <article class="small-card">
+                    <h3>Task scheduling</h3>
+                    <p>Manage work waiting for a shared resource.</p>
                 </article>
 
             </div>
 
         </section>
 
-
-        <!-- ================= Advantages and Disadvantages ================= -->
+        <!-- ================= Comparison ================= -->
 
         <section class="comparison-grid">
 
@@ -499,63 +603,54 @@
                 <h2>Advantages</h2>
 
                 <ul class="information-list">
-
-                    <li>
-                        Maintains the order in which elements arrive.
-                    </li>
-
-                    <li>
-                        Enqueue and dequeue can take O(1) with a linked
-                        list implementation.
-                    </li>
-
-                    <li>
-                        Suitable for scheduling and sequential processing.
-                    </li>
-
+                    <li>Preserves arrival order.</li>
+                    <li>Circular Enqueue and Dequeue take O(1).</li>
+                    <li>Suitable for scheduling and buffering.</li>
                 </ul>
 
             </article>
-
 
             <article class="lesson-card disadvantage-card">
 
-                <h2>Disadvantages</h2>
+                <h2>Limitations</h2>
 
                 <ul class="information-list">
-
-                    <li>
-                        A simple array implementation may require O(n)
-                        shifting.
-                    </li>
-
-                    <li>
-                        A fixed-size array queue can overflow.
-                    </li>
-
-                    <li>
-                        Elements in the middle cannot be accessed directly.
-                    </li>
-
+                    <li>Only Front and Rear are directly used.</li>
+                    <li>A fixed queue can overflow.</li>
+                    <li>Incorrect index handling can break wrap-around.</li>
                 </ul>
 
             </article>
 
         </section>
 
+        <!-- ================= Completion ================= -->
+
         <section class="complete-section">
+
             <div>
                 <h2>Finished this lesson?</h2>
-                <p>Mark the Array lesson as completed.</p>
+
+                <p>
+                    Can you explain FIFO and circular wrap-around?
+                </p>
+
+                <p
+                    id="completionMessage"
+                    role="status"
+                    aria-live="polite"
+                ></p>
             </div>
 
-            <button type="button" id="completeLessonButton" class="complete-lesson-button">
+            <button
+                type="button"
+                id="completeLessonButton"
+                class="complete-lesson-button"
+            >
                 Mark as Completed
             </button>
+
         </section>
-
-
-        <!-- ================= Bottom Navigation ================= -->
 
         <div class="bottom-navigation">
 
@@ -571,18 +666,13 @@
 
     </main>
 
-
-    <!-- ================= Footer ================= -->
-
     <footer>
-        <p>
-            DataLab — Learn Data Structures Interactively
-        </p>
+        <p>DataLab — Learn Data Structures Interactively</p>
     </footer>
 
     <script src="../../js/progress.js"></script>
+    <script src="../../js/linearJS/queue-examples.js"></script>
     <script src="../../js/linearJS/queue.js"></script>
 
 </body>
-
 </html>

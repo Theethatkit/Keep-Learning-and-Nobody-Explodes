@@ -9,19 +9,12 @@
 
     <title>Tree | DataLab</title>
 
-    <!-- Shared Navigation CSS -->
     <link rel="stylesheet" href="../../css/navbar.css">
-
-    <!-- Tree Page CSS -->
-    <link rel="stylesheet" href="../../css/nonLinearCSS/tree.css">
-
-    <!-- Global CSS -->
     <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/nonLinearCSS/tree.css">
 </head>
 
-<body>
-
-    <!-- ================= Navigation Bar ================= -->
+<body class="tree-page">
 
     <header class="navbar">
 
@@ -32,7 +25,6 @@
         </a>
 
         <nav class="nav-links">
-
             <a href="../../index.html" class="nav-link">
                 Home
             </a>
@@ -48,21 +40,20 @@
             <a href="../team.html" class="nav-link">
                 Team
             </a>
-
         </nav>
 
-        <a href="../login.html" id="authButton" class="auth-button">
+        <a href="../login.html"
+           id="authButton"
+           class="auth-button">
             Log in
         </a>
 
     </header>
 
 
-    <!-- ================= Main Content ================= -->
-
     <main class="container">
 
-        <!-- Page Header -->
+        <!-- Hero -->
 
         <section class="page-header">
 
@@ -76,477 +67,831 @@
 
             <h1>Tree</h1>
 
-            <p>
-                Learn how trees organize data into parent–child
-                relationships, how the basic terminology works, and how
-                a Binary Search Tree performs its core operations.
+            <p class="hero-description">
+                Learn how hierarchical data works, build a Binary Search
+                Tree, trace every comparison, explore traversal algorithms,
+                and solve an interactive tree challenge.
             </p>
 
+            <div class="lesson-route">
+                <a href="#understand">01 Understand</a>
+                <a href="#explore">02 Explore</a>
+                <a href="#experiment">03 Experiment</a>
+                <a href="#code">04 Code</a>
+                <a href="#practice">05 Practice</a>
+                <a href="#challenge">06 Apply</a>
+            </div>
+
         </section>
 
 
-        <!-- ================= Introduction ================= -->
+        <!-- Understand -->
 
-        <section class="lesson-card">
+        <section class="lesson-card" id="understand">
 
-            <h2>Introduction</h2>
+            <div class="section-heading">
+                <div>
+                    <p class="small-heading">01 — UNDERSTAND</p>
+                    <h2>What is a Tree?</h2>
+                </div>
+
+                <span class="section-badge">Concept</span>
+            </div>
 
             <p>
-                A tree is a hierarchical data structure used to organize
-                and represent data in a parent–child relationship. It
-                consists of nodes, where the topmost node is called the
-                root, and every other node can have one or more child
-                nodes.
+                A tree is a non-linear data structure that organizes
+                information into parent–child relationships. Unlike an
+                array or linked list, its elements are not arranged in
+                one continuous sequence.
             </p>
 
-        </section>
-
-
-        <!-- ================= Basic Terminologies ================= -->
-
-        <section class="lesson-card">
-
-            <h2>Basic Terminologies in Tree Data Structure</h2>
-
-            <figure class="lesson-figure">
-                <img src="../../images/nonLinear/sampletree.png"
-                     alt="Example tree with root 15, children 35 and others, used to illustrate the terms below">
-                <figcaption>
-                    Example tree referenced by the terms below.
-                </figcaption>
-            </figure>
-
-            <ul class="information-list">
-
-                <li>
-                    <strong>Parent Node:</strong>
-                    A node that is an immediate predecessor of another
-                    node. Example: 35 is the parent of 3 and 6.
-                </li>
-
-                <li>
-                    <strong>Child Node:</strong>
-                    A node that is an immediate successor of another
-                    node. Example: 3 and 6 are children of 35.
-                </li>
-
-                <li>
-                    <strong>Root Node:</strong>
-                    The topmost node in a tree, which does not have a
-                    parent. Example: 15 is the root node.
-                </li>
-
-                <li>
-                    <strong>Leaf Node (External Node):</strong>
-                    Nodes that do not have any children. Example: 1, 10,
-                    12, 5, 7, 7 are leaf nodes.
-                </li>
-
-                <li>
-                    <strong>Ancestor:</strong>
-                    Any node on the path from the root to a given node,
-                    excluding the node itself. Example: 15 and 35 are
-                    ancestors of 10.
-                </li>
-
-                <li>
-                    <strong>Descendant:</strong>
-                    A node x is a descendant of another node y if y is
-                    an ancestor of x. Example: 1, 10, and 6 are
-                    descendants of 35.
-                </li>
-
-                <li>
-                    <strong>Sibling:</strong>
-                    Nodes that share the same parent. Example: 1 and 10
-                    are siblings, and 5 and 7 are siblings.
-                </li>
-
-                <li>
-                    <strong>Level of a Node:</strong>
-                    The number of edges in the path from the root to
-                    that node. The root node is at level 0.
-                </li>
-
-                <li>
-                    <strong>Internal Node:</strong>
-                    A node with at least one child.
-                </li>
-
-                <li>
-                    <strong>Neighbor of a Node:</strong>
-                    The parent or children of a node.
-                </li>
-
-                <li>
-                    <strong>Subtree:</strong>
-                    A node and all its descendants form a subtree.
-                </li>
-
-            </ul>
-
-        </section>
-
-
-        <!-- ================= Why Non-Linear ================= -->
-
-        <section class="lesson-card">
-
-            <h2>Why Tree is Considered a Non-Linear Data Structure</h2>
-
             <p>
-                Data in a tree is not stored sequentially, i.e. not in a
-                linear order. Instead, it is organized across multiple
-                levels, forming a hierarchical structure. Because of
-                this arrangement, a tree is classified as a non-linear
-                data structure.
+                The first node is called the <strong>root</strong>. Each
+                node may connect to child nodes, producing branches and
+                smaller subtrees.
             </p>
 
+            <div class="analogy-card">
+                <div class="analogy-icon">🌳</div>
+
+                <div>
+                    <h3>Think of a family tree</h3>
+
+                    <p>
+                        One person can have several children, and each
+                        child can become the parent of another group.
+                        This creates multiple levels instead of one
+                        straight line.
+                    </p>
+                </div>
+            </div>
+
+            <div class="concept-grid">
+
+                <article class="concept-card">
+                    <span class="concept-symbol">R</span>
+                    <h3>Root</h3>
+                    <p>The topmost node. It has no parent.</p>
+                </article>
+
+                <article class="concept-card">
+                    <span class="concept-symbol">P</span>
+                    <h3>Parent</h3>
+                    <p>A node directly connected above another node.</p>
+                </article>
+
+                <article class="concept-card">
+                    <span class="concept-symbol">C</span>
+                    <h3>Child</h3>
+                    <p>A node directly connected below a parent.</p>
+                </article>
+
+                <article class="concept-card">
+                    <span class="concept-symbol">L</span>
+                    <h3>Leaf</h3>
+                    <p>A node that does not have any children.</p>
+                </article>
+
+                <article class="concept-card">
+                    <span class="concept-symbol">D</span>
+                    <h3>Depth</h3>
+                    <p>The number of edges from the root to a node.</p>
+                </article>
+
+                <article class="concept-card">
+                    <span class="concept-symbol">H</span>
+                    <h3>Height</h3>
+                    <p>The longest path from a node to a leaf.</p>
+                </article>
+
+            </div>
+
         </section>
 
 
-        <!-- ================= Importance ================= -->
+        <!-- Tree Types -->
 
-        <section class="lesson-card">
+        <section class="lesson-card" id="explore">
 
-            <h2>Importance of Tree Data Structure</h2>
+            <div class="section-heading">
+                <div>
+                    <p class="small-heading">02 — EXPLORE</p>
+                    <h2>Types of Trees</h2>
+                </div>
 
-            <ul class="information-list">
-
-                <li>
-                    Trees are useful for storing data that naturally
-                    forms a hierarchy.
-                </li>
-
-                <li>
-                    File systems on computers are structured as trees,
-                    with folders containing subfolders and files.
-                </li>
-
-                <li>
-                    The DOM (Document Object Model) of an HTML page is a
-                    tree: the &lt;html&gt; tag is the root, &lt;head&gt;
-                    and &lt;body&gt; are its children, and these tags can
-                    have their own child nodes, forming a hierarchical
-                    structure.
-                </li>
-
-                <li>
-                    Trees help in efficient data organization and
-                    retrieval for hierarchical relationships.
-                </li>
-
-            </ul>
-
-        </section>
-
-
-        <!-- ================= Types of Trees ================= -->
-
-        <section class="lesson-card">
-
-            <h2>Types of Tree Data Structures</h2>
+                <span class="section-badge">Compare</span>
+            </div>
 
             <p>
-                Tree data structures can be classified based on the
-                number of children each node can have.
-            </p>
-
-            <h3 class="type-heading">Binary Tree</h3>
-
-            <p>
-                Each node can have a maximum of two children.
+                Trees can be classified by the number and arrangement
+                of their children.
             </p>
 
             <div class="type-grid">
 
                 <article class="type-card">
+                    <div class="mini-tree">
+                        <span class="mini-node root-node">A</span>
+                        <span class="mini-node left-node">B</span>
+                        <span class="mini-node right-node">C</span>
+                    </div>
 
-                    <h4>Full Binary Tree</h4>
+                    <h3>Binary Tree</h3>
 
-                    <p>Every node has either 0 or 2 children.</p>
-
-                    <figure class="lesson-figure small">
-                        <img src="../../images/nonLinear/fullbinarytree.png"
-                             alt="Diagram of a Full Binary Tree, where every node has either 0 or 2 children">
-                    </figure>
-
+                    <p>
+                        Each node can have at most two children,
+                        normally called left and right.
+                    </p>
                 </article>
 
                 <article class="type-card">
+                    <div class="mini-tree">
+                        <span class="mini-node root-node">8</span>
+                        <span class="mini-node left-node">4</span>
+                        <span class="mini-node right-node">12</span>
+                    </div>
 
-                    <h4>Complete Binary Tree</h4>
+                    <h3>Binary Search Tree</h3>
 
                     <p>
-                        All levels are fully filled except possibly the
-                        last, which is filled from left to right.
+                        Smaller values are stored on the left and larger
+                        values are stored on the right.
                     </p>
-
-                    <figure class="lesson-figure small">
-                        <img src="../../images/nonLinear/completebinarytree.png"
-                             alt="Diagram of a Complete Binary Tree, where all levels are filled except possibly the last, filled left to right">
-                    </figure>
-
                 </article>
 
                 <article class="type-card">
+                    <div class="balance-icon">⚖</div>
 
-                    <h4>Balanced Binary Tree</h4>
+                    <h3>Balanced Tree</h3>
 
                     <p>
-                        The height difference between the left and right
-                        subtrees of every node is minimal.
+                        Left and right subtree heights remain close,
+                        helping operations stay efficient.
                     </p>
+                </article>
 
-                    <figure class="lesson-figure small">
-                        <img src="../../images/nonLinear/balancedbinarytree.png"
-                             alt="Diagram of a Balanced Binary Tree, where left and right subtree heights differ minimally at every node">
-                    </figure>
+                <article class="type-card">
+                    <div class="branch-icon">⑂</div>
 
+                    <h3>N-ary Tree</h3>
+
+                    <p>
+                        Each node may contain more than two children,
+                        such as folders in a file system.
+                    </p>
                 </article>
 
             </div>
 
-            <h3 class="type-heading">Ternary Tree</h3>
+            <div class="bst-rule">
 
-            <p>
-                Each node can have at most three children, often labeled
-                as left, middle, and right.
-            </p>
-
-            <figure class="lesson-figure">
-                <img src="../../images/nonLinear/ternarytree.png"
-                     alt="Diagram of a Ternary Tree, where each node has at most three children labeled left, middle, and right">
-            </figure>
-
-            <h3 class="type-heading">N-ary Tree (or Generic Tree)</h3>
-
-            <ul class="information-list">
-
-                <li>Each node can have any number of children.</li>
-
-                <li>
-                    Each node typically contains some data and a list of
-                    references to its children, and duplicates are not
-                    allowed.
-                </li>
-
-                <li>
-                    Unlike linked lists, nodes store references to
-                    multiple child nodes.
-                </li>
-
-            </ul>
-
-            <figure class="lesson-figure">
-                <img src="../../images/nonLinear/narytree.png"
-                     alt="Diagram of an N-ary Tree, where each node can have any number of children">
-            </figure>
-
-        </section>
-
-
-        <!-- ================= Properties ================= -->
-
-        <section class="lesson-card">
-
-            <h2>Properties of Tree Data Structure</h2>
-
-            <ul class="information-list">
-
-                <li>
-                    <strong>Number of Edges:</strong>
-                    An edge is the connection between two nodes. A tree
-                    with N nodes will always have N − 1 edges, and there
-                    is exactly one path from any node to any other node
-                    in the tree.
-                </li>
-
-                <li>
-                    <strong>Depth of a Node:</strong>
-                    The length of the path from the root to that node.
-                    Each edge in the path adds 1 unit to the length.
-                </li>
-
-                <li>
-                    <strong>Height of the Tree:</strong>
-                    The length of the longest path from the root to any
-                    leaf node.
-                </li>
-
-                <li>
-                    <strong>Degree of a Node:</strong>
-                    The number of subtrees attached to it, i.e. the
-                    number of children it has. A leaf node has a degree
-                    of 0, and the degree of the tree is the maximum
-                    degree among all of its nodes.
-                </li>
-
-            </ul>
-
-        </section>
-
-
-        <!-- ================= Interactive Visualization ================= -->
-
-        <section class="lesson-card">
-
-            <div class="visualization-heading">
-
-                <div>
-                    <p class="small-heading">
-                        INTERACTIVE LEARNING
-                    </p>
-
-                    <h2>Binary Search Tree Visualization</h2>
+                <div class="rule-side smaller">
+                    <span>Left subtree</span>
+                    <strong>Values &lt; Parent</strong>
                 </div>
 
-                <span class="visualization-label">
-                    Try it yourself
-                </span>
+                <div class="rule-center">
+                    <span>Binary Search Tree Rule</span>
+                    <strong>LEFT &lt; NODE &lt; RIGHT</strong>
+                </div>
+
+                <div class="rule-side larger">
+                    <span>Right subtree</span>
+                    <strong>Values &gt; Parent</strong>
+                </div>
 
             </div>
 
-            <p class="visualization-intro">
-                Insert, search for, and delete values to see how a
-                Binary Search Tree keeps every left child smaller and
-                every right child larger than its parent, then run a
-                traversal to watch how each strategy visits the nodes.
+        </section>
+
+
+        <!-- Experiment -->
+
+        <section class="lesson-card" id="experiment">
+
+            <div class="section-heading">
+                <div>
+                    <p class="small-heading">03 — EXPERIMENT</p>
+                    <h2>Binary Search Tree Laboratory</h2>
+                </div>
+
+                <span class="section-badge interactive-badge">
+                    Interactive
+                </span>
+            </div>
+
+            <p>
+                Insert, search, delete, or traverse the tree. Each
+                algorithm is divided into steps so that you can inspect
+                every decision before continuing.
             </p>
-
-
-            <!-- Tree Stats -->
 
             <div class="tree-stats">
 
                 <div class="stat-box">
-                    <span class="stat-label">Nodes</span>
-                    <span class="stat-value" id="nodeCount">0</span>
+                    <span>Nodes</span>
+                    <strong id="nodeCount">0</strong>
                 </div>
 
                 <div class="stat-box">
-                    <span class="stat-label">Height</span>
-                    <span class="stat-value" id="treeHeight">0</span>
+                    <span>Levels</span>
+                    <strong id="treeHeight">0</strong>
+                </div>
+
+                <div class="stat-box">
+                    <span>Current action</span>
+                    <strong id="currentAction">Ready</strong>
                 </div>
 
             </div>
 
+            <div class="tree-workspace">
 
-            <!-- Interactive Tree -->
+                <div class="tree-canvas-panel">
 
-            <div id="interactiveTree"
-                 class="interactive-tree"></div>
+                    <div class="panel-title">
+                        <span>Tree visualization</span>
+                        <span class="live-indicator">● LIVE</span>
+                    </div>
 
+                    <div id="interactiveTree"
+                         class="interactive-tree">
+                    </div>
 
-            <!-- Result Message -->
+                </div>
+
+                <aside class="algorithm-panel">
+
+                    <div class="panel-title">
+                        <span>Algorithm workspace</span>
+                    </div>
+
+                    <div class="workspace-block">
+                        <span class="workspace-label">
+                            Current comparison
+                        </span>
+
+                        <strong id="comparisonDisplay">
+                            Waiting for an operation
+                        </strong>
+                    </div>
+
+                    <div class="workspace-block">
+                        <span class="workspace-label"
+                              id="structureLabel">
+                            Visited nodes
+                        </span>
+
+                        <div id="structureDisplay"
+                             class="structure-display">
+                            <span class="empty-item">Empty</span>
+                        </div>
+                    </div>
+
+                    <div class="workspace-block">
+                        <span class="workspace-label">
+                            Output
+                        </span>
+
+                        <div id="traversalOutput"
+                             class="traversal-output">
+                            —
+                        </div>
+                    </div>
+
+                    <div class="step-progress">
+                        <div class="step-progress-header">
+                            <span>Algorithm progress</span>
+                            <span id="stepCounter">0 / 0</span>
+                        </div>
+
+                        <div class="step-progress-track">
+                            <div id="stepProgressBar"
+                                 class="step-progress-bar">
+                            </div>
+                        </div>
+                    </div>
+
+                </aside>
+
+            </div>
 
             <p id="visualizationResult"
-               class="visualization-result">
-                Select an operation to interact with the tree.
+               class="visualization-result"
+               aria-live="polite">
+                Choose an operation to begin.
             </p>
 
+            <div class="control-panel">
 
-            <!-- Input Controls -->
-
-            <div class="input-controls tree-input-controls">
-
-                <div class="input-group">
-                    <label for="valueInput">
-                        Value
-                    </label>
+                <div class="value-control">
+                    <label for="valueInput">Node value</label>
 
                     <input type="number"
                            id="valueInput"
-                           placeholder="Example: 45">
+                           min="-99"
+                           max="999"
+                           placeholder="Example: 40">
+                </div>
+
+                <div class="operation-group">
+                    <button type="button"
+                            id="insertButton"
+                            class="primary-operation">
+                        Insert
+                    </button>
+
+                    <button type="button" id="searchButton">
+                        Search
+                    </button>
+
+                    <button type="button" id="deleteButton">
+                        Delete
+                    </button>
                 </div>
 
             </div>
 
+            <div class="traversal-controls">
 
-            <!-- Operation Buttons -->
+                <div>
+                    <span class="control-label">Traversal algorithm</span>
 
-            <div class="operation-buttons">
+                    <div class="operation-group">
+                        <button type="button"
+                                class="traversal-button"
+                                data-order="preorder">
+                            Preorder
+                        </button>
 
-                <button type="button" id="insertButton">
-                    Insert
-                </button>
+                        <button type="button"
+                                class="traversal-button"
+                                data-order="inorder">
+                            Inorder
+                        </button>
 
-                <button type="button" id="searchButton">
-                    Search
-                </button>
+                        <button type="button"
+                                class="traversal-button"
+                                data-order="postorder">
+                            Postorder
+                        </button>
 
-                <button type="button" id="deleteButton">
-                    Delete
-                </button>
+                        <button type="button"
+                                class="traversal-button"
+                                data-order="levelorder">
+                            Level Order
+                        </button>
+                    </div>
+                </div>
 
-                <button type="button" id="preorderButton">
-                    Preorder
-                </button>
+                <div class="step-controls">
+                    <button type="button"
+                            id="nextStepButton"
+                            class="next-step-button"
+                            disabled>
+                        Next Step →
+                    </button>
 
-                <button type="button" id="inorderButton">
-                    Inorder
-                </button>
-
-                <button type="button" id="postorderButton">
-                    Postorder
-                </button>
-
-                <button type="button" id="levelOrderButton">
-                    Level Order
-                </button>
-
-                <button type="button"
-                        id="resetButton"
-                        class="secondary-button">
-                    Reset
-                </button>
+                    <button type="button"
+                            id="resetButton"
+                            class="reset-button">
+                        Reset Tree
+                    </button>
+                </div>
 
             </div>
 
         </section>
 
 
-        <!-- ================= Applications ================= -->
+        <!-- Traversal Guide -->
 
         <section class="lesson-card">
 
-            <h2>Applications</h2>
+            <div class="section-heading">
+                <div>
+                    <p class="small-heading">TRAVERSAL GUIDE</p>
+                    <h2>How is Each Traversal Different?</h2>
+                </div>
+            </div>
+
+            <div class="traversal-grid">
+
+                <article class="traversal-card">
+                    <span class="order-number">N-L-R</span>
+                    <h3>Preorder</h3>
+                    <p>Visit Node, then Left subtree, then Right subtree.</p>
+                    <code>Node → Left → Right</code>
+                </article>
+
+                <article class="traversal-card">
+                    <span class="order-number">L-N-R</span>
+                    <h3>Inorder</h3>
+                    <p>Visit Left subtree, then Node, then Right subtree.</p>
+                    <code>Left → Node → Right</code>
+                </article>
+
+                <article class="traversal-card">
+                    <span class="order-number">L-R-N</span>
+                    <h3>Postorder</h3>
+                    <p>Visit Left subtree, Right subtree, and then Node.</p>
+                    <code>Left → Right → Node</code>
+                </article>
+
+                <article class="traversal-card">
+                    <span class="order-number">BFS</span>
+                    <h3>Level Order</h3>
+                    <p>Visit nodes one level at a time using a queue.</p>
+                    <code>Top → Bottom</code>
+                </article>
+
+            </div>
+
+            <div class="important-note">
+                <strong>Useful observation:</strong>
+                Inorder traversal of a Binary Search Tree returns its
+                values in ascending order.
+            </div>
+
+        </section>
+
+
+        <!-- Code -->
+
+        <section class="lesson-card" id="code">
+
+            <div class="section-heading">
+                <div>
+                    <p class="small-heading">04 — CODE</p>
+                    <h2>Connect Visualization to C Code</h2>
+                </div>
+
+                <span class="section-badge">C Language</span>
+            </div>
+
+            <p>
+                Select an operation and compare the source code with
+                the behavior shown in the visualization.
+            </p>
+
+            <div class="code-tabs" role="tablist">
+
+                <button type="button"
+                        class="code-tab active"
+                        data-example="node">
+                    Node
+                </button>
+
+                <button type="button"
+                        class="code-tab"
+                        data-example="insert">
+                    Insert
+                </button>
+
+                <button type="button"
+                        class="code-tab"
+                        data-example="search">
+                    Search
+                </button>
+
+                <button type="button"
+                        class="code-tab"
+                        data-example="delete">
+                    Delete
+                </button>
+
+                <button type="button"
+                        class="code-tab"
+                        data-example="traversal">
+                    Traversal
+                </button>
+
+            </div>
+
+            <div class="code-window">
+
+                <div class="code-toolbar">
+                    <span id="codeTitle">BST Node Structure</span>
+
+                    <button type="button" id="copyCodeButton">
+                        Copy code
+                    </button>
+                </div>
+
+                <pre><code id="codeDisplay"></code></pre>
+
+            </div>
+
+            <div id="codeExplanation"
+                 class="code-explanation">
+            </div>
+
+        </section>
+
+
+        <!-- Complexity -->
+
+        <section class="lesson-card">
+
+            <div class="section-heading">
+                <div>
+                    <p class="small-heading">EFFICIENCY</p>
+                    <h2>Time Complexity</h2>
+                </div>
+            </div>
+
+            <div class="complexity-table-wrapper">
+
+                <table class="complexity-table">
+                    <thead>
+                        <tr>
+                            <th>Operation</th>
+                            <th>Balanced BST</th>
+                            <th>Unbalanced BST</th>
+                            <th>Reason</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr>
+                            <td>Search</td>
+                            <td><span class="good-complexity">O(log n)</span></td>
+                            <td><span class="bad-complexity">O(n)</span></td>
+                            <td>Only one branch is followed.</td>
+                        </tr>
+
+                        <tr>
+                            <td>Insert</td>
+                            <td><span class="good-complexity">O(log n)</span></td>
+                            <td><span class="bad-complexity">O(n)</span></td>
+                            <td>The correct empty position must be found.</td>
+                        </tr>
+
+                        <tr>
+                            <td>Delete</td>
+                            <td><span class="good-complexity">O(log n)</span></td>
+                            <td><span class="bad-complexity">O(n)</span></td>
+                            <td>The node and possibly its successor are found.</td>
+                        </tr>
+
+                        <tr>
+                            <td>Traversal</td>
+                            <td>O(n)</td>
+                            <td>O(n)</td>
+                            <td>Every node must be visited once.</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- Practice -->
+
+        <section class="lesson-card" id="practice">
+
+            <div class="section-heading">
+                <div>
+                    <p class="small-heading">05 — PRACTICE</p>
+                    <h2>Check Your Understanding</h2>
+                </div>
+
+                <span class="section-badge">3 Questions</span>
+            </div>
+
+            <div id="quizContainer" class="quiz-container">
+
+                <article class="quiz-question"
+                         data-answer="b">
+
+                    <p class="question-number">Question 1</p>
+
+                    <h3>
+                        Where is a value smaller than the current node
+                        inserted in a Binary Search Tree?
+                    </h3>
+
+                    <div class="answer-list">
+                        <button type="button" data-choice="a">
+                            A. Right subtree
+                        </button>
+
+                        <button type="button" data-choice="b">
+                            B. Left subtree
+                        </button>
+
+                        <button type="button" data-choice="c">
+                            C. At the root
+                        </button>
+                    </div>
+
+                    <p class="answer-feedback"></p>
+                </article>
+
+                <article class="quiz-question"
+                         data-answer="c">
+
+                    <p class="question-number">Question 2</p>
+
+                    <h3>
+                        Which traversal returns BST values in ascending
+                        order?
+                    </h3>
+
+                    <div class="answer-list">
+                        <button type="button" data-choice="a">
+                            A. Preorder
+                        </button>
+
+                        <button type="button" data-choice="b">
+                            B. Postorder
+                        </button>
+
+                        <button type="button" data-choice="c">
+                            C. Inorder
+                        </button>
+                    </div>
+
+                    <p class="answer-feedback"></p>
+                </article>
+
+                <article class="quiz-question"
+                         data-answer="a">
+
+                    <p class="question-number">Question 3</p>
+
+                    <h3>
+                        Which data structure is normally used for
+                        Level-order traversal?
+                    </h3>
+
+                    <div class="answer-list">
+                        <button type="button" data-choice="a">
+                            A. Queue
+                        </button>
+
+                        <button type="button" data-choice="b">
+                            B. Stack
+                        </button>
+
+                        <button type="button" data-choice="c">
+                            C. Array index only
+                        </button>
+                    </div>
+
+                    <p class="answer-feedback"></p>
+                </article>
+
+            </div>
+
+            <div class="quiz-summary">
+                <span>Your score</span>
+                <strong id="quizScore">0 / 3</strong>
+            </div>
+
+        </section>
+
+
+        <!-- Challenge -->
+
+        <section class="lesson-card challenge-card" id="challenge">
+
+            <div class="section-heading">
+                <div>
+                    <p class="small-heading">06 — APPLY</p>
+                    <h2>Tree Engineer Challenge</h2>
+                </div>
+
+                <span class="section-badge challenge-badge">
+                    Mission
+                </span>
+            </div>
+
+            <div class="challenge-layout">
+
+                <div>
+                    <p>
+                        Build a Binary Search Tree that satisfies all
+                        three conditions.
+                    </p>
+
+                    <ul class="mission-list">
+                        <li id="missionRoot">
+                            The root must be 50.
+                        </li>
+
+                        <li id="missionChildren">
+                            The root must have both left and right children.
+                        </li>
+
+                        <li id="missionInorder">
+                            Inorder output must be 20, 30, 50, 70, 80.
+                        </li>
+                    </ul>
+
+                    <p class="challenge-hint">
+                        Hint: Insert 50 first. The order of the remaining
+                        values changes the shape of the tree.
+                    </p>
+                </div>
+
+                <div class="challenge-control">
+
+                    <label for="challengeInput">
+                        Enter one value at a time
+                    </label>
+
+                    <div class="challenge-input-row">
+                        <input type="number"
+                               id="challengeInput"
+                               placeholder="Example: 50">
+
+                        <button type="button"
+                                id="challengeInsertButton">
+                            Insert
+                        </button>
+                    </div>
+
+                    <div id="challengeValues"
+                         class="challenge-values">
+                        No values inserted
+                    </div>
+
+                    <div class="challenge-buttons">
+                        <button type="button"
+                                id="checkChallengeButton"
+                                class="check-button">
+                            Check Tree
+                        </button>
+
+                        <button type="button"
+                                id="resetChallengeButton"
+                                class="reset-button">
+                            Reset
+                        </button>
+                    </div>
+
+                    <p id="challengeResult"
+                       class="challenge-result"
+                       aria-live="polite">
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- Applications -->
+
+        <section class="lesson-card">
+
+            <div class="section-heading">
+                <div>
+                    <p class="small-heading">REAL-WORLD USE</p>
+                    <h2>Where are Trees Used?</h2>
+                </div>
+            </div>
 
             <div class="application-grid">
 
-                <article class="small-card">
-
+                <article class="application-card">
+                    <span>📁</span>
                     <h3>File Systems</h3>
-
                     <p>
-                        Folders and files are organized as a tree, with
-                        each folder able to contain subfolders and
-                        files.
+                        Folders contain subfolders and files in a
+                        hierarchical structure.
                     </p>
-
                 </article>
 
-                <article class="small-card">
-
-                    <h3>The DOM</h3>
-
+                <article class="application-card">
+                    <span>🌐</span>
+                    <h3>HTML DOM</h3>
                     <p>
-                        Every HTML page is parsed into a tree of
-                        elements, starting from a single root node.
+                        Browser elements form a tree beginning at the
+                        document root.
                     </p>
-
                 </article>
 
-                <article class="small-card">
-
-                    <h3>Decision Making</h3>
-
+                <article class="application-card">
+                    <span>🎮</span>
+                    <h3>Game Decisions</h3>
                     <p>
-                        Decision trees branch through a series of
-                        choices to reach an outcome, as used in games
-                        and machine learning.
+                        Decision trees represent choices and possible
+                        outcomes.
                     </p>
+                </article>
 
+                <article class="application-card">
+                    <span>🤖</span>
+                    <h3>Machine Learning</h3>
+                    <p>
+                        Decision trees classify data using a sequence
+                        of conditions.
+                    </p>
                 </article>
 
             </div>
@@ -554,81 +899,28 @@
         </section>
 
 
-        <!-- ================= Advantages and Disadvantages ================= -->
-
-        <section class="comparison-grid">
-
-            <article class="lesson-card advantage-card">
-
-                <h2>Advantages</h2>
-
-                <ul class="information-list">
-
-                    <li>
-                        Hierarchical relationships are represented
-                        naturally.
-                    </li>
-
-                    <li>
-                        A Binary Search Tree can search, insert, and
-                        delete in O(log n) time when balanced.
-                    </li>
-
-                    <li>
-                        Trees can grow or shrink without shifting
-                        existing elements.
-                    </li>
-
-                    <li>
-                        Traversals allow data to be visited in different
-                        useful orders.
-                    </li>
-
-                </ul>
-
-            </article>
-
-
-            <article class="lesson-card disadvantage-card">
-
-                <h2>Disadvantages</h2>
-
-                <ul class="information-list">
-
-                    <li>
-                        An unbalanced tree can degrade to O(n) for
-                        search, insert, and delete.
-                    </li>
-
-                    <li>
-                        Trees use extra memory for storing child
-                        references.
-                    </li>
-
-                    <li>
-                        Implementing operations like deletion or
-                        balancing is more complex than for linear
-                        structures.
-                    </li>
-
-                </ul>
-
-            </article>
-
-        </section>
+        <!-- Completion -->
 
         <section class="complete-section">
+
             <div>
+                <p class="small-heading">LESSON PROGRESS</p>
                 <h2>Finished this lesson?</h2>
-                <p>Mark the Array lesson as completed.</p>
+
+                <p>
+                    Complete the experiments and practice questions,
+                    then save Tree as a completed lesson.
+                </p>
             </div>
 
-            <button type="button" id="completeLessonButton" class="complete-lesson-button">
+            <button type="button"
+                    id="completeLessonButton"
+                    class="complete-lesson-button">
                 Mark as Completed
             </button>
+
         </section>
 
-        <!-- ================= Bottom Navigation ================= -->
 
         <div class="bottom-navigation">
 
@@ -645,17 +937,13 @@
     </main>
 
 
-    <!-- ================= Footer ================= -->
-
     <footer>
-        <p>
-            DataLab — Learn Data Structures Interactively
-        </p>
+        <p>DataLab — Learn Data Structures Interactively</p>
     </footer>
 
 
-    <!-- Tree JavaScript -->
     <script src="../../js/progress.js"></script>
+    <script src="../../js/nonLinearJS/tree-examples.js"></script>
     <script src="../../js/nonLinearJS/tree.js"></script>
 
 </body>

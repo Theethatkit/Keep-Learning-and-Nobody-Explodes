@@ -11,19 +11,14 @@
 
     <title>Linked List | DataLab</title>
 
-    <!-- Shared Navigation CSS -->
     <link rel="stylesheet" href="../../css/navbar.css">
-
-    <!-- Linked List CSS -->
-    <link rel="stylesheet" href="../../css/linearCSS/linked-list.css">
-
-    <!-- Global CSS -->
     <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/linearCSS/linked-list.css">
 </head>
 
-<body>
+<body class="linked-list-page">
 
-    <!-- ================= Navigation Bar ================= -->
+    <!-- ================= Navigation ================= -->
 
     <header class="navbar">
 
@@ -35,7 +30,7 @@
             >
         </a>
 
-        <nav class="nav-links">
+        <nav class="nav-links" aria-label="Main navigation">
 
             <a href="../../index.html" class="nav-link">
                 Home
@@ -45,7 +40,7 @@
                 Lessons
             </a>
 
-           <a href="../defusal.html" class="nav-link">
+            <a href="../defusal.html" class="nav-link">
                 Revision
             </a>
 
@@ -55,18 +50,21 @@
 
         </nav>
 
-        <a href="../login.html" id="authButton" class="auth-button">
+        <a
+            href="../login.html"
+            id="authButton"
+            class="auth-button"
+        >
             Log in
         </a>
 
     </header>
 
-
-    <!-- ================= Main Content ================= -->
+    <!-- ================= Main ================= -->
 
     <main class="container">
 
-        <!-- Page Header -->
+        <!-- Header -->
 
         <section class="page-header">
 
@@ -74,251 +72,232 @@
                 ← Back to Linear Structures
             </a>
 
-            <p class="category">
-                LINEAR DATA STRUCTURE
-            </p>
+            <p class="category">LINEAR DATA STRUCTURE</p>
 
             <h1>Linked List</h1>
 
-            <p>
-                Learn how linked lists store data using nodes and pointers,
-                and compare singly and doubly linked lists.
+            <p class="page-description">
+                Follow connections between nodes and discover why
+                linked lists change links instead of shifting values.
             </p>
+
+            <div class="lesson-tags">
+                <span>Beginner → Intermediate</span>
+                <span>Step-by-step visualization</span>
+                <span>C pointer examples</span>
+            </div>
 
         </section>
 
+        <!-- Lesson Navigation -->
 
-        <!-- ================= Introduction ================= -->
+        <nav class="lesson-navigation" aria-label="Lesson sections">
 
-        <section class="lesson-card">
+            <a href="#understand">01 Understand</a>
+            <a href="#types">02 Types</a>
+            <a href="#operations">03 Operations</a>
+            <a href="#experiment">04 Experiment</a>
+            <a href="#code-examples">05 Code</a>
+            <a href="#practice">06 Practice</a>
+            <a href="#apply">07 Apply</a>
 
-            <h2>Introduction</h2>
+        </nav>
 
-            <p>
-                A linked list is a linear data structure where elements
-                are stored as nodes connected using pointers. Unlike an
-                array, linked list nodes do not need to be stored in
-                contiguous memory locations.
-            </p>
+        <!-- ================= Understand ================= -->
 
-            <p>
-                A linked list can grow or shrink during runtime, making
-                it suitable for data whose size changes frequently.
-            </p>
+        <section id="understand" class="lesson-card">
 
-        </section>
+            <p class="small-heading">01 / UNDERSTAND</p>
 
-
-        <!-- ================= Singly Linked List ================= -->
-
-        <section class="lesson-card">
-
-            <p class="small-heading">
-                TYPE ONE
-            </p>
-
-            <h2>Singly Linked List</h2>
+            <h2>A sequence formed by connected nodes.</h2>
 
             <p>
-                In a singly linked list, each node stores a value and a
-                pointer to the next node. Movement is possible in one
-                direction only.
+                A linked list stores data inside nodes. Each node contains
+                a value and one or more pointers that connect it to other
+                nodes.
             </p>
 
+            <p>
+                Unlike an array, linked-list nodes do not need to occupy
+                neighboring memory locations. The sequence is determined
+                by its pointers.
+            </p>
+
+            <div class="learning-box">
+
+                <h3>By the end, you should be able to:</h3>
+
+                <ul class="information-list">
+                    <li>Identify Head, Tail, Data, Next, Previous and NULL.</li>
+                    <li>Follow pointers to reach a given position.</li>
+                    <li>Insert and delete nodes by changing connections.</li>
+                    <li>Compare singly, circular and doubly linked lists.</li>
+                    <li>Explain the time complexity of each operation.</li>
+                </ul>
+
+            </div>
+
+            <div class="list-example">
+
+                <span class="list-label">Head</span>
+                <span class="example-arrow">→</span>
+
+                <div class="example-node">
+                    <span>10</span>
+                    <small>next</small>
+                </div>
+
+                <span class="example-arrow">→</span>
+
+                <div class="example-node">
+                    <span>20</span>
+                    <small>next</small>
+                </div>
+
+                <span class="example-arrow">→</span>
+
+                <div class="example-node">
+                    <span>30</span>
+                    <small>next</small>
+                </div>
+
+                <span class="example-arrow">→</span>
+                <span class="null-value">NULL</span>
+
+            </div>
+
+            <p class="example-caption">
+                To reach position 2, begin at Head and follow Next twice.
+            </p>
 
             <div class="structure-grid">
 
                 <article class="structure-item">
                     <h3>Node</h3>
-
-                    <p>
-                        An element containing a value and a next pointer.
-                    </p>
+                    <p>Stores a value and pointer information.</p>
                 </article>
 
                 <article class="structure-item">
                     <h3>Head</h3>
-
-                    <p>
-                        A reference pointing to the first node.
-                    </p>
+                    <p>Points to the first node. An empty list has Head = NULL.</p>
                 </article>
 
                 <article class="structure-item">
-                    <h3>Next Pointer</h3>
-
-                    <p>
-                        Stores a reference to the following node.
-                    </p>
+                    <h3>Next</h3>
+                    <p>Points to the next node in the sequence.</p>
                 </article>
 
                 <article class="structure-item">
                     <h3>Tail</h3>
-
-                    <p>
-                        The final node. Its next pointer contains null.
-                    </p>
+                    <p>The final node. In a normal singly list, Tail.next is NULL.</p>
                 </article>
 
             </div>
 
-
-            <!-- Singly Linked List Example -->
-
-            <div class="list-example">
-
-                <span class="list-label">Head</span>
-
-                <div class="example-node">
-                    <span>10</span>
-                    <small>next</small>
-                </div>
-
-                <span class="example-arrow">→</span>
-
-                <div class="example-node">
-                    <span>20</span>
-                    <small>next</small>
-                </div>
-
-                <span class="example-arrow">→</span>
-
-                <div class="example-node">
-                    <span>30</span>
-                    <small>next</small>
-                </div>
-
-                <span class="example-arrow">→</span>
-
-                <span class="null-value">null</span>
-
-            </div>
-
-            <p class="example-caption">
-                Traversal starts at the head and follows each next pointer.
-            </p>
-
-        </section>
-
-
-        <!-- ================= Circular Singly Linked List ================= -->
-
-        <section class="lesson-card">
-
-            <h2>Circular Singly Linked List</h2>
-
-            <p>
-                In a circular singly linked list, the tail node points
-                back to the head instead of pointing to null. Storing the
-                tail gives direct access to both the last node and the
-                first node.
-            </p>
-
-            <div class="circular-note">
-
-                <span class="note-symbol">↻</span>
+            <details>
+                <summary>Position is not direct access</summary>
 
                 <p>
-                    Tail.next points to Head, forming a continuous loop.
+                    Positions can be numbered 0, 1, 2 and so on, but a
+                    linked list cannot calculate a node's address directly
+                    from its position. It must follow pointers from Head.
                 </p>
-
-            </div>
+            </details>
 
         </section>
 
+        <!-- ================= Types ================= -->
 
-        <!-- ================= Doubly Linked List ================= -->
+        <section id="types" class="lesson-card">
 
-        <section class="lesson-card">
+            <p class="small-heading">02 / TYPES</p>
 
-            <p class="small-heading">
-                TYPE TWO
-            </p>
+            <h2>Three ways to connect nodes.</h2>
 
-            <h2>Doubly Linked List</h2>
+            <div class="type-grid">
 
-            <p>
-                A doubly linked list is similar to a singly linked list,
-                but every node also stores a previous pointer. This enables
-                traversal in both directions.
-            </p>
+                <article class="type-card">
 
-
-            <div class="structure-grid">
-
-                <article class="structure-item">
-                    <h3>Value</h3>
-
-                    <p>The data stored inside the node.</p>
-                </article>
-
-                <article class="structure-item">
-                    <h3>Next Pointer</h3>
-
-                    <p>Points to the next node.</p>
-                </article>
-
-                <article class="structure-item">
-                    <h3>Previous Pointer</h3>
-
-                    <p>Points to the previous node.</p>
-                </article>
-
-                <article class="structure-item">
-                    <h3>Two-way Traversal</h3>
+                    <h3>Singly Linked List</h3>
 
                     <p>
-                        The list can be traversed forward and backward.
+                        Each node has one Next pointer. Movement is possible
+                        from Head toward Tail only.
                     </p>
+
+                    <div class="mini-list">
+                        <span>10</span>
+                        <b>→</b>
+                        <span>20</span>
+                        <b>→</b>
+                        <span>30</span>
+                        <b>→ NULL</b>
+                    </div>
+
+                </article>
+
+                <article class="type-card">
+
+                    <h3>Circular Singly Linked List</h3>
+
+                    <p>
+                        Tail.next points back to Head. There is no NULL
+                        pointer at the end of the cycle.
+                    </p>
+
+                    <div class="mini-list">
+                        <span>10</span>
+                        <b>→</b>
+                        <span>20</span>
+                        <b>→</b>
+                        <span>30</span>
+                        <b>↺ Head</b>
+                    </div>
+
+                </article>
+
+                <article class="type-card">
+
+                    <h3>Doubly Linked List</h3>
+
+                    <p>
+                        Each node has Previous and Next pointers, allowing
+                        traversal in both directions.
+                    </p>
+
+                    <div class="mini-list">
+                        <b>NULL ←</b>
+                        <span>10</span>
+                        <b>⇄</b>
+                        <span>20</span>
+                        <b>⇄</b>
+                        <span>30</span>
+                        <b>→ NULL</b>
+                    </div>
+
                 </article>
 
             </div>
 
+            <details>
+                <summary>Which type is used in the interactive lab?</summary>
 
-            <!-- Doubly Linked List Example -->
-
-            <div class="list-example">
-
-                <span class="null-value">null</span>
-
-                <span class="example-arrow">←</span>
-
-                <div class="example-node double-node">
-                    <small>prev</small>
-                    <span>10</span>
-                    <small>next</small>
-                </div>
-
-                <span class="double-arrow">⇄</span>
-
-                <div class="example-node double-node">
-                    <small>prev</small>
-                    <span>20</span>
-                    <small>next</small>
-                </div>
-
-                <span class="double-arrow">⇄</span>
-
-                <div class="example-node double-node">
-                    <small>prev</small>
-                    <span>30</span>
-                    <small>next</small>
-                </div>
-
-                <span class="example-arrow">→</span>
-
-                <span class="null-value">null</span>
-
-            </div>
+                <p>
+                    You can select all three types. The stored values remain
+                    the same when the type changes, but the displayed
+                    connections and traversal rules change.
+                </p>
+            </details>
 
         </section>
-
 
         <!-- ================= Operations ================= -->
 
-        <section class="lesson-card">
+        <section id="operations" class="lesson-card">
 
-            <h2>Basic Operations and Time Complexity</h2>
+            <p class="small-heading">03 / OPERATIONS</p>
+
+            <h2>Finding a node and changing links are different costs.</h2>
 
             <div class="operation-table-container">
 
@@ -327,8 +306,9 @@
                     <thead>
                         <tr>
                             <th>Operation</th>
-                            <th>Description</th>
-                            <th>Complexity</th>
+                            <th>Singly</th>
+                            <th>Doubly</th>
+                            <th>Condition</th>
                         </tr>
                     </thead>
 
@@ -336,46 +316,47 @@
 
                         <tr>
                             <td>Insert Front</td>
-                            <td>Add a new node before the head.</td>
-                            <td><span>O(1)</span></td>
+                            <td>O(1)</td>
+                            <td>O(1)</td>
+                            <td>Change Head and nearby pointers.</td>
                         </tr>
 
                         <tr>
                             <td>Insert Back</td>
-                            <td>
-                                Add a node after the tail when a tail
-                                reference is available.
-                            </td>
-                            <td><span>O(1)</span></td>
+                            <td>O(1)*</td>
+                            <td>O(1)*</td>
+                            <td>*When a Tail pointer is maintained.</td>
+                        </tr>
+
+                        <tr>
+                            <td>Insert at Position</td>
+                            <td>O(n)</td>
+                            <td>O(n)</td>
+                            <td>Traversal may be needed to find the position.</td>
                         </tr>
 
                         <tr>
                             <td>Delete Front</td>
-                            <td>Move the head to the next node.</td>
-                            <td><span>O(1)</span></td>
+                            <td>O(1)</td>
+                            <td>O(1)</td>
+                            <td>Move Head to the next node.</td>
                         </tr>
 
                         <tr>
                             <td>Delete Back</td>
+                            <td>O(n)</td>
+                            <td>O(1)*</td>
                             <td>
-                                Remove the tail using the previous pointer
-                                in a doubly linked list.
+                                Singly must find the predecessor.
+                                *Doubly needs a Tail pointer.
                             </td>
-                            <td><span>O(1)</span></td>
                         </tr>
 
                         <tr>
-                            <td>Access / Traversal</td>
-                            <td>
-                                Follow pointers until the target is reached.
-                            </td>
-                            <td><span>O(n)</span></td>
-                        </tr>
-
-                        <tr>
-                            <td>Search</td>
-                            <td>Check nodes one by one.</td>
-                            <td><span>O(n)</span></td>
+                            <td>Search / Traversal</td>
+                            <td>O(n)</td>
+                            <td>O(n)</td>
+                            <td>Nodes may need to be checked one by one.</td>
                         </tr>
 
                     </tbody>
@@ -384,32 +365,39 @@
 
             </div>
 
-            <p class="table-note">
-                Insertion or deletion around a known node in a doubly
-                linked list can be performed in O(1).
-            </p>
+            <div class="learning-box">
+
+                <h3>Important distinction</h3>
+
+                <p>
+                    Changing a constant number of pointers is O(1).
+                    However, finding the correct node or predecessor
+                    from Head may require O(n) traversal first.
+                </p>
+
+            </div>
 
         </section>
 
+        <!-- ================= Experiment ================= -->
 
-        <!-- ================= Interactive Visualization ================= -->
-
-        <section class="lesson-card">
+        <section id="experiment" class="lesson-card">
 
             <div class="visualization-heading">
 
                 <div>
-                    <p class="small-heading">
-                        INTERACTIVE LEARNING
-                    </p>
-
-                    <h2>Linked List Visualization</h2>
+                    <p class="small-heading">04 / EXPERIMENT</p>
+                    <h2>Trace each pointer change.</h2>
                 </div>
 
-                <select id="listType">
+                <select id="listType" aria-label="Linked list type">
 
                     <option value="singly">
                         Singly Linked List
+                    </option>
+
+                    <option value="circular">
+                        Circular Singly Linked List
                     </option>
 
                     <option value="doubly">
@@ -420,46 +408,56 @@
 
             </div>
 
+            <p>
+                Try inserting 15 at position 1. Press
+                <strong>Next step</strong> to follow the traversal and
+                observe how the links change.
+            </p>
 
             <div
                 id="linkedListContainer"
                 class="interactive-list"
+                role="group"
+                aria-label="Linked list visualization"
             ></div>
 
+            <p id="listState" class="state-line"></p>
 
             <p
                 id="visualizationResult"
                 class="visualization-result"
+                role="status"
+                aria-live="polite"
             >
-                Select an operation to interact with the linked list.
+                Select an operation to begin.
             </p>
-
 
             <div class="input-controls">
 
                 <div class="input-group">
 
-                    <label for="valueInput">
-                        Value
-                    </label>
+                    <label for="valueInput">Integer value</label>
 
                     <input
                         type="number"
                         id="valueInput"
-                        placeholder="Example: 25"
+                        min="-999"
+                        max="999"
+                        step="1"
+                        placeholder="Example: 15"
                     >
 
                 </div>
 
                 <div class="input-group">
 
-                    <label for="positionInput">
-                        Position
-                    </label>
+                    <label for="positionInput">Position</label>
 
                     <input
                         type="number"
                         id="positionInput"
+                        min="0"
+                        step="1"
                         placeholder="Example: 1"
                     >
 
@@ -467,6 +465,11 @@
 
             </div>
 
+            <p class="supporting-note">
+                Insert Front/Back need Value. Insert at Position needs
+                Value and Position. Search needs Value. Other operations
+                need no input.
+            </p>
 
             <div class="operation-buttons">
 
@@ -508,75 +511,264 @@
 
             </div>
 
+            <div class="trace-panel">
+
+                <div class="trace-toolbar">
+
+                    <span id="stepStatus">
+                        No operation in progress
+                    </span>
+
+                    <button
+                        type="button"
+                        id="nextStepButton"
+                        disabled
+                    >
+                        Next step →
+                    </button>
+
+                </div>
+
+                <ol id="stepHistory" class="step-history"></ol>
+
+            </div>
+
+            <p class="supporting-note">
+                Node IDs represent identity, not memory addresses.
+                Reset cancels an unfinished trace. The display is limited
+                to eight nodes for readability.
+            </p>
+
+            <noscript>
+                <p>Enable JavaScript to use the interactive lab.</p>
+            </noscript>
+
         </section>
 
+        <!-- ================= Code Examples ================= -->
 
-        <!-- ================= Applications ================= -->
+        <section id="code-examples" class="lesson-card">
 
-        <section class="lesson-card">
+            <p class="small-heading">05 / CONNECT THE VISUAL TO C</p>
 
-            <h2>Applications</h2>
+            <h2>Linked List Operations in C</h2>
+
+            <p>
+                Open an operation to see its C code, expected result,
+                explanation and complexity.
+            </p>
+
+            <div class="learning-box">
+
+                <h3>Before you start</h3>
+
+                <ul class="information-list">
+                    <li>
+                        The examples focus on a singly linked list.
+                    </li>
+                    <li>
+                        Each example starts with 10 → 20 → 30 → NULL.
+                    </li>
+                    <li>
+                        malloc creates a node and free releases it.
+                    </li>
+                    <li>
+                        Node ** allows a function to change Head.
+                    </li>
+                </ul>
+
+            </div>
+
+            <div id="codeExamplesContainer">
+                <p>
+                    Code examples will appear when
+                    linked-list-examples.js loads.
+                </p>
+            </div>
+
+            <noscript>
+                <p>Enable JavaScript to display the C examples.</p>
+            </noscript>
+
+        </section>
+
+        <!-- ================= Practice ================= -->
+
+        <section id="practice" class="lesson-card">
+
+            <p class="small-heading">06 / PRACTICE</p>
+
+            <h2>Predict before checking.</h2>
+
+            <article class="question-card" data-question="links">
+
+                <h3>1. Reaching a position</h3>
+
+                <p>
+                    In 10 → 20 → 30, how many Next pointers must
+                    be followed from Head to reach position 2?
+                </p>
+
+                <div class="answer-buttons">
+                    <button type="button" data-answer="0">0</button>
+                    <button type="button" data-answer="1">2</button>
+                    <button type="button" data-answer="2">3</button>
+                </div>
+
+                <p class="question-feedback" aria-live="polite">
+                    Choose an answer.
+                </p>
+
+            </article>
+
+            <article class="question-card" data-question="insert">
+
+                <h3>2. Safe insertion order</h3>
+
+                <p>
+                    To insert N after A without losing A's old successor,
+                    which order is correct?
+                </p>
+
+                <div class="answer-buttons">
+
+                    <button type="button" data-answer="0">
+                        N.next = A.next; A.next = N;
+                    </button>
+
+                    <button type="button" data-answer="1">
+                        A.next = N; N.next = A.next;
+                    </button>
+
+                </div>
+
+                <p class="question-feedback" aria-live="polite">
+                    Choose an answer.
+                </p>
+
+            </article>
+
+            <article class="question-card" data-question="delete">
+
+                <h3>3. Delete Back</h3>
+
+                <p>
+                    Why is Delete Back normally O(n) in a singly
+                    linked list?
+                </p>
+
+                <div class="answer-buttons">
+
+                    <button type="button" data-answer="0">
+                        All values must shift
+                    </button>
+
+                    <button type="button" data-answer="1">
+                        The predecessor of Tail must be found
+                    </button>
+
+                    <button type="button" data-answer="2">
+                        Head must always be deleted first
+                    </button>
+
+                </div>
+
+                <p class="question-feedback" aria-live="polite">
+                    Choose an answer.
+                </p>
+
+            </article>
+
+            <p id="practiceStatus">
+                Questions solved: 0 / 3
+            </p>
+
+        </section>
+
+        <!-- ================= Apply ================= -->
+
+        <section id="apply" class="lesson-card">
+
+            <p class="small-heading">07 / APPLY</p>
+
+            <h2>Choose the correct structure.</h2>
 
             <div class="application-grid">
 
                 <article class="small-card">
-                    <h3>Dynamic Memory</h3>
-
+                    <h3>Stack</h3>
                     <p>
-                        Stores data whose size can grow or shrink during
-                        runtime.
+                        Use Head as the top for O(1) push and pop.
                     </p>
                 </article>
 
                 <article class="small-card">
-                    <h3>Stacks</h3>
-
+                    <h3>Queue</h3>
                     <p>
-                        A stack can use the head as its top for O(1)
-                        push and pop.
+                        Maintain Head and Tail for O(1) enqueue
+                        and dequeue.
                     </p>
                 </article>
 
                 <article class="small-card">
-                    <h3>Queues</h3>
-
+                    <h3>Browser navigation</h3>
                     <p>
-                        A queue can use head and tail pointers for O(1)
-                        enqueue and dequeue.
+                        Previous and Next links support backward
+                        and forward movement.
                     </p>
                 </article>
 
                 <article class="small-card">
-                    <h3>Music Player</h3>
-
+                    <h3>Hash chaining</h3>
                     <p>
-                        A doubly linked list supports moving to the next
-                        and previous songs.
+                        Nodes in the same hash bucket can be linked.
                     </p>
                 </article>
 
                 <article class="small-card">
-                    <h3>Browser History</h3>
-
+                    <h3>Round-robin tasks</h3>
                     <p>
-                        Previous and next pointers support backward and
-                        forward navigation.
+                        A circular list can repeatedly cycle
+                        through active tasks.
                     </p>
                 </article>
 
                 <article class="small-card">
-                    <h3>LRU Cache</h3>
-
+                    <h3>LRU cache</h3>
                     <p>
-                        Recently used items can be moved or removed
-                        efficiently.
+                        A doubly linked list supports moving and
+                        removing known nodes efficiently.
                     </p>
                 </article>
 
             </div>
 
-        </section>
+            <div class="learning-box">
 
+                <h3>Investigation</h3>
+
+                <ol class="information-list">
+                    <li>Reset the visualization.</li>
+                    <li>Insert 5 at the front.</li>
+                    <li>Reset and insert 25 at position 2.</li>
+                    <li>Compare how many pointers were followed.</li>
+                    <li>Explain why existing node values did not shift.</li>
+                </ol>
+
+            </div>
+
+            <details>
+                <summary>Check your explanation</summary>
+
+                <p>
+                    Front insertion changes Head immediately. Insertion
+                    at position 2 first finds the predecessor. Both
+                    operations reconnect nodes rather than moving
+                    the existing values.
+                </p>
+            </details>
+
+        </section>
 
         <!-- ================= Comparison ================= -->
 
@@ -587,70 +779,58 @@
                 <h2>Advantages</h2>
 
                 <ul class="information-list">
-
-                    <li>
-                        The list can grow or shrink during runtime.
-                    </li>
-
-                    <li>
-                        Front insertion and deletion can be performed
-                        in O(1).
-                    </li>
-
-                    <li>
-                        Nodes do not require contiguous memory.
-                    </li>
-
-                    <li>
-                        Doubly linked lists support two-way traversal.
-                    </li>
-
+                    <li>Can grow or shrink during runtime.</li>
+                    <li>Front insertion and deletion take O(1).</li>
+                    <li>Nodes do not need contiguous memory.</li>
+                    <li>Known nodes can be reconnected efficiently.</li>
                 </ul>
 
             </article>
-
 
             <article class="lesson-card disadvantage-card">
 
-                <h2>Disadvantages</h2>
+                <h2>Limitations</h2>
 
                 <ul class="information-list">
-
-                    <li>
-                        Elements cannot be accessed directly using an index.
-                    </li>
-
-                    <li>
-                        Access and search normally require O(n).
-                    </li>
-
-                    <li>
-                        Every node requires additional memory for pointers.
-                    </li>
-
-                    <li>
-                        Pointer updates make the implementation more complex.
-                    </li>
-
+                    <li>No O(1) random access by position.</li>
+                    <li>Pointers require additional memory.</li>
+                    <li>Separate allocations may reduce cache locality.</li>
+                    <li>Incorrect pointer handling can lose nodes.</li>
                 </ul>
 
             </article>
 
         </section>
 
+        <!-- Completion -->
+
         <section class="complete-section">
+
             <div>
                 <h2>Finished this lesson?</h2>
-                <p>Mark the Array lesson as completed.</p>
+
+                <p>
+                    Can you explain traversal, insertion and pointer changes?
+                </p>
+
+                <p
+                    id="completionMessage"
+                    role="status"
+                    aria-live="polite"
+                ></p>
             </div>
 
-            <button type="button" id="completeLessonButton" class="complete-lesson-button">
+            <button
+                type="button"
+                id="completeLessonButton"
+                class="complete-lesson-button"
+            >
                 Mark as Completed
             </button>
+
         </section>
 
-
-        <!-- ================= Bottom Navigation ================= -->
+        <!-- Bottom Navigation -->
 
         <div class="bottom-navigation">
 
@@ -666,18 +846,13 @@
 
     </main>
 
-
-    <!-- ================= Footer ================= -->
-
     <footer>
-        <p>
-            DataLab — Learn Data Structures Interactively
-        </p>
+        <p>DataLab — Learn Data Structures Interactively</p>
     </footer>
 
     <script src="../../js/progress.js"></script>
+    <script src="../../js/linearJS/linked-list-examples.js"></script>
     <script src="../../js/linearJS/linked-list.js"></script>
 
 </body>
-
 </html>

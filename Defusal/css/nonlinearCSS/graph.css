@@ -604,3 +604,299 @@ footer {
         text-align: center;
     }
 }
+
+/* ================= Improved Graph Lesson ================= */
+
+.graph-page .page-description {
+    color: #94a3b8;
+    font-size: 18px;
+}
+
+.graph-page .lesson-tags,
+.graph-page .lesson-navigation,
+.graph-page .answer-buttons,
+.graph-page .challenge-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.graph-page .lesson-tags {
+    margin-top: 22px;
+}
+
+.graph-page .lesson-tags span {
+    padding: 5px 12px;
+    border: 1px solid #334155;
+    border-radius: 30px;
+    font-size: 12px;
+}
+
+.graph-page .lesson-navigation {
+    margin-bottom: 28px;
+}
+
+.graph-page .lesson-navigation a {
+    padding: 10px 14px;
+    color: #cbd5e1;
+    text-decoration: none;
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.graph-page .lesson-navigation a:hover {
+    color: #67e8f9;
+    border-color: #22d3ee;
+}
+
+.graph-page .lesson-card {
+    scroll-margin-top: 24px;
+}
+
+.graph-page .learning-box {
+    margin: 24px 0;
+    padding: 20px;
+    background: rgba(8, 145, 178, 0.08);
+    border-left: 3px solid #22d3ee;
+    border-radius: 0 12px 12px 0;
+}
+
+.graph-page .concept-grid,
+.graph-page .application-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 15px;
+    margin-top: 22px;
+}
+
+.graph-page .concept-card,
+.graph-page .small-card {
+    padding: 18px;
+    background: rgba(2, 6, 23, 0.65);
+    border: 1px solid #29374c;
+    border-radius: 11px;
+}
+
+.graph-page .small-card {
+    border-left: 3px solid #22d3ee;
+}
+
+.graph-page .concept-card p,
+.graph-page .small-card p {
+    font-size: 14px;
+}
+
+.graph-page .lesson-card details {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid #334155;
+}
+
+.graph-page .lesson-card summary {
+    color: #e2e8f0;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.graph-page .graph-stats {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin: 24px 0 8px;
+}
+
+.graph-page #graphType {
+    padding: 10px 13px;
+    color: #f8fafc;
+    background: #020617;
+    border: 1px solid #475569;
+    border-radius: 8px;
+}
+
+.graph-page .trace-panel {
+    margin-top: 24px;
+    padding: 18px;
+    background: rgba(2, 6, 23, 0.65);
+    border: 1px solid #334155;
+    border-radius: 12px;
+}
+
+.graph-page .trace-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.graph-page #stepStatus {
+    color: #c4b5fd;
+    font-size: 14px;
+}
+
+.graph-page #nextStepButton {
+    padding: 9px 15px;
+    color: #e2e8f0;
+    background: #1e293b;
+    border: 1px solid #22d3ee;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.graph-page #nextStepButton:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.graph-page .trace-data {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.graph-page .trace-data > div {
+    padding: 13px;
+    background: #0f172a;
+    border-radius: 8px;
+}
+
+.graph-page .trace-data span {
+    display: block;
+    color: #64748b;
+    font-size: 11px;
+}
+
+.graph-page .trace-data strong {
+    color: #67e8f9;
+    font-family: monospace;
+}
+
+.graph-page .step-history {
+    max-height: 180px;
+    overflow-y: auto;
+    margin-top: 15px;
+    padding-left: 24px;
+    color: #94a3b8;
+    font-size: 14px;
+}
+
+.graph-page .directed-edge {
+    stroke: rgba(100, 116, 139, 0.75);
+    stroke-width: 2;
+}
+
+.graph-page .lesson-card pre {
+    max-width: 100%;
+    overflow-x: auto;
+    margin: 16px 0;
+    padding: 20px;
+    color: #d9edff;
+    background: #020617;
+    border: 1px solid #29374c;
+    border-radius: 10px;
+    font: 13px/1.8 Consolas, monospace;
+}
+
+.graph-page .question-card {
+    margin-top: 20px;
+    padding: 20px;
+    background: #0a1324;
+    border: 1px solid #334155;
+    border-radius: 12px;
+}
+
+.graph-page .answer-buttons,
+.graph-page .challenge-controls {
+    margin: 16px 0;
+}
+
+.graph-page .answer-buttons button,
+.graph-page .challenge-controls button,
+.graph-page .complete-lesson-button {
+    padding: 10px 16px;
+    color: #e2e8f0;
+    background: #1e293b;
+    border: 1px solid #475569;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.graph-page .answer-buttons button:hover,
+.graph-page .challenge-controls button:hover {
+    color: #082f49;
+    background: #67e8f9;
+    border-color: #67e8f9;
+}
+
+.graph-page .answer-buttons button[aria-pressed="true"] {
+    outline: 2px solid #67e8f9;
+    outline-offset: 2px;
+}
+
+.graph-page .question-feedback {
+    min-height: 54px;
+    padding: 14px;
+    background: #080f20;
+    border-left: 3px solid #a78bfa;
+    border-radius: 7px;
+}
+
+.graph-page .question-feedback.result-success {
+    color: #a7f3d0;
+    border-left-color: #34d399;
+}
+
+.graph-page .question-feedback.result-error {
+    color: #fed7aa;
+    border-left-color: #fb923c;
+}
+
+.graph-page #practiceStatus {
+    margin-top: 20px;
+    color: #67e8f9;
+    font-weight: bold;
+}
+
+.graph-page .complete-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 28px;
+    padding: 26px;
+    background: #102837;
+    border: 1px solid #226375;
+    border-radius: 16px;
+}
+
+.graph-page .complete-section > div {
+    flex: 1;
+}
+
+.graph-page .complete-lesson-button.completed {
+    color: #a7f3d0;
+    border-color: #34d399;
+}
+
+@media screen and (max-width: 850px) {
+    .graph-page .concept-grid,
+    .graph-page .application-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .graph-page .concept-grid,
+    .graph-page .application-grid,
+    .graph-page .trace-data {
+        grid-template-columns: 1fr;
+    }
+
+    .graph-page .complete-section {
+        align-items: stretch;
+        flex-direction: column;
+    }
+}

@@ -1,135 +1,138 @@
 document.addEventListener("DOMContentLoaded", function () {
+    "use strict";
 
-    /* ================= Authentication ================= */
+    const $ = id => document.getElementById(id);
 
-    const authButton = document.getElementById("authButton");
-    const loggedInUser = localStorage.getItem("loggedInUser");
-
-    if (authButton) {
-        if (loggedInUser) {
-            authButton.textContent = "Profile";
-            authButton.href = "../profile.html";
-        } else {
-            authButton.textContent = "Log in";
-            authButton.href = "../login.html";
-        }
-    }
-
-
-    /* ================= Stack Settings ================= */
-
+    const LESSON_ID = "stack";
+    const CAPACITY = 7;
     const initialStack = [10, 20, 30];
-    const maximumSize = 7;
 
     let stack = [...initialStack];
 
-    const stackContainer =
-        document.getElementById("stackContainer");
+    /* ================= Authentication ================= */
 
-    const resultText =
-        document.getElementById("visualizationResult");
-
-    const valueInput =
-        document.getElementById("valueInput");
-
-    const operationButtons =
-        document.querySelectorAll(".operation-buttons button");
-
-
-    /* ================= Display Stack ================= */
-
-    function displayStack(highlightTop = false) {
-        stackContainer.innerHTML = "";
-
-        if (stack.length === 0) {
-            stackContainer.innerHTML =
-                '<p class="empty-stack">Empty Stack</p>';
-
-            return;
+    try {
+        if (localStorage.getItem("loggedInUser")) {
+            $("authButton").textContent = "Profile";
+            $("authButton").href = "../profile.html";
         }
-
-        for (
-            let index = stack.length - 1;
-            index >= 0;
-            index--
-        ) {
-            const stackNode =
-                document.createElement("div");
-
-            stackNode.classList.add("stack-node");
-            stackNode.textContent = stack[index];
-
-            if (
-                highlightTop &&
-                index === stack.length - 1
-            ) {
-                stackNode.classList.add("selected");
-            }
-
-            stackContainer.appendChild(stackNode);
-        }
+    } catch (error) {
+        console.warn("Login state could not be read.", error);
     }
 
+    /* ================= Stack Display ================= */
 
-    /* ================= Result Message ================= */
+    function displayStack(highlightTop = false) {
+        const container = $("stackContainer");
 
-    function showResult(message, type = "normal") {
-        resultText.textContent = message;
+        container.replaceChildren();
 
-        resultText.classList.remove(
-            "result-success",
-            "result-error"
-        );
+        if (stack.length === 0) {
+            const empty = document.createElement("p");
+
+            empty.className = "empty-stack";
+            empty.textContent = "Empty Stack";
+
+            container.append(empty);
+        } else {
+            for (
+                let index = stack.length - 1;
+                index >= 0;
+                index--
+            ) {
+                const node = document.createElement("div");
+
+                node.className = "stack-node";
+                node.textContent = stack[index];
+
+                if (
+                    highlightTop &&
+                    index === stack.length - 1
+                ) {
+                    node.classList.add("selected");
+                }
+
+                container.append(node);
+            }
+        }
+
+        const topIndex = stack.length - 1;
+        const topValue =
+            stack.length > 0
+                ? stack[topIndex]
+                : "none";
+
+        $("stackState").textContent =
+            `Size: ${stack.length}/${CAPACITY} · ` +
+            `Top index: ${topIndex} · ` +
+            `Top value: ${topValue} · ` +
+            `isEmpty: ${stack.length === 0} · ` +
+            `isFull: ${stack.length === CAPACITY}`;
+    }
+
+    /* ================= Messages ================= */
+
+    function showResult(message, type = "") {
+        const result = $("visualizationResult");
+
+        result.textContent = message;
+        result.className = "visualization-result";
 
         if (type === "success") {
-            resultText.classList.add("result-success");
+            result.classList.add("result-success");
         }
 
         if (type === "error") {
-            resultText.classList.add("result-error");
+            result.classList.add("result-error");
         }
     }
 
+    function addHistory(message) {
+        const item = document.createElement("li");
 
-    /* ================= Input Validation ================= */
+        item.textContent = message;
+        $("operationHistory").prepend(item);
+
+        if ($("operationHistory").children.length > 12) {
+            $("operationHistory").lastElementChild.remove();
+        }
+    }
+
+    function report(message, type = "") {
+        showResult(message, type);
+        addHistory(message);
+        displayStack(type === "success");
+    }
+
+    /* ================= Validation ================= */
 
     function getValue() {
-        const input = valueInput.value.trim();
+        const raw = $("valueInput").value.trim();
+        const value = Number(raw);
 
-        if (input === "") {
-            showResult(
-                "Please enter a value before using Push.",
-                "error"
+        if (
+            raw === "" ||
+            !Number.isInteger(value) ||
+            value < -999 ||
+            value > 999
+        ) {
+            $("valueInput").focus();
+
+            throw new Error(
+                "Enter a whole number from −999 to 999."
             );
-
-            valueInput.focus();
-            return null;
-        }
-
-        const value = Number(input);
-
-        if (Number.isNaN(value)) {
-            showResult(
-                "Please enter a valid number.",
-                "error"
-            );
-
-            valueInput.focus();
-            valueInput.select();
-
-            return null;
         }
 
         return value;
     }
 
-
-    /* ================= Push ================= */
+    /* ================= Operations ================= */
 
     function pushElement() {
-        if (stack.length >= maximumSize) {
-            showResult(
-                `Stack overflow: The maximum size is ${maximumSize}.`,
+        if (stack.length === CAPACITY) {
+            report(
+                `Overflow: capacity ${CAPACITY} is full. ` +
+                "Pop an item before pushing. No data changed.",
                 "error"
             );
 
@@ -137,53 +140,50 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         const value = getValue();
-
-        if (value === null) {
-            return;
-        }
+        const oldTop =
+            stack.length > 0
+                ? stack[stack.length - 1]
+                : "none";
 
         stack.push(value);
 
-        displayStack(true);
-
-        showResult(
-            `Push: ${value} was added to the top of the stack.`,
+        report(
+            `Push(${value}): ${value} became the new Top. ` +
+            `Previous Top: ${oldTop}. Size is now ${stack.length}.`,
             "success"
         );
 
-        valueInput.value = "";
-        valueInput.focus();
+        $("valueInput").value = "";
+        $("valueInput").focus();
     }
-
-
-    /* ================= Pop ================= */
 
     function popElement() {
         if (stack.length === 0) {
-            showResult(
-                "Stack underflow: The stack is empty.",
+            report(
+                "Underflow: the stack is empty. " +
+                "There is no Top value to remove.",
                 "error"
             );
 
             return;
         }
 
-        const removedValue = stack.pop();
+        const removed = stack.pop();
+        const newTop =
+            stack.length > 0
+                ? stack[stack.length - 1]
+                : "none";
 
-        displayStack();
-
-        showResult(
-            `Pop: ${removedValue} was removed from the top.`,
+        report(
+            `Pop() returned ${removed}. ` +
+            `New Top: ${newTop}. Size is now ${stack.length}.`,
             "success"
         );
     }
 
-
-    /* ================= Peek ================= */
-
     function peekElement() {
         if (stack.length === 0) {
-            showResult(
+            report(
                 "Peek is unavailable because the stack is empty.",
                 "error"
             );
@@ -191,109 +191,364 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        const topValue = stack[stack.length - 1];
+        const top = stack[stack.length - 1];
 
-        displayStack(true);
-
-        showResult(
-            `Peek: The top element is ${topValue}.`,
+        report(
+            `Peek() returned ${top}. ` +
+            `The value was not removed; Size remains ${stack.length}.`,
             "success"
         );
     }
-
-
-    /* ================= isEmpty ================= */
 
     function checkIsEmpty() {
         const empty = stack.length === 0;
 
-        displayStack();
-
-        showResult(
-            `isEmpty: ${empty}. The stack contains ${stack.length} element(s).`,
+        report(
+            `isEmpty() returned ${empty}. ` +
+            `The stack contains ${stack.length} element(s).`,
             "success"
         );
     }
 
+    function checkIsFull() {
+        const full = stack.length === CAPACITY;
 
-    /* ================= Reset ================= */
+        report(
+            `isFull() returned ${full}. ` +
+            `${CAPACITY - stack.length} slot(s) remain.`,
+            "success"
+        );
+    }
 
     function resetStack() {
         stack = [...initialStack];
 
-        valueInput.value = "";
+        $("valueInput").value = "";
+        $("operationHistory").replaceChildren();
+
+        addHistory(
+            "Initial stack: bottom [10, 20, 30] top."
+        );
 
         displayStack();
 
         showResult(
-            "The stack has been reset.",
+            "Reset to bottom [10, 20, 30] top.",
             "success"
         );
     }
 
+    /* ================= Main Events ================= */
 
-    /* ================= Button States ================= */
+    const actions = {
+        pushButton: pushElement,
+        popButton: popElement,
+        peekButton: peekElement,
+        isEmptyButton: checkIsEmpty,
+        isFullButton: checkIsFull,
+        resetButton: resetStack
+    };
 
-    function disableButtons(disabled) {
-        operationButtons.forEach(function (button) {
-            button.disabled = disabled;
+    Object.entries(actions).forEach(([id, action]) => {
+        $(id).addEventListener("click", function () {
+            try {
+                action();
+            } catch (error) {
+                report(error.message, "error");
+            }
         });
-    }
-
-    /* ================= Lesson Completion ================= */
-    const completeLessonButton =
-    document.getElementById("completeLessonButton");
-
-    if (isLessonCompleted("stack")) {
-        completeLessonButton.textContent = "Completed ✓";
-        completeLessonButton.classList.add("completed");
-    }
-
-    completeLessonButton.addEventListener("click", function () {
-    const saved = completeLesson("stack");
-
-    if (saved) {
-        completeLessonButton.textContent = "Completed ✓";
-        completeLessonButton.classList.add("completed");
-
-        alert("Stack lesson completed!");
-    }
     });
 
-
-    /* ================= Button Events ================= */
-
-    document
-        .getElementById("pushButton")
-        .addEventListener("click", pushElement);
-
-    document
-        .getElementById("popButton")
-        .addEventListener("click", popElement);
-
-    document
-        .getElementById("peekButton")
-        .addEventListener("click", peekElement);
-
-    document
-        .getElementById("isEmptyButton")
-        .addEventListener("click", checkIsEmpty);
-
-    document
-        .getElementById("resetButton")
-        .addEventListener("click", resetStack);
-
-
-    valueInput.addEventListener("keydown", function (event) {
+    $("valueInput").addEventListener("keydown", function (event) {
         if (event.key === "Enter") {
-            pushElement();
+            try {
+                pushElement();
+            } catch (error) {
+                report(error.message, "error");
+            }
         }
     });
 
+    /* ================= Practice ================= */
+
+    const questions = {
+        sequence: {
+            correct: 2,
+
+            feedback: [
+                "4 remains at the bottom. After Pop removes 7, " +
+                "Push(9) makes 9 the Top.",
+
+                "7 was removed by Pop, so it cannot be returned by Peek.",
+
+                "Correct. The final stack is bottom [4, 9] top."
+            ]
+        },
+
+        peek: {
+            correct: 2,
+
+            feedback: [
+                "Push adds a new value rather than reading the current Top.",
+
+                "Pop returns 30 but also removes it, reducing Size.",
+
+                "Correct. Peek returns 30 without changing the stack."
+            ]
+        },
+
+        overflow: {
+            correct: 1,
+
+            feedback: [
+                "Overwriting the Top would destroy stored data.",
+
+                "Correct. Reject the Push and preserve all seven items.",
+
+                "Removing the Bottom is not a valid stack operation."
+            ]
+        }
+    };
+
+    const solved = new Set();
+
+    document.querySelectorAll(".question-card").forEach(card => {
+        const questionId = card.dataset.question;
+        const data = questions[questionId];
+
+        const buttons =
+            card.querySelectorAll("[data-answer]");
+
+        const feedback =
+            card.querySelector(".question-feedback");
+
+        buttons.forEach(button => {
+            button.setAttribute("aria-pressed", "false");
+
+            button.addEventListener("click", function () {
+                const answer =
+                    Number(this.dataset.answer);
+
+                const correct =
+                    answer === data.correct;
+
+                buttons.forEach(item => {
+                    item.setAttribute(
+                        "aria-pressed",
+                        "false"
+                    );
+                });
+
+                this.setAttribute(
+                    "aria-pressed",
+                    "true"
+                );
+
+                feedback.textContent =
+                    data.feedback[answer];
+
+                feedback.className =
+                    "question-feedback " +
+                    (
+                        correct
+                            ? "result-success"
+                            : "result-error"
+                    );
+
+                if (correct) {
+                    solved.add(questionId);
+                }
+
+                $("practiceStatus").textContent =
+                    `Questions solved: ${solved.size} / 3`;
+            });
+        });
+    });
+
+    /* ================= Reverse Challenge ================= */
+
+    let incoming = ["A", "B", "C"];
+    let challengeStack = [];
+    let output = [];
+    let challengeFinished = false;
+
+    function displayChallenge() {
+        $("incomingSignal").textContent =
+            incoming.join(" → ") || "Empty";
+
+        $("challengeStack").textContent =
+            challengeStack.join(" → ") || "Empty";
+
+        $("signalOutput").textContent =
+            output.join(" → ") || "Empty";
+
+        $("signalPushButton").disabled =
+            challengeFinished || incoming.length === 0;
+
+        $("signalPopButton").disabled =
+            challengeFinished || challengeStack.length === 0;
+    }
+
+    function challengeMessage(message, type = "") {
+        const result = $("challengeResult");
+
+        result.textContent = message;
+        result.className = "visualization-result";
+
+        if (type === "success") {
+            result.classList.add("result-success");
+        }
+
+        if (type === "error") {
+            result.classList.add("result-error");
+        }
+    }
+
+    function pushSignal() {
+        if (challengeFinished || incoming.length === 0) {
+            return;
+        }
+
+        const symbol = incoming.shift();
+
+        challengeStack.push(symbol);
+
+        challengeMessage(
+            `Pushed ${symbol}. It is now the Top.`
+        );
+
+        displayChallenge();
+    }
+
+    function popSignal() {
+        if (
+            challengeFinished ||
+            challengeStack.length === 0
+        ) {
+            return;
+        }
+
+        const symbol = challengeStack.pop();
+
+        output.push(symbol);
+
+        const target = "CBA";
+
+        if (
+            output.join("") !==
+            target.slice(0, output.length)
+        ) {
+            challengeFinished = true;
+
+            challengeMessage(
+                `${symbol} was removed too early. ` +
+                "The output can no longer become C → B → A. Restart.",
+                "error"
+            );
+        } else if (output.length === 3) {
+            challengeFinished = true;
+
+            challengeMessage(
+                "Solved! Push A, B and C, then Pop C, B and A. " +
+                "LIFO reversed the sequence.",
+                "success"
+            );
+        } else {
+            challengeMessage(
+                `Popped ${symbol}. The output is correct so far.`,
+                "success"
+            );
+        }
+
+        displayChallenge();
+    }
+
+    function resetChallenge() {
+        incoming = ["A", "B", "C"];
+        challengeStack = [];
+        output = [];
+        challengeFinished = false;
+
+        challengeMessage(
+            "Challenge restarted. Make C the first output."
+        );
+
+        displayChallenge();
+    }
+
+    $("signalPushButton").addEventListener(
+        "click",
+        pushSignal
+    );
+
+    $("signalPopButton").addEventListener(
+        "click",
+        popSignal
+    );
+
+    $("challengeResetButton").addEventListener(
+        "click",
+        resetChallenge
+    );
+
+    /* ================= Progress ================= */
+
+    const completeButton =
+        $("completeLessonButton");
+
+    function setCompleted() {
+        completeButton.textContent = "Completed ✓";
+        completeButton.classList.add("completed");
+        completeButton.disabled = true;
+    }
+
+    try {
+        if (
+            typeof isLessonCompleted === "function" &&
+            isLessonCompleted(LESSON_ID)
+        ) {
+            setCompleted();
+        }
+    } catch (error) {
+        console.warn("Completion could not be read.", error);
+    }
+
+    completeButton.addEventListener("click", async function () {
+        if (typeof completeLesson !== "function") {
+            $("completionMessage").textContent =
+                "Progress is unavailable. Check progress.js.";
+            return;
+        }
+
+        completeButton.disabled = true;
+
+        try {
+            const saved =
+                await completeLesson(LESSON_ID);
+
+            if (saved) {
+                setCompleted();
+
+                $("completionMessage").textContent =
+                    "Stack lesson completion saved.";
+            } else {
+                completeButton.disabled = false;
+
+                $("completionMessage").textContent =
+                    "Completion was not saved. Check your login.";
+            }
+        } catch (error) {
+            completeButton.disabled = false;
+
+            $("completionMessage").textContent =
+                "Completion could not be saved.";
+
+            console.warn(error);
+        }
+    });
 
     /* ================= Initial Display ================= */
 
-    disableButtons(false);
     displayStack();
-
+    displayChallenge();
 });

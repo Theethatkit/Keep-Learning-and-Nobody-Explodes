@@ -3,48 +3,34 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <title>Hash Map | DataLab</title>
 
-    <title>HashMap | DataLab</title>
-
-    <!-- Shared Navigation CSS -->
     <link rel="stylesheet" href="../../css/navbar.css">
-
-    <!-- HashMap Page CSS -->
-    <link rel="stylesheet" href="../../css/nonlinearCSS/hashmap.css">
-
-    <!-- Global CSS -->
     <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet"
+          href="../../css/nonLinearCSS/hashmap.css">
 </head>
 
-<body>
-
-    <!-- ================= Navigation Bar ================= -->
+<body class="hashmap-page">
 
     <header class="navbar">
 
         <a href="../../index.html" class="logo-link">
-
-            <img
-                src="../../images/Logo.png"
-                alt="DataLab Logo"
-                class="logo"
-            >
-
+            <img src="../../images/Logo.png"
+                 alt="DataLab Logo"
+                 class="logo">
         </a>
 
-
         <nav class="nav-links">
-
             <a href="../../index.html" class="nav-link">
                 Home
             </a>
 
-            <a href="../lessons.html" class="nav-link active">
+            <a href="../lessons.html"
+               class="nav-link active">
                 Lessons
             </a>
 
@@ -55,539 +41,829 @@
             <a href="../team.html" class="nav-link">
                 Team
             </a>
-
         </nav>
 
-
-        <a href="../login.html" id="authButton" class="auth-button">
+        <a href="../login.html"
+           id="authButton"
+           class="auth-button">
             Log in
         </a>
 
     </header>
 
 
-    <!-- ================= Main Content ================= -->
-
     <main class="container">
 
-        <!-- Page Header -->
+        <!-- Header -->
 
         <section class="page-header">
 
             <a href="nonlinear.html" class="back-link">
-                ← Back to Non-linear Structures
+                ← Back to Data Structures
             </a>
 
-            <p class="category">
-                HASH-BASED DATA STRUCTURE
+            <p class="category">HASH-BASED DATA STRUCTURE</p>
+
+            <h1>Hash Map</h1>
+
+            <p class="hero-description">
+                Discover how a key becomes a bucket index, investigate
+                collisions, and experiment with insertion, searching,
+                updating, and deletion.
             </p>
 
-            <h1>HashMap</h1>
-
-            <p>
-                Learn how a HashMap stores key-value pairs and uses
-                a hash function to locate values efficiently.
-            </p>
-
-        </section>
-
-
-        <!-- ================= Introduction ================= -->
-
-        <section class="lesson-card">
-
-            <h2>What is a HashMap?</h2>
-
-            <p>
-                A HashMap is a data structure that connects keys to
-                values. It uses a hash function to convert each key
-                into an index inside an array of buckets.
-            </p>
-
-            <p>
-                It is similar to a dictionary. You use a word as the
-                key to quickly find its corresponding meaning, which
-                is the value.
-            </p>
-
-
-            <div class="key-value-example">
-
-                <div class="key-box">
-                    Peter
-                </div>
-
-                <span class="process-arrow">
-                    →
-                </span>
-
-                <div class="function-box">
-                    Hash Function
-                </div>
-
-                <span class="process-arrow">
-                    →
-                </span>
-
-                <div class="value-box">
-                    Spiderman
-                </div>
-
+            <div class="lesson-route">
+                <a href="#understand">01 Understand</a>
+                <a href="#trace">02 Trace</a>
+                <a href="#experiment">03 Experiment</a>
+                <a href="#code">04 Code</a>
+                <a href="#practice">05 Practice</a>
+                <a href="#challenge">06 Apply</a>
             </div>
 
         </section>
 
 
-        <!-- ================= Why HashMaps ================= -->
+        <!-- Understand -->
 
-        <section class="lesson-card">
+        <section class="lesson-card" id="understand">
 
-            <h2>Why Do We Need HashMaps?</h2>
+            <div class="section-heading">
+                <div>
+                    <p class="small-heading">01 — UNDERSTAND</p>
+                    <h2>What is a Hash Map?</h2>
+                </div>
+
+                <span class="section-badge">Concept</span>
+            </div>
 
             <p>
-                Searching for a value inside an unsorted array normally
-                requires checking elements one by one, which takes O(n).
+                A Hash Map stores information as
+                <strong>key–value pairs</strong>. Instead of searching
+                through every element, it uses a hash function to
+                calculate where a key should be stored.
             </p>
 
-            <p>
-                A HashMap uses a key to calculate the location of a value.
-                This allows insertion, lookup and removal to take O(1)
-                average time.
-            </p>
+            <div class="mapping-example">
 
-            <div class="comparison-example">
+                <div class="mapping-item">
+                    <span class="mapping-label">Key</span>
+                    <strong>"Peter"</strong>
+                </div>
 
-                <article class="comparison-item">
+                <span class="mapping-arrow">→</span>
 
-                    <span class="comparison-label">
-                        Array Search
-                    </span>
+                <div class="mapping-item">
+                    <span class="mapping-label">Hash function</span>
+                    <strong>hash("Peter")</strong>
+                </div>
 
-                    <strong>O(n)</strong>
+                <span class="mapping-arrow">→</span>
 
-                    <p>
-                        Check values one by one.
-                    </p>
+                <div class="mapping-item">
+                    <span class="mapping-label">Bucket</span>
+                    <strong>Index 1</strong>
+                </div>
 
-                </article>
+                <span class="mapping-arrow">→</span>
 
-
-                <article class="comparison-item fast-item">
-
-                    <span class="comparison-label">
-                        HashMap Lookup
-                    </span>
-
-                    <strong>O(1) average</strong>
-
-                    <p>
-                        Calculate the bucket from the key.
-                    </p>
-
-                </article>
+                <div class="mapping-item">
+                    <span class="mapping-label">Value</span>
+                    <strong>"Spiderman"</strong>
+                </div>
 
             </div>
 
-        </section>
+            <div class="concept-grid">
 
-
-        <!-- ================= Structure ================= -->
-
-        <section class="lesson-card">
-
-            <h2>Key Components of Hashing</h2>
-
-            <div class="structure-grid">
-
-                <article class="structure-item">
-
+                <article class="concept-card">
+                    <span class="concept-icon">K</span>
                     <h3>Key</h3>
-
                     <p>
-                        A unique identifier used to locate its
-                        corresponding value.
+                        A unique name used to identify and retrieve a value.
                     </p>
-
                 </article>
 
-
-                <article class="structure-item">
-
+                <article class="concept-card">
+                    <span class="concept-icon">V</span>
                     <h3>Value</h3>
-
                     <p>
-                        The data stored and associated with a key.
+                        The information associated with a particular key.
                     </p>
-
                 </article>
 
-
-                <article class="structure-item">
-
+                <article class="concept-card">
+                    <span class="concept-icon">#</span>
                     <h3>Hash Function</h3>
-
                     <p>
-                        Converts a key into a bucket index.
+                        Converts a key into a numeric bucket index.
                     </p>
-
                 </article>
 
-
-                <article class="structure-item">
-
+                <article class="concept-card">
+                    <span class="concept-icon">B</span>
                     <h3>Bucket</h3>
-
                     <p>
-                        A position where one or more key-value pairs
-                        are stored.
+                        A storage location inside the Hash Map.
                     </p>
-
                 </article>
 
             </div>
 
+        </section>
+
+
+        <!-- Trace -->
+
+        <section class="lesson-card" id="trace">
+
+            <div class="section-heading">
+                <div>
+                    <p class="small-heading">02 — TRACE</p>
+                    <h2>How Does the Hash Function Work?</h2>
+                </div>
+
+                <span class="section-badge">Step-by-step</span>
+            </div>
+
+            <p>
+                This lesson converts every character into its character
+                code, adds the codes together, and uses modulo 7 to
+                select one of seven buckets.
+            </p>
 
             <div class="formula-box">
+                <span>Hash formula</span>
 
-                <span>Key</span>
-                <span>→</span>
-                <span>Hash Code</span>
-                <span>→</span>
-                <span>Index = Hash Code % Bucket Count</span>
+                <strong>
+                    index = sum of character codes % 7
+                </strong>
+            </div>
+
+            <div class="hash-tracer">
+
+                <div class="trace-input">
+                    <label for="traceKeyInput">
+                        Enter a key
+                    </label>
+
+                    <input type="text"
+                           id="traceKeyInput"
+                           maxlength="15"
+                           placeholder="Example: Peter">
+
+                    <button type="button" id="traceHashButton">
+                        Trace Hash
+                    </button>
+                </div>
+
+                <div class="trace-process">
+
+                    <div class="trace-stage">
+                        <span>Characters</span>
+                        <strong id="traceCharacters">—</strong>
+                    </div>
+
+                    <div class="trace-stage">
+                        <span>Character codes</span>
+                        <strong id="traceCodes">—</strong>
+                    </div>
+
+                    <div class="trace-stage">
+                        <span>Total</span>
+                        <strong id="traceTotal">—</strong>
+                    </div>
+
+                    <div class="trace-stage result-stage">
+                        <span>Bucket index</span>
+                        <strong id="traceIndex">—</strong>
+                    </div>
+
+                </div>
 
             </div>
 
         </section>
 
 
-        <!-- ================= Operations ================= -->
+        <!-- Experiment -->
+
+        <section class="lesson-card" id="experiment">
+
+            <div class="section-heading">
+                <div>
+                    <p class="small-heading">03 — EXPERIMENT</p>
+                    <h2>Hash Map Laboratory</h2>
+                </div>
+
+                <span class="section-badge interactive-badge">
+                    Interactive
+                </span>
+            </div>
+
+            <p>
+                Store key–value pairs in seven buckets. When different
+                keys produce the same bucket index, the entries are
+                connected using Separate Chaining.
+            </p>
+
+            <div class="lab-stats">
+
+                <div class="stat-card">
+                    <span>Entries</span>
+                    <strong id="entryCount">0</strong>
+                </div>
+
+                <div class="stat-card">
+                    <span>Used buckets</span>
+                    <strong id="usedBucketCount">0 / 7</strong>
+                </div>
+
+                <div class="stat-card">
+                    <span>Load factor</span>
+                    <strong id="loadFactor">0.00</strong>
+                </div>
+
+                <div class="stat-card">
+                    <span>Comparisons</span>
+                    <strong id="comparisonCount">0</strong>
+                </div>
+
+            </div>
+
+            <div class="hash-workspace">
+
+                <div class="bucket-panel">
+
+                    <div class="panel-title">
+                        <span>Bucket visualization</span>
+                        <span class="live-indicator">● LIVE</span>
+                    </div>
+
+                    <div id="bucketContainer"
+                         class="bucket-container">
+                    </div>
+
+                </div>
+
+                <aside class="operation-panel">
+
+                    <div class="panel-title">
+                        <span>Operation workspace</span>
+                    </div>
+
+                    <div class="workspace-block">
+                        <span class="workspace-label">
+                            Hash calculation
+                        </span>
+
+                        <strong id="hashCalculation">
+                            Waiting for an operation
+                        </strong>
+                    </div>
+
+                    <div class="workspace-block">
+                        <span class="workspace-label">
+                            Current step
+                        </span>
+
+                        <p id="currentStep">
+                            Enter a key and value to begin.
+                        </p>
+                    </div>
+
+                    <div class="workspace-block">
+                        <span class="workspace-label">
+                            Search path
+                        </span>
+
+                        <div id="searchPath"
+                             class="search-path">
+                            <span class="empty-item">Empty</span>
+                        </div>
+                    </div>
+
+                    <div class="step-progress">
+                        <div class="progress-heading">
+                            <span>Progress</span>
+                            <span id="stepCounter">0 / 0</span>
+                        </div>
+
+                        <div class="progress-track">
+                            <div id="progressBar"
+                                 class="progress-bar">
+                            </div>
+                        </div>
+                    </div>
+
+                </aside>
+
+            </div>
+
+            <p id="operationResult"
+               class="operation-result"
+               aria-live="polite">
+                Choose an operation to begin.
+            </p>
+
+            <div class="control-panel">
+
+                <div class="input-group">
+                    <label for="keyInput">Key</label>
+
+                    <input type="text"
+                           id="keyInput"
+                           maxlength="15"
+                           placeholder="Example: Peter">
+                </div>
+
+                <div class="input-group">
+                    <label for="valueInput">Value</label>
+
+                    <input type="text"
+                           id="valueInput"
+                           maxlength="25"
+                           placeholder="Example: Spiderman">
+                </div>
+
+                <div class="operation-buttons">
+
+                    <button type="button"
+                            id="putButton"
+                            class="primary-button">
+                        Put / Update
+                    </button>
+
+                    <button type="button" id="getButton">
+                        Get
+                    </button>
+
+                    <button type="button" id="containsButton">
+                        Contains Key
+                    </button>
+
+                    <button type="button" id="removeButton">
+                        Remove
+                    </button>
+
+                </div>
+
+            </div>
+
+            <div class="step-controls">
+
+                <button type="button"
+                        id="nextStepButton"
+                        class="next-step-button"
+                        disabled>
+                    Next Step →
+                </button>
+
+                <button type="button"
+                        id="resetButton"
+                        class="reset-button">
+                    Reset Hash Map
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- Collision -->
 
         <section class="lesson-card">
 
-            <h2>Basic Operations and Time Complexity</h2>
+            <div class="section-heading">
+                <div>
+                    <p class="small-heading">COLLISION HANDLING</p>
+                    <h2>What Happens When Keys Collide?</h2>
+                </div>
+            </div>
 
-            <div class="operation-table-container">
+            <p>
+                A collision occurs when two different keys produce the
+                same bucket index. A Hash Map must have a strategy for
+                storing both entries.
+            </p>
 
-                <table class="operation-table">
+            <div class="collision-grid">
 
+                <article class="collision-card selected-method">
+                    <span class="method-number">01</span>
+                    <h3>Separate Chaining</h3>
+                    <p>
+                        Every bucket stores a linked list of entries.
+                        Colliding entries are added to the same chain.
+                    </p>
+
+                    <div class="chain-example">
+                        <span>[1]</span>
+                        <strong>AB</strong>
+                        <i>→</i>
+                        <strong>BA</strong>
+                    </div>
+
+                    <small>Used in this visualization</small>
+                </article>
+
+                <article class="collision-card">
+                    <span class="method-number">02</span>
+                    <h3>Open Addressing</h3>
+                    <p>
+                        If a bucket is occupied, the algorithm searches
+                        for another available bucket.
+                    </p>
+
+                    <div class="address-example">
+                        <span>3 occupied</span>
+                        <i>→</i>
+                        <span>Try 4</span>
+                    </div>
+                </article>
+
+            </div>
+
+        </section>
+
+
+        <!-- Code -->
+
+        <section class="lesson-card" id="code">
+
+            <div class="section-heading">
+                <div>
+                    <p class="small-heading">04 — CODE</p>
+                    <h2>Connect the Visualization to C Code</h2>
+                </div>
+
+                <span class="section-badge">C Language</span>
+            </div>
+
+            <div class="code-tabs">
+
+                <button type="button"
+                        class="code-tab active"
+                        data-example="structure">
+                    Structure
+                </button>
+
+                <button type="button"
+                        class="code-tab"
+                        data-example="hash">
+                    Hash Function
+                </button>
+
+                <button type="button"
+                        class="code-tab"
+                        data-example="put">
+                    Put
+                </button>
+
+                <button type="button"
+                        class="code-tab"
+                        data-example="get">
+                    Get
+                </button>
+
+                <button type="button"
+                        class="code-tab"
+                        data-example="remove">
+                    Remove
+                </button>
+
+            </div>
+
+            <div class="code-window">
+
+                <div class="code-toolbar">
+                    <span id="codeTitle">
+                        Hash Map Structure
+                    </span>
+
+                    <button type="button" id="copyCodeButton">
+                        Copy code
+                    </button>
+                </div>
+
+                <pre><code id="codeDisplay"></code></pre>
+
+            </div>
+
+            <div id="codeExplanation"
+                 class="code-explanation">
+            </div>
+
+        </section>
+
+
+        <!-- Complexity -->
+
+        <section class="lesson-card">
+
+            <div class="section-heading">
+                <div>
+                    <p class="small-heading">EFFICIENCY</p>
+                    <h2>Time Complexity</h2>
+                </div>
+            </div>
+
+            <div class="complexity-wrapper">
+
+                <table class="complexity-table">
                     <thead>
                         <tr>
                             <th>Operation</th>
-                            <th>Description</th>
                             <th>Average</th>
-                            <th>Worst Case</th>
+                            <th>Worst</th>
+                            <th>Explanation</th>
                         </tr>
                     </thead>
 
                     <tbody>
-
                         <tr>
                             <td>Put</td>
-
-                            <td>
-                                Add or update a key-value pair.
-                            </td>
-
-                            <td>
-                                <span class="complexity">O(1)</span>
-                            </td>
-
-                            <td>
-                                <span class="worst-complexity">O(n)</span>
-                            </td>
+                            <td><span class="fast">O(1)</span></td>
+                            <td><span class="slow">O(n)</span></td>
+                            <td>A long collision chain may be searched.</td>
                         </tr>
-
 
                         <tr>
                             <td>Get</td>
-
-                            <td>
-                                Retrieve a value using its key.
-                            </td>
-
-                            <td>
-                                <span class="complexity">O(1)</span>
-                            </td>
-
-                            <td>
-                                <span class="worst-complexity">O(n)</span>
-                            </td>
+                            <td><span class="fast">O(1)</span></td>
+                            <td><span class="slow">O(n)</span></td>
+                            <td>Entries in the same bucket are compared.</td>
                         </tr>
-
 
                         <tr>
                             <td>Remove</td>
-
-                            <td>
-                                Delete a key-value pair.
-                            </td>
-
-                            <td>
-                                <span class="complexity">O(1)</span>
-                            </td>
-
-                            <td>
-                                <span class="worst-complexity">O(n)</span>
-                            </td>
+                            <td><span class="fast">O(1)</span></td>
+                            <td><span class="slow">O(n)</span></td>
+                            <td>The key must be found before removal.</td>
                         </tr>
-
 
                         <tr>
-                            <td>containsKey</td>
-
-                            <td>
-                                Check whether a key exists.
-                            </td>
-
-                            <td>
-                                <span class="complexity">O(1)</span>
-                            </td>
-
-                            <td>
-                                <span class="worst-complexity">O(n)</span>
-                            </td>
+                            <td>Contains Key</td>
+                            <td><span class="fast">O(1)</span></td>
+                            <td><span class="slow">O(n)</span></td>
+                            <td>Uses the same process as Get.</td>
                         </tr>
-
                     </tbody>
-
                 </table>
 
             </div>
 
-            <p class="table-note">
-                Operations may become O(n) in the worst case when many
-                keys collide in the same bucket.
-            </p>
-
-        </section>
-
-
-        <!-- ================= Collision ================= -->
-
-        <section class="lesson-card">
-
-            <h2>Collision in Hashing</h2>
-
-            <p>
-                A collision occurs when two different keys produce the
-                same bucket index. A HashMap must handle collisions
-                without losing either value.
-            </p>
-
-
-            <div class="collision-grid">
-
-                <article class="collision-card">
-
-                    <h3>Chaining</h3>
-
-                    <p>
-                        Each bucket stores a list of key-value pairs.
-                        Keys that produce the same index are placed
-                        inside the same bucket.
-                    </p>
-
-                    <div class="chain-example">
-
-                        <span class="bucket-index">2</span>
-                        <span>Peter: Spiderman</span>
-                        <span>→</span>
-                        <span>Bruce: Batman</span>
-
-                    </div>
-
-                </article>
-
-
-                <article class="collision-card">
-
-                    <h3>Open Addressing</h3>
-
-                    <p>
-                        When a bucket is occupied, the HashMap searches
-                        for another available bucket using a probing
-                        method.
-                    </p>
-
-                    <div class="probing-example">
-
-                        <span>Index 2 occupied</span>
-                        <span>→</span>
-                        <span>Try index 3</span>
-
-                    </div>
-
-                </article>
-
+            <div class="important-note">
+                <strong>Important:</strong>
+                O(1) is the average case. Performance depends on a good
+                hash function, a suitable capacity, and a controlled
+                load factor.
             </div>
 
         </section>
 
 
-        <!-- ================= Interactive Visualization ================= -->
+        <!-- Practice -->
 
-        <section class="lesson-card">
+        <section class="lesson-card" id="practice">
 
-            <div class="visualization-heading">
+            <div class="section-heading">
+                <div>
+                    <p class="small-heading">05 — PRACTICE</p>
+                    <h2>Check Your Understanding</h2>
+                </div>
+
+                <span class="section-badge">3 Questions</span>
+            </div>
+
+            <div class="quiz-container">
+
+                <article class="quiz-question" data-answer="b">
+
+                    <p class="question-number">Question 1</p>
+
+                    <h3>
+                        What does a hash function produce?
+                    </h3>
+
+                    <div class="answer-list">
+                        <button type="button" data-choice="a">
+                            A. A sorted linked list
+                        </button>
+
+                        <button type="button" data-choice="b">
+                            B. A bucket index
+                        </button>
+
+                        <button type="button" data-choice="c">
+                            C. A new value
+                        </button>
+                    </div>
+
+                    <p class="answer-feedback"></p>
+
+                </article>
+
+                <article class="quiz-question" data-answer="c">
+
+                    <p class="question-number">Question 2</p>
+
+                    <h3>
+                        What is a collision?
+                    </h3>
+
+                    <div class="answer-list">
+                        <button type="button" data-choice="a">
+                            A. A key has no value
+                        </button>
+
+                        <button type="button" data-choice="b">
+                            B. The table is empty
+                        </button>
+
+                        <button type="button" data-choice="c">
+                            C. Different keys produce the same index
+                        </button>
+                    </div>
+
+                    <p class="answer-feedback"></p>
+
+                </article>
+
+                <article class="quiz-question" data-answer="a">
+
+                    <p class="question-number">Question 3</p>
+
+                    <h3>
+                        What does Separate Chaining store in a bucket?
+                    </h3>
+
+                    <div class="answer-list">
+                        <button type="button" data-choice="a">
+                            A. A chain of entries
+                        </button>
+
+                        <button type="button" data-choice="b">
+                            B. Only one key
+                        </button>
+
+                        <button type="button" data-choice="c">
+                            C. A binary tree root only
+                        </button>
+                    </div>
+
+                    <p class="answer-feedback"></p>
+
+                </article>
+
+            </div>
+
+            <div class="quiz-summary">
+                <span>Your score</span>
+                <strong id="quizScore">0 / 3</strong>
+            </div>
+
+        </section>
+
+
+        <!-- Challenge -->
+
+        <section class="lesson-card challenge-card"
+                 id="challenge">
+
+            <div class="section-heading">
+                <div>
+                    <p class="small-heading">06 — APPLY</p>
+                    <h2>Collision Engineer Challenge</h2>
+                </div>
+
+                <span class="section-badge challenge-badge">
+                    Mission
+                </span>
+            </div>
+
+            <div class="challenge-layout">
 
                 <div>
-
-                    <p class="small-heading">
-                        INTERACTIVE LEARNING
+                    <p>
+                        Find two different keys that produce the same
+                        bucket index using this lesson's hash function.
                     </p>
 
-                    <h2>HashMap Visualization</h2>
+                    <ul class="mission-list">
+                        <li id="differentKeyMission">
+                            The keys must be different.
+                        </li>
+
+                        <li id="sameBucketMission">
+                            Both keys must produce the same bucket.
+                        </li>
+                    </ul>
+
+                    <p class="challenge-hint">
+                        Hint: Character order does not change the sum.
+                        Try keys such as AB and BA.
+                    </p>
+                </div>
+
+                <div class="challenge-control">
+
+                    <div class="challenge-inputs">
+
+                        <div>
+                            <label for="challengeKeyOne">
+                                First key
+                            </label>
+
+                            <input type="text"
+                                   id="challengeKeyOne"
+                                   maxlength="10"
+                                   placeholder="Example: AB">
+                        </div>
+
+                        <div>
+                            <label for="challengeKeyTwo">
+                                Second key
+                            </label>
+
+                            <input type="text"
+                                   id="challengeKeyTwo"
+                                   maxlength="10"
+                                   placeholder="Example: BA">
+                        </div>
+
+                    </div>
+
+                    <button type="button"
+                            id="checkChallengeButton"
+                            class="check-button">
+                        Test Collision
+                    </button>
+
+                    <div class="challenge-output">
+                        <span id="challengeOutputOne">
+                            First index: —
+                        </span>
+
+                        <span id="challengeOutputTwo">
+                            Second index: —
+                        </span>
+                    </div>
+
+                    <p id="challengeResult"
+                       class="challenge-result">
+                    </p>
 
                 </div>
 
-                <span class="visualization-label">
-                    CHAINING
-                </span>
-
             </div>
-
-
-            <div class="visualization-layout">
-
-                <!-- Input and Controls -->
-
-                <div class="control-panel">
-
-                    <div class="input-group">
-
-                        <label for="keyInput">
-                            Key
-                        </label>
-
-                        <input
-                            type="text"
-                            id="keyInput"
-                            placeholder="Example: Peter"
-                            maxlength="20"
-                        >
-
-                    </div>
-
-
-                    <div class="input-group">
-
-                        <label for="valueInput">
-                            Value
-                        </label>
-
-                        <input
-                            type="text"
-                            id="valueInput"
-                            placeholder="Example: Spiderman"
-                            maxlength="30"
-                        >
-
-                    </div>
-
-
-                    <div class="operation-buttons">
-
-                        <button type="button" id="putButton">
-                            Put
-                        </button>
-
-                        <button type="button" id="getButton">
-                            Get
-                        </button>
-
-                        <button type="button" id="removeButton">
-                            Remove
-                        </button>
-
-                        <button type="button" id="containsButton">
-                            containsKey
-                        </button>
-
-                        <button
-                            type="button"
-                            id="resetButton"
-                            class="secondary-button"
-                        >
-                            Reset
-                        </button>
-
-                    </div>
-
-                </div>
-
-
-                <!-- Hash Table -->
-
-                <div
-                    id="hashTable"
-                    class="hash-table"
-                ></div>
-
-            </div>
-
-
-            <p
-                id="visualizationResult"
-                class="visualization-result"
-            >
-                Enter a key and value, then select an operation.
-            </p>
 
         </section>
 
 
-        <!-- ================= Applications ================= -->
+        <!-- Applications -->
 
         <section class="lesson-card">
 
-            <h2>Applications of HashMaps</h2>
+            <div class="section-heading">
+                <div>
+                    <p class="small-heading">REAL-WORLD USE</p>
+                    <h2>Applications</h2>
+                </div>
+            </div>
 
             <div class="application-grid">
 
-                <article class="small-card">
+                <article class="application-card">
+                    <span>👤</span>
+                    <h3>User Accounts</h3>
+                    <p>
+                        Find an account quickly using a username or ID.
+                    </p>
+                </article>
 
+                <article class="application-card">
+                    <span>🗄️</span>
                     <h3>Database Indexing</h3>
-
                     <p>
-                        Keys help databases retrieve records quickly.
+                        Locate records without scanning every entry.
                     </p>
-
                 </article>
 
-
-                <article class="small-card">
-
+                <article class="application-card">
+                    <span>⚡</span>
                     <h3>Caching</h3>
-
                     <p>
-                        Previously calculated results can be stored and
-                        retrieved using their input as a key.
+                        Store and retrieve previously calculated results.
                     </p>
-
                 </article>
 
-
-                <article class="small-card">
-
-                    <h3>DNS Resolution</h3>
-
+                <article class="application-card">
+                    <span>🔤</span>
+                    <h3>Word Frequency</h3>
                     <p>
-                        Domain names can be connected to their
-                        corresponding IP addresses.
+                        Map each word to the number of times it appears.
                     </p>
-
-                </article>
-
-
-                <article class="small-card">
-
-                    <h3>Symbol Tables</h3>
-
-                    <p>
-                        Compilers use HashMaps to store variables,
-                        functions and other identifiers.
-                    </p>
-
                 </article>
 
             </div>
@@ -595,77 +871,27 @@
         </section>
 
 
-        <!-- ================= Advantages and Disadvantages ================= -->
-
-        <section class="advantages-grid">
-
-            <article class="lesson-card advantage-card">
-
-                <h2>Advantages</h2>
-
-                <ul class="information-list">
-
-                    <li>
-                        Fast O(1) average insertion and lookup.
-                    </li>
-
-                    <li>
-                        Keys can represent meaningful identifiers.
-                    </li>
-
-                    <li>
-                        Suitable for large collections of key-value data.
-                    </li>
-
-                    <li>
-                        Existing values can be updated using their keys.
-                    </li>
-
-                </ul>
-
-            </article>
-
-
-            <article class="lesson-card disadvantage-card">
-
-                <h2>Disadvantages</h2>
-
-                <ul class="information-list">
-
-                    <li>
-                        Additional space is required for unused buckets.
-                    </li>
-
-                    <li>
-                        Collisions require special handling.
-                    </li>
-
-                    <li>
-                        Many collisions can reduce performance to O(n).
-                    </li>
-
-                    <li>
-                        Entries do not normally follow a meaningful order.
-                    </li>
-
-                </ul>
-
-            </article>
-
-        </section>
+        <!-- Completion -->
 
         <section class="complete-section">
+
             <div>
+                <p class="small-heading">LESSON PROGRESS</p>
                 <h2>Finished this lesson?</h2>
-                <p>Mark the Array lesson as completed.</p>
+
+                <p>
+                    Save Hash Map as a completed lesson in your profile.
+                </p>
             </div>
 
-            <button type="button" id="completeLessonButton" class="complete-lesson-button">
+            <button type="button"
+                    id="completeLessonButton"
+                    class="complete-lesson-button">
                 Mark as Completed
             </button>
+
         </section>
 
-        <!-- ================= Bottom Navigation ================= -->
 
         <div class="bottom-navigation">
 
@@ -674,7 +900,7 @@
             </a>
 
             <a href="nonlinear.html" class="next-button">
-                Back to Non-linear Structures →
+                Back to Data Structures →
             </a>
 
         </div>
@@ -682,18 +908,18 @@
     </main>
 
 
-    <!-- ================= Footer ================= -->
-
     <footer>
-
-        <p>
-            DataLab — Learn Data Structures Interactively
-        </p>
-
+        <p>DataLab — Learn Data Structures Interactively</p>
     </footer>
 
+
     <script src="../../js/progress.js"></script>
-    <script src="../../js/nonlinearJS/hashmap.js"></script>
+
+    <script src="../../js/nonLinearJS/hashmap-examples.js">
+    </script>
+
+    <script src="../../js/nonLinearJS/hashmap.js">
+    </script>
 
 </body>
 

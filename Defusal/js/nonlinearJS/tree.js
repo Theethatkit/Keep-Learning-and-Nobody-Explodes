@@ -16,161 +16,262 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    /* ================= Tree Settings ================= */
+    /* ================= Elements ================= */
+
+    const treeContainer =
+        document.getElementById("interactiveTree");
+
+    const valueInput =
+        document.getElementById("valueInput");
+
+    const resultDisplay =
+        document.getElementById("visualizationResult");
+
+    const nodeCountDisplay =
+        document.getElementById("nodeCount");
+
+    const treeHeightDisplay =
+        document.getElementById("treeHeight");
+
+    const currentActionDisplay =
+        document.getElementById("currentAction");
+
+    const comparisonDisplay =
+        document.getElementById("comparisonDisplay");
+
+    const structureLabel =
+        document.getElementById("structureLabel");
+
+    const structureDisplay =
+        document.getElementById("structureDisplay");
+
+    const traversalOutput =
+        document.getElementById("traversalOutput");
+
+    const stepCounter =
+        document.getElementById("stepCounter");
+
+    const stepProgressBar =
+        document.getElementById("stepProgressBar");
+
+    const insertButton =
+        document.getElementById("insertButton");
+
+    const searchButton =
+        document.getElementById("searchButton");
+
+    const deleteButton =
+        document.getElementById("deleteButton");
+
+    const nextStepButton =
+        document.getElementById("nextStepButton");
+
+    const resetButton =
+        document.getElementById("resetButton");
+
+    const traversalButtons =
+        document.querySelectorAll(".traversal-button");
+
+
+    /* ================= Tree State ================= */
 
     const initialValues = [45, 25, 65, 15, 35, 55, 75];
 
     const SVG_NS = "http://www.w3.org/2000/svg";
 
-    const NODE_RADIUS = 22;
-    const LEVEL_HEIGHT = 80;
-    const NODE_SPACING = 62;
-    const TOP_MARGIN = 30;
-    const SIDE_MARGIN = 30;
+    const NODE_RADIUS = 23;
+    const LEVEL_HEIGHT = 88;
+    const NODE_SPACING = 68;
+    const SIDE_MARGIN = 35;
+    const TOP_MARGIN = 26;
 
     let root = null;
-    let nextId = 1;
+    let nextNodeId = 1;
 
-    const treeContainer =
-        document.getElementById("interactiveTree");
-
-    const resultText =
-        document.getElementById("visualizationResult");
-
-    const valueInput =
-        document.getElementById("valueInput");
-
-    const nodeCountLabel =
-        document.getElementById("nodeCount");
-
-    const treeHeightLabel =
-        document.getElementById("treeHeight");
-
-    const operationButtons =
-        document.querySelectorAll(".operation-buttons button");
+    let steps = [];
+    let currentStepIndex = -1;
+    let pendingAction = null;
 
 
-    /* ================= Node Factory ================= */
+    /* ================= Node Functions ================= */
 
     function createNode(value) {
         return {
-            id: nextId++,
+            id: nextNodeId++,
             value: value,
             left: null,
             right: null
         };
     }
 
-
-    /* ================= Insert (data only, no animation) ================= */
-
-    function insertValue(node, value) {
+    function insertImmediately(node, value) {
         if (node === null) {
             return createNode(value);
         }
 
         if (value < node.value) {
-            node.left = insertValue(node.left, value);
+            node.left = insertImmediately(node.left, value);
         } else if (value > node.value) {
-            node.right = insertValue(node.right, value);
+            node.right = insertImmediately(node.right, value);
         }
 
         return node;
     }
 
+    function findMinimum(node) {
+        let current = node;
 
-    /* ================= Layout ================= */
+        while (current && current.left !== null) {
+            current = current.left;
+        }
 
-    function computeLayout() {
-        const positions = new Map();
-        let cursor = 0;
+        return current;
+    }
 
-        function assign(node, depth) {
-            if (node === null) {
-                return;
+    function deleteImmediately(node, value) {
+        if (node === null) {
+            return null;
+        }
+
+        if (value < node.value) {
+            node.left = deleteImmediately(node.left, value);
+        } else if (value > node.value) {
+            node.right = deleteImmediately(node.right, value);
+        } else {
+            if (node.left === null) {
+                return node.right;
             }
 
-            assign(node.left, depth + 1);
+            if (node.right === null) {
+                return node.left;
+            }
 
-            positions.set(node.id, {
-                node: node,
-                x: cursor * NODE_SPACING + SIDE_MARGIN + NODE_RADIUS,
-                y: depth * LEVEL_HEIGHT + TOP_MARGIN + NODE_RADIUS
-            });
+            const successor = findMinimum(node.right);
 
-            cursor++;
-
-            assign(node.right, depth + 1);
+            node.value = successor.value;
+            node.right =
+                deleteImmediately(node.right, successor.value);
         }
 
-        assign(root, 0);
-
-        return positions;
+        return node;
     }
-
-
-    function treeHeight(node) {
-        if (node === null) {
-            return 0;
-        }
-
-        return 1 + Math.max(
-            treeHeight(node.left),
-            treeHeight(node.right)
-        );
-    }
-
 
     function countNodes(node) {
         if (node === null) {
             return 0;
         }
 
-        return 1 + countNodes(node.left) + countNodes(node.right);
+        return 1 +
+            countNodes(node.left) +
+            countNodes(node.right);
+    }
+
+    function countLevels(node) {
+        if (node === null) {
+            return 0;
+        }
+
+        return 1 + Math.max(
+            countLevels(node.left),
+            countLevels(node.right)
+        );
+    }
+
+    function findNode(value) {
+        let current = root;
+
+        while (current !== null) {
+            if (value === current.value) {
+                return current;
+            }
+
+            current =
+                value < current.value
+                    ? current.left
+                    : current.right;
+        }
+
+        return null;
     }
 
 
-    /* ================= Render ================= */
+    /* ================= Tree Layout ================= */
 
-    function displayTree(highlightIds = [], foundId = null) {
+    function calculateLayout() {
+        const positions = new Map();
+        let horizontalIndex = 0;
+
+        function assignPosition(node, depth) {
+            if (node === null) {
+                return;
+            }
+
+            assignPosition(node.left, depth + 1);
+
+            positions.set(node.id, {
+                node: node,
+                x:
+                    SIDE_MARGIN +
+                    NODE_RADIUS +
+                    horizontalIndex * NODE_SPACING,
+                y:
+                    TOP_MARGIN +
+                    NODE_RADIUS +
+                    depth * LEVEL_HEIGHT
+            });
+
+            horizontalIndex++;
+
+            assignPosition(node.right, depth + 1);
+        }
+
+        assignPosition(root, 0);
+
+        return positions;
+    }
+
+
+    /* ================= Tree Rendering ================= */
+
+    function renderTree(options = {}) {
+        const activeId = options.activeId || null;
+        const visitedIds = options.visitedIds || [];
+        const foundId = options.foundId || null;
+        const deletedId = options.deletedId || null;
+
         treeContainer.innerHTML = "";
 
-        nodeCountLabel.textContent = countNodes(root);
-        treeHeightLabel.textContent = treeHeight(root);
+        nodeCountDisplay.textContent = countNodes(root);
+        treeHeightDisplay.textContent = countLevels(root);
 
         if (root === null) {
             treeContainer.innerHTML =
-                '<p class="empty-message">The tree is empty.</p>';
+                '<p class="empty-tree">The tree is empty.</p>';
 
             return;
         }
 
-        const positions = computeLayout();
+        const positions = calculateLayout();
 
-        let maxX = 0;
-        let maxY = 0;
+        let maxX = 500;
+        let maxY = 280;
 
         positions.forEach(function (position) {
-            maxX = Math.max(maxX, position.x);
-            maxY = Math.max(maxY, position.y);
+            maxX = Math.max(maxX, position.x + 50);
+            maxY = Math.max(maxY, position.y + 50);
         });
 
-        const svg = document.createElementNS(SVG_NS, "svg");
+        const svg =
+            document.createElementNS(SVG_NS, "svg");
 
         svg.setAttribute(
             "viewBox",
-            `0 0 ${maxX + SIDE_MARGIN + NODE_RADIUS} ${maxY + NODE_RADIUS + 20}`
+            `0 0 ${maxX} ${maxY}`
         );
 
-        svg.setAttribute(
-            "width",
-            Math.max(maxX + SIDE_MARGIN + NODE_RADIUS, 320)
-        );
+        svg.setAttribute("width", maxX);
+        svg.setAttribute("height", maxY);
 
-        svg.setAttribute("height", maxY + NODE_RADIUS + 20);
-
-
-        /* Draw Edges */
 
         positions.forEach(function (position) {
             const node = position.node;
@@ -182,7 +283,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 const childPosition = positions.get(child.id);
 
-                const line = document.createElementNS(SVG_NS, "line");
+                const line =
+                    document.createElementNS(SVG_NS, "line");
 
                 line.setAttribute("x1", position.x);
                 line.setAttribute("y1", position.y);
@@ -191,38 +293,55 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 line.classList.add("tree-edge");
 
+                if (
+                    activeId === node.id ||
+                    activeId === child.id
+                ) {
+                    line.classList.add("active");
+                }
+
                 svg.appendChild(line);
             });
         });
 
 
-        /* Draw Nodes */
-
         positions.forEach(function (position) {
             const node = position.node;
 
-            const group = document.createElementNS(SVG_NS, "g");
+            const group =
+                document.createElementNS(SVG_NS, "g");
+
             group.classList.add("tree-node");
 
-            if (foundId === node.id) {
-                group.classList.add("found");
-            } else if (highlightIds.includes(node.id)) {
-                group.classList.add("selected");
+            if (visitedIds.includes(node.id)) {
+                group.classList.add("visited");
             }
 
-            const circle = document.createElementNS(SVG_NS, "circle");
+            if (node.id === activeId) {
+                group.classList.add("active");
+            }
+
+            if (node.id === foundId) {
+                group.classList.add("found");
+            }
+
+            if (node.id === deletedId) {
+                group.classList.add("deleted");
+            }
+
+            const circle =
+                document.createElementNS(SVG_NS, "circle");
 
             circle.setAttribute("cx", position.x);
             circle.setAttribute("cy", position.y);
             circle.setAttribute("r", NODE_RADIUS);
-
             circle.classList.add("tree-node-circle");
 
-            const text = document.createElementNS(SVG_NS, "text");
+            const text =
+                document.createElementNS(SVG_NS, "text");
 
             text.setAttribute("x", position.x);
             text.setAttribute("y", position.y);
-
             text.classList.add("tree-node-text");
             text.textContent = node.value;
 
@@ -236,34 +355,31 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    /* ================= Result Message ================= */
+    /* ================= Interface Helpers ================= */
 
     function showResult(message, type = "normal") {
-        resultText.textContent = message;
+        resultDisplay.textContent = message;
 
-        resultText.classList.remove(
-            "result-success",
-            "result-error"
+        resultDisplay.classList.remove(
+            "success",
+            "error"
         );
 
         if (type === "success") {
-            resultText.classList.add("result-success");
+            resultDisplay.classList.add("success");
         }
 
         if (type === "error") {
-            resultText.classList.add("result-error");
+            resultDisplay.classList.add("error");
         }
     }
 
-
-    /* ================= Input Validation ================= */
-
-    function getValue() {
+    function getInputValue() {
         const input = valueInput.value.trim();
 
         if (input === "") {
             showResult(
-                "Please enter a value.",
+                "Please enter a value before selecting an operation.",
                 "error"
             );
 
@@ -273,9 +389,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const value = Number(input);
 
-        if (!Number.isInteger(value)) {
+        if (
+            !Number.isInteger(value) ||
+            value < -99 ||
+            value > 999
+        ) {
             showResult(
-                "Please enter a whole number.",
+                "Enter a whole number between -99 and 999.",
                 "error"
             );
 
@@ -288,281 +408,328 @@ document.addEventListener("DOMContentLoaded", function () {
         return value;
     }
 
+    function updateStructure(values) {
+        structureDisplay.innerHTML = "";
 
-    /* ================= Helper Functions ================= */
+        if (!values || values.length === 0) {
+            structureDisplay.innerHTML =
+                '<span class="empty-item">Empty</span>';
 
-    function wait(milliseconds) {
-        return new Promise(function (resolve) {
-            setTimeout(resolve, milliseconds);
+            return;
+        }
+
+        values.forEach(function (value) {
+            const item = document.createElement("span");
+
+            item.className = "structure-item";
+            item.textContent = value;
+
+            structureDisplay.appendChild(item);
         });
     }
 
-
-    function disableButtons(disabled) {
-        operationButtons.forEach(function (button) {
-            button.disabled = disabled;
+    function clearSelectedTraversal() {
+        traversalButtons.forEach(function (button) {
+            button.classList.remove("selected");
         });
     }
 
+    function resetStepInterface() {
+        steps = [];
+        currentStepIndex = -1;
+        pendingAction = null;
 
-    function findPath(value) {
-        const path = [];
+        nextStepButton.disabled = true;
+
+        comparisonDisplay.textContent =
+            "Waiting for an operation";
+
+        structureLabel.textContent = "Visited nodes";
+
+        updateStructure([]);
+
+        traversalOutput.textContent = "—";
+
+        stepCounter.textContent = "0 / 0";
+        stepProgressBar.style.width = "0%";
+
+        clearSelectedTraversal();
+    }
+
+    function startSteps(action, createdSteps) {
+        steps = createdSteps;
+        currentStepIndex = -1;
+        pendingAction = action;
+
+        nextStepButton.disabled = false;
+
+        currentActionDisplay.textContent =
+            action.label;
+
+        stepCounter.textContent =
+            `0 / ${steps.length}`;
+
+        stepProgressBar.style.width = "0%";
+
+        comparisonDisplay.textContent =
+            "Press Next Step to begin.";
+
+        updateStructure([]);
+        traversalOutput.textContent = "—";
+
+        showResult(
+            `${action.label} is ready. Press Next Step to trace the algorithm.`
+        );
+    }
+
+
+    /* ================= Search Path ================= */
+
+    function createSearchSteps(value, operationName) {
+        const createdSteps = [];
+        const visited = [];
+
         let current = root;
 
         while (current !== null) {
-            path.push(current);
+            visited.push(current);
 
             if (value === current.value) {
-                return { path, found: current };
+                createdSteps.push({
+                    activeId: current.id,
+                    foundId: current.id,
+                    visitedIds: visited.map(function (node) {
+                        return node.id;
+                    }),
+                    values: visited.map(function (node) {
+                        return node.value;
+                    }),
+                    message:
+                        `${value} = ${current.value}. Target found.`,
+                    result:
+                        `${operationName}: ${value} was found.`,
+                    final: true,
+                    found: true
+                });
+
+                return createdSteps;
             }
 
-            current = value < current.value ? current.left : current.right;
+            const movesLeft = value < current.value;
+
+            createdSteps.push({
+                activeId: current.id,
+                visitedIds: visited.map(function (node) {
+                    return node.id;
+                }),
+                values: visited.map(function (node) {
+                    return node.value;
+                }),
+                message:
+                    `${value} ${movesLeft ? "<" : ">"} ` +
+                    `${current.value} → Move ` +
+                    `${movesLeft ? "left" : "right"}.`,
+                result:
+                    `Comparing ${value} with ${current.value}.`,
+                final: false
+            });
+
+            current =
+                movesLeft
+                    ? current.left
+                    : current.right;
         }
 
-        return { path, found: null };
+        createdSteps.push({
+            activeId: null,
+            visitedIds: visited.map(function (node) {
+                return node.id;
+            }),
+            values: visited.map(function (node) {
+                return node.value;
+            }),
+            message: "Reached an empty position.",
+            result:
+                `${operationName}: ${value} is not in the tree.`,
+            final: true,
+            found: false
+        });
+
+        return createdSteps;
     }
 
 
     /* ================= Insert ================= */
 
-    async function handleInsert() {
-        const value = getValue();
+    function prepareInsert() {
+        const value = getInputValue();
 
         if (value === null) {
             return;
         }
 
-        const existing = findPath(value);
+        clearSelectedTraversal();
 
-        if (existing.found) {
-            displayTree(existing.path.map((node) => node.id));
-
+        if (findNode(value)) {
             showResult(
-                `${value} is already in the tree. Duplicate values are not inserted.`,
+                `${value} already exists. Duplicate values are not inserted.`,
                 "error"
             );
 
             return;
         }
 
-        disableButtons(true);
+        const createdSteps = [];
+        const visited = [];
 
-        for (let i = 0; i < existing.path.length; i++) {
-            displayTree(existing.path.slice(0, i + 1).map((node) => node.id));
+        let current = root;
 
-            showResult(
-                `Insert: ${value} ${value < existing.path[i].value ? "<" : ">"} ${existing.path[i].value}, moving ${value < existing.path[i].value ? "left" : "right"}...`
-            );
-
-            await wait(500);
+        if (current === null) {
+            createdSteps.push({
+                activeId: null,
+                visitedIds: [],
+                values: [],
+                message: "The tree is empty.",
+                result: `${value} will become the root.`,
+                final: true
+            });
         }
 
-        root = insertValue(root, value);
+        while (current !== null) {
+            visited.push(current);
 
-        displayTree();
+            const movesLeft = value < current.value;
+            const nextNode =
+                movesLeft
+                    ? current.left
+                    : current.right;
 
-        showResult(
-            `Insert: ${value} was added to the tree.`,
-            "success"
+            createdSteps.push({
+                activeId: current.id,
+                visitedIds: visited.map(function (node) {
+                    return node.id;
+                }),
+                values: visited.map(function (node) {
+                    return node.value;
+                }),
+                message:
+                    `${value} ${movesLeft ? "<" : ">"} ` +
+                    `${current.value} → Move ` +
+                    `${movesLeft ? "left" : "right"}.`,
+                result:
+                    `Searching for the correct position for ${value}.`,
+                final: nextNode === null
+            });
+
+            current = nextNode;
+        }
+
+        startSteps(
+            {
+                type: "insert",
+                label: "Insert",
+                value: value
+            },
+            createdSteps
         );
-
-        disableButtons(false);
     }
 
 
     /* ================= Search ================= */
 
-    async function handleSearch() {
-        if (root === null) {
-            showResult(
-                "The tree is empty.",
-                "error"
-            );
-
-            return;
-        }
-
-        const value = getValue();
+    function prepareSearch() {
+        const value = getInputValue();
 
         if (value === null) {
             return;
         }
 
-        disableButtons(true);
-
-        const { path, found } = findPath(value);
-
-        for (let i = 0; i < path.length; i++) {
-            const isLast = i === path.length - 1;
-
-            displayTree(
-                path.slice(0, i + 1).map((node) => node.id),
-                isLast && found ? found.id : null
-            );
-
-            if (path[i].value === value) {
-                showResult(
-                    `Search: ${value} was found.`,
-                    "success"
-                );
-            } else {
-                showResult(
-                    `Search: Checking ${path[i].value}, moving ${value < path[i].value ? "left" : "right"}...`
-                );
-            }
-
-            await wait(500);
+        if (root === null) {
+            showResult("The tree is empty.", "error");
+            return;
         }
 
-        if (!found) {
-            displayTree();
+        clearSelectedTraversal();
 
-            showResult(
-                `${value} was not found in the tree.`,
-                "error"
-            );
-        }
-
-        disableButtons(false);
+        startSteps(
+            {
+                type: "search",
+                label: "Search",
+                value: value
+            },
+            createSearchSteps(value, "Search")
+        );
     }
 
 
     /* ================= Delete ================= */
 
-    function findMin(node) {
-        let current = node;
-
-        while (current.left !== null) {
-            current = current.left;
-        }
-
-        return current;
-    }
-
-    function removeValue(node, value) {
-        if (node === null) {
-            return null;
-        }
-
-        if (value < node.value) {
-            node.left = removeValue(node.left, value);
-        } else if (value > node.value) {
-            node.right = removeValue(node.right, value);
-        } else {
-            if (node.left === null) {
-                return node.right;
-            }
-
-            if (node.right === null) {
-                return node.left;
-            }
-
-            const successor = findMin(node.right);
-
-            node.value = successor.value;
-            node.right = removeValue(node.right, successor.value);
-        }
-
-        return node;
-    }
-
-    async function handleDelete() {
-        if (root === null) {
-            showResult(
-                "The tree is already empty.",
-                "error"
-            );
-
-            return;
-        }
-
-        const value = getValue();
+    function prepareDelete() {
+        const value = getInputValue();
 
         if (value === null) {
             return;
         }
 
-        disableButtons(true);
-
-        const { path, found } = findPath(value);
-
-        for (let i = 0; i < path.length; i++) {
-            displayTree(path.slice(0, i + 1).map((node) => node.id));
-
-            showResult(
-                path[i].value === value
-                    ? `Delete: ${value} was found, removing it...`
-                    : `Delete: Checking ${path[i].value}, moving ${value < path[i].value ? "left" : "right"}...`
-            );
-
-            await wait(500);
-        }
-
-        if (!found) {
-            displayTree();
-
-            showResult(
-                `${value} was not found in the tree.`,
-                "error"
-            );
-
-            disableButtons(false);
+        if (root === null) {
+            showResult("The tree is empty.", "error");
             return;
         }
 
-        root = removeValue(root, value);
+        clearSelectedTraversal();
 
-        displayTree();
-
-        showResult(
-            `Delete: ${value} was removed from the tree.`,
-            "success"
+        startSteps(
+            {
+                type: "delete",
+                label: "Delete",
+                value: value
+            },
+            createSearchSteps(value, "Delete")
         );
-
-        disableButtons(false);
     }
 
 
     /* ================= Traversals ================= */
 
-    async function runTraversal(order, label) {
-        if (root === null) {
-            showResult(
-                "The tree is empty.",
-                "error"
-            );
-
-            return;
-        }
-
-        disableButtons(true);
-
+    function getTraversalSequence(order) {
         const sequence = [];
 
-        function collect(node) {
+        function preorder(node) {
             if (node === null) {
                 return;
             }
 
-            if (order === "pre") {
-                sequence.push(node);
-            }
-
-            collect(node.left);
-
-            if (order === "in") {
-                sequence.push(node);
-            }
-
-            collect(node.right);
-
-            if (order === "post") {
-                sequence.push(node);
-            }
+            sequence.push(node);
+            preorder(node.left);
+            preorder(node.right);
         }
 
-        if (order === "level") {
-            const queue = [root];
+        function inorder(node) {
+            if (node === null) {
+                return;
+            }
+
+            inorder(node.left);
+            sequence.push(node);
+            inorder(node.right);
+        }
+
+        function postorder(node) {
+            if (node === null) {
+                return;
+            }
+
+            postorder(node.left);
+            postorder(node.right);
+            sequence.push(node);
+        }
+
+        function levelorder(node) {
+            if (node === null) {
+                return;
+            }
+
+            const queue = [node];
 
             while (queue.length > 0) {
                 const current = queue.shift();
@@ -577,112 +744,710 @@ document.addEventListener("DOMContentLoaded", function () {
                     queue.push(current.right);
                 }
             }
-        } else {
-            collect(root);
         }
 
-        const visitedValues = [];
-
-        for (let i = 0; i < sequence.length; i++) {
-            visitedValues.push(sequence[i].value);
-
-            displayTree(sequence.slice(0, i + 1).map((node) => node.id));
-
-            showResult(
-                `${label}: Visiting ${sequence[i].value}...`
-            );
-
-            await wait(500);
+        if (order === "preorder") {
+            preorder(root);
         }
 
-        displayTree();
+        if (order === "inorder") {
+            inorder(root);
+        }
 
-        showResult(
-            `${label} completed: ${visitedValues.join(" → ")}`,
-            "success"
+        if (order === "postorder") {
+            postorder(root);
+        }
+
+        if (order === "levelorder") {
+            levelorder(root);
+        }
+
+        return sequence;
+    }
+
+    function prepareTraversal(order, selectedButton) {
+        if (root === null) {
+            showResult("The tree is empty.", "error");
+            return;
+        }
+
+        clearSelectedTraversal();
+        selectedButton.classList.add("selected");
+
+        const names = {
+            preorder: "Preorder",
+            inorder: "Inorder",
+            postorder: "Postorder",
+            levelorder: "Level Order"
+        };
+
+        const sequence = getTraversalSequence(order);
+
+        const createdSteps = sequence.map(
+            function (node, index) {
+                const visitedNodes =
+                    sequence.slice(0, index + 1);
+
+                return {
+                    activeId: node.id,
+                    visitedIds: visitedNodes.map(
+                        function (visitedNode) {
+                            return visitedNode.id;
+                        }
+                    ),
+                    values: visitedNodes.map(
+                        function (visitedNode) {
+                            return visitedNode.value;
+                        }
+                    ),
+                    message:
+                        `Visit node ${node.value}.`,
+                    result:
+                        `${names[order]} is visiting ${node.value}.`,
+                    final: index === sequence.length - 1
+                };
+            }
         );
 
-        disableButtons(false);
+        structureLabel.textContent =
+            order === "levelorder"
+                ? "Queue / visited order"
+                : "Traversal stack / visited order";
+
+        startSteps(
+            {
+                type: "traversal",
+                label: names[order],
+                order: order
+            },
+            createdSteps
+        );
+
+        structureLabel.textContent =
+            order === "levelorder"
+                ? "Queue / visited order"
+                : "Traversal stack / visited order";
     }
 
 
-    /* ================= Reset ================= */
+    /* ================= Next Step ================= */
+
+    function executeNextStep() {
+        if (steps.length === 0) {
+            return;
+        }
+
+        currentStepIndex++;
+
+        if (currentStepIndex >= steps.length) {
+            return;
+        }
+
+        const step = steps[currentStepIndex];
+
+        comparisonDisplay.textContent = step.message;
+
+        updateStructure(step.values);
+
+        traversalOutput.textContent =
+            step.values.length > 0
+                ? step.values.join(" → ")
+                : "—";
+
+        stepCounter.textContent =
+            `${currentStepIndex + 1} / ${steps.length}`;
+
+        stepProgressBar.style.width =
+            `${((currentStepIndex + 1) / steps.length) * 100}%`;
+
+        renderTree({
+            activeId: step.activeId,
+            visitedIds: step.visitedIds || [],
+            foundId: step.foundId || null
+        });
+
+        showResult(step.result);
+
+        if (currentStepIndex === steps.length - 1) {
+            finishPendingAction(step);
+        }
+    }
+
+    function finishPendingAction(finalStep) {
+        nextStepButton.disabled = true;
+
+        if (pendingAction.type === "insert") {
+            root =
+                insertImmediately(
+                    root,
+                    pendingAction.value
+                );
+
+            renderTree();
+
+            showResult(
+                `${pendingAction.value} was inserted successfully.`,
+                "success"
+            );
+        }
+
+        if (pendingAction.type === "search") {
+            if (finalStep.found) {
+                showResult(
+                    `${pendingAction.value} was found in the tree.`,
+                    "success"
+                );
+            } else {
+                showResult(
+                    `${pendingAction.value} was not found.`,
+                    "error"
+                );
+            }
+        }
+
+        if (pendingAction.type === "delete") {
+            if (finalStep.found) {
+                root =
+                    deleteImmediately(
+                        root,
+                        pendingAction.value
+                    );
+
+                renderTree();
+
+                showResult(
+                    `${pendingAction.value} was deleted successfully.`,
+                    "success"
+                );
+            } else {
+                showResult(
+                    `${pendingAction.value} cannot be deleted because it was not found.`,
+                    "error"
+                );
+            }
+        }
+
+        if (pendingAction.type === "traversal") {
+            showResult(
+                `${pendingAction.label} completed: ` +
+                `${finalStep.values.join(" → ")}`,
+                "success"
+            );
+        }
+
+        currentActionDisplay.textContent = "Completed";
+    }
+
+
+    /* ================= Reset Tree ================= */
 
     function resetTree() {
         root = null;
-        nextId = 1;
+        nextNodeId = 1;
 
         initialValues.forEach(function (value) {
-            root = insertValue(root, value);
+            root = insertImmediately(root, value);
         });
 
         valueInput.value = "";
 
-        displayTree();
+        resetStepInterface();
+        renderTree();
+
+        currentActionDisplay.textContent = "Ready";
 
         showResult(
-            "The tree has been reset.",
+            "Tree reset to 45, 25, 65, 15, 35, 55, 75.",
             "success"
         );
     }
 
-    /* ================= Lesson Completion ================= */
-    const completeLessonButton =
-    document.getElementById("completeLessonButton");
 
-    if (isLessonCompleted("tree")) {
-        completeLessonButton.textContent = "Completed ✓";
-        completeLessonButton.classList.add("completed");
+    /* ================= Code Examples ================= */
+
+    const codeDisplay =
+        document.getElementById("codeDisplay");
+
+    const codeTitle =
+        document.getElementById("codeTitle");
+
+    const codeExplanation =
+        document.getElementById("codeExplanation");
+
+    const copyCodeButton =
+        document.getElementById("copyCodeButton");
+
+    const codeTabs =
+        document.querySelectorAll(".code-tab");
+
+    function showCodeExample(exampleName) {
+        const examples =
+            window.TREE_CODE_EXAMPLES || {};
+
+        const example = examples[exampleName];
+
+        if (!example) {
+            codeDisplay.textContent =
+                "Code example could not be loaded.";
+
+            return;
+        }
+
+        codeTitle.textContent = example.title;
+        codeDisplay.textContent = example.code;
+        codeExplanation.textContent =
+            example.explanation;
     }
 
-    completeLessonButton.addEventListener("click", function () {
-    const saved = completeLesson("tree");
+    codeTabs.forEach(function (tab) {
+        tab.addEventListener("click", function () {
+            codeTabs.forEach(function (otherTab) {
+                otherTab.classList.remove("active");
+            });
 
-    if (saved) {
-        completeLessonButton.textContent = "Completed ✓";
-        completeLessonButton.classList.add("completed");
+            tab.classList.add("active");
 
-        alert("Tree lesson completed!");
-    }
+            showCodeExample(tab.dataset.example);
+        });
     });
 
-    /* ================= Button Events ================= */
+    copyCodeButton.addEventListener(
+        "click",
+        async function () {
+            try {
+                await navigator.clipboard.writeText(
+                    codeDisplay.textContent
+                );
 
-    document
-        .getElementById("insertButton")
-        .addEventListener("click", handleInsert);
+                copyCodeButton.textContent = "Copied";
 
-    document
-        .getElementById("searchButton")
-        .addEventListener("click", handleSearch);
-
-    document
-        .getElementById("deleteButton")
-        .addEventListener("click", handleDelete);
-
-    document
-        .getElementById("preorderButton")
-        .addEventListener("click", () => runTraversal("pre", "Preorder"));
-
-    document
-        .getElementById("inorderButton")
-        .addEventListener("click", () => runTraversal("in", "Inorder"));
-
-    document
-        .getElementById("postorderButton")
-        .addEventListener("click", () => runTraversal("post", "Postorder"));
-
-    document
-        .getElementById("levelOrderButton")
-        .addEventListener("click", () => runTraversal("level", "Level Order"));
-
-    document
-        .getElementById("resetButton")
-        .addEventListener("click", resetTree);
+                setTimeout(function () {
+                    copyCodeButton.textContent =
+                        "Copy code";
+                }, 1200);
+            } catch (error) {
+                copyCodeButton.textContent =
+                    "Select and copy";
+            }
+        }
+    );
 
 
-    /* ================= Initial Display ================= */
+    /* ================= Quiz ================= */
 
+    const quizQuestions =
+        document.querySelectorAll(".quiz-question");
+
+    const quizScore =
+        document.getElementById("quizScore");
+
+    const answeredQuestions = new Map();
+
+    function updateQuizScore() {
+        let score = 0;
+
+        answeredQuestions.forEach(function (correct) {
+            if (correct) {
+                score++;
+            }
+        });
+
+        quizScore.textContent =
+            `${score} / ${quizQuestions.length}`;
+    }
+
+    quizQuestions.forEach(function (question, index) {
+        const correctAnswer =
+            question.dataset.answer;
+
+        const feedback =
+            question.querySelector(".answer-feedback");
+
+        const answerButtons =
+            question.querySelectorAll(
+                ".answer-list button"
+            );
+
+        answerButtons.forEach(function (button) {
+            button.addEventListener(
+                "click",
+                function () {
+                    answerButtons.forEach(
+                        function (answerButton) {
+                            answerButton.classList.remove(
+                                "correct",
+                                "incorrect"
+                            );
+                        }
+                    );
+
+                    const isCorrect =
+                        button.dataset.choice ===
+                        correctAnswer;
+
+                    button.classList.add(
+                        isCorrect
+                            ? "correct"
+                            : "incorrect"
+                    );
+
+                    if (!isCorrect) {
+                        const correctButton =
+                            question.querySelector(
+                                `[data-choice="${correctAnswer}"]`
+                            );
+
+                        correctButton.classList.add(
+                            "correct"
+                        );
+                    }
+
+                    answeredQuestions.set(
+                        index,
+                        isCorrect
+                    );
+
+                    feedback.textContent =
+                        isCorrect
+                            ? "Correct. Good work!"
+                            : "Not quite. Review the highlighted answer.";
+
+                    updateQuizScore();
+                }
+            );
+        });
+    });
+
+
+    /* ================= Challenge ================= */
+
+    const challengeInput =
+        document.getElementById("challengeInput");
+
+    const challengeInsertButton =
+        document.getElementById(
+            "challengeInsertButton"
+        );
+
+    const checkChallengeButton =
+        document.getElementById(
+            "checkChallengeButton"
+        );
+
+    const resetChallengeButton =
+        document.getElementById(
+            "resetChallengeButton"
+        );
+
+    const challengeValuesDisplay =
+        document.getElementById("challengeValues");
+
+    const challengeResult =
+        document.getElementById("challengeResult");
+
+    const missionRoot =
+        document.getElementById("missionRoot");
+
+    const missionChildren =
+        document.getElementById("missionChildren");
+
+    const missionInorder =
+        document.getElementById("missionInorder");
+
+    let challengeRoot = null;
+    let challengeValues = [];
+
+    function createChallengeNode(value) {
+        return {
+            value: value,
+            left: null,
+            right: null
+        };
+    }
+
+    function insertChallengeNode(node, value) {
+        if (node === null) {
+            return createChallengeNode(value);
+        }
+
+        if (value < node.value) {
+            node.left =
+                insertChallengeNode(
+                    node.left,
+                    value
+                );
+        } else if (value > node.value) {
+            node.right =
+                insertChallengeNode(
+                    node.right,
+                    value
+                );
+        }
+
+        return node;
+    }
+
+    function getChallengeInorder(node, values) {
+        if (node === null) {
+            return;
+        }
+
+        getChallengeInorder(node.left, values);
+        values.push(node.value);
+        getChallengeInorder(node.right, values);
+    }
+
+    function updateChallengeValues() {
+        challengeValuesDisplay.textContent =
+            challengeValues.length > 0
+                ? challengeValues.join(" → ")
+                : "No values inserted";
+    }
+
+    function insertChallengeValue() {
+        const input =
+            challengeInput.value.trim();
+
+        const value = Number(input);
+
+        if (
+            input === "" ||
+            !Number.isInteger(value)
+        ) {
+            challengeResult.textContent =
+                "Enter a valid whole number.";
+
+            challengeResult.className =
+                "challenge-result error";
+
+            return;
+        }
+
+        if (challengeValues.includes(value)) {
+            challengeResult.textContent =
+                "That value has already been inserted.";
+
+            challengeResult.className =
+                "challenge-result error";
+
+            return;
+        }
+
+        challengeRoot =
+            insertChallengeNode(
+                challengeRoot,
+                value
+            );
+
+        challengeValues.push(value);
+
+        challengeInput.value = "";
+        challengeInput.focus();
+
+        updateChallengeValues();
+
+        challengeResult.textContent =
+            `${value} inserted into the challenge tree.`;
+
+        challengeResult.className =
+            "challenge-result";
+    }
+
+    function checkChallenge() {
+        const inorderValues = [];
+
+        getChallengeInorder(
+            challengeRoot,
+            inorderValues
+        );
+
+        const rootPassed =
+            challengeRoot !== null &&
+            challengeRoot.value === 50;
+
+        const childrenPassed =
+            challengeRoot !== null &&
+            challengeRoot.left !== null &&
+            challengeRoot.right !== null;
+
+        const inorderPassed =
+            inorderValues.join(",") ===
+            "20,30,50,70,80";
+
+        missionRoot.classList.toggle(
+            "passed",
+            rootPassed
+        );
+
+        missionChildren.classList.toggle(
+            "passed",
+            childrenPassed
+        );
+
+        missionInorder.classList.toggle(
+            "passed",
+            inorderPassed
+        );
+
+        if (
+            rootPassed &&
+            childrenPassed &&
+            inorderPassed
+        ) {
+            challengeResult.textContent =
+                "Mission completed! You built a valid BST.";
+
+            challengeResult.className =
+                "challenge-result success";
+        } else {
+            challengeResult.textContent =
+                `Not complete yet. Current inorder: ` +
+                `${inorderValues.join(", ") || "empty"}.`;
+
+            challengeResult.className =
+                "challenge-result error";
+        }
+    }
+
+    function resetChallenge() {
+        challengeRoot = null;
+        challengeValues = [];
+
+        challengeInput.value = "";
+
+        missionRoot.classList.remove("passed");
+        missionChildren.classList.remove("passed");
+        missionInorder.classList.remove("passed");
+
+        challengeResult.textContent = "";
+        challengeResult.className =
+            "challenge-result";
+
+        updateChallengeValues();
+    }
+
+
+    /* ================= Progress ================= */
+
+    const completeLessonButton =
+        document.getElementById(
+            "completeLessonButton"
+        );
+
+    if (
+        typeof isLessonCompleted === "function" &&
+        isLessonCompleted("tree")
+    ) {
+        completeLessonButton.textContent =
+            "Completed ✓";
+
+        completeLessonButton.classList.add(
+            "completed"
+        );
+    }
+
+    completeLessonButton.addEventListener(
+        "click",
+        function () {
+            let saved = true;
+
+            if (
+                typeof completeLesson === "function"
+            ) {
+                saved = completeLesson("tree");
+            }
+
+            if (saved !== false) {
+                completeLessonButton.textContent =
+                    "Completed ✓";
+
+                completeLessonButton.classList.add(
+                    "completed"
+                );
+
+                alert("Tree lesson completed!");
+            }
+        }
+    );
+
+
+    /* ================= Events ================= */
+
+    insertButton.addEventListener(
+        "click",
+        prepareInsert
+    );
+
+    searchButton.addEventListener(
+        "click",
+        prepareSearch
+    );
+
+    deleteButton.addEventListener(
+        "click",
+        prepareDelete
+    );
+
+    nextStepButton.addEventListener(
+        "click",
+        executeNextStep
+    );
+
+    resetButton.addEventListener(
+        "click",
+        resetTree
+    );
+
+    traversalButtons.forEach(function (button) {
+        button.addEventListener(
+            "click",
+            function () {
+                prepareTraversal(
+                    button.dataset.order,
+                    button
+                );
+            }
+        );
+    });
+
+    valueInput.addEventListener(
+        "keydown",
+        function (event) {
+            if (event.key === "Enter") {
+                prepareInsert();
+            }
+        }
+    );
+
+    challengeInsertButton.addEventListener(
+        "click",
+        insertChallengeValue
+    );
+
+    checkChallengeButton.addEventListener(
+        "click",
+        checkChallenge
+    );
+
+    resetChallengeButton.addEventListener(
+        "click",
+        resetChallenge
+    );
+
+    challengeInput.addEventListener(
+        "keydown",
+        function (event) {
+            if (event.key === "Enter") {
+                insertChallengeValue();
+            }
+        }
+    );
+
+
+    /* ================= Initial Page ================= */
+
+    showCodeExample("node");
+    resetChallenge();
     resetTree();
 
 });

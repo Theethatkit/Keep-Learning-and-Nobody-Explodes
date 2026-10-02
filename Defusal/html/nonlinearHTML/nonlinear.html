@@ -9,19 +9,17 @@
 
     <title>Non-linear Data Structures | DataLab</title>
 
-    <!-- Shared Navigation CSS -->
     <link rel="stylesheet" href="../../css/navbar.css">
 
-    <!-- Non-linear Page CSS -->
-    <link rel="stylesheet" href="../../css/nonlinearCSS/nonlinear.css">
+    <link rel="stylesheet"
+          href="../../css/nonlinearCSS/nonlinear.css">
 
-    <!-- Global CSS -->
     <link rel="stylesheet" href="../../css/style.css">
 </head>
 
-<body>
+<body class="nonlinear-page">
 
-    <!-- ================= Navigation Bar ================= -->
+    <!-- Navigation -->
 
     <header class="navbar">
 
@@ -37,7 +35,8 @@
                 Home
             </a>
 
-            <a href="../lessons.html" class="nav-link active">
+            <a href="../lessons.html"
+               class="nav-link active">
                 Lessons
             </a>
 
@@ -51,18 +50,20 @@
 
         </nav>
 
-        <a href="../login.html" id="authButton" class="auth-button">
+        <a href="../login.html"
+           id="authButton"
+           class="auth-button">
             Log in
         </a>
 
     </header>
 
 
-    <!-- ================= Main Content ================= -->
+    <!-- Main Content -->
 
     <main class="container">
 
-        <!-- Page Introduction -->
+        <!-- Introduction -->
 
         <section class="introduction">
 
@@ -86,16 +87,34 @@
             </p>
 
             <p class="introduction-text">
-                Non-linear data structures are useful for representing
-                relationships, hierarchies and fast key-based lookups,
-                but they are often more complex to traverse than linear
-                structures.
+                Explore Tree, Graph, and Hash Map through visual lessons,
+                step-by-step algorithms, interactive laboratories, code
+                examples, practice questions, and challenges.
             </p>
+
+            <div class="learning-summary">
+
+                <div>
+                    <strong>3</strong>
+                    <span>Lessons</span>
+                </div>
+
+                <div>
+                    <strong>Interactive</strong>
+                    <span>Visual laboratories</span>
+                </div>
+
+                <div>
+                    <strong>Beginner → Intermediate</strong>
+                    <span>Learning level</span>
+                </div>
+
+            </div>
 
         </section>
 
 
-        <!-- ================= Topic Selection ================= -->
+        <!-- Topic Selection -->
 
         <section class="topics">
 
@@ -120,7 +139,7 @@
 
                 <!-- Tree -->
 
-                <article class="topic-card"
+                <article class="topic-card tree-card"
                          data-page="tree.html"
                          tabindex="0">
 
@@ -134,15 +153,99 @@
 
                     </div>
 
-                    <div class="tree-icon">
 
-                        <span class="tree-node tree-node-root"></span>
-                        <span class="tree-branch tree-branch-left"></span>
-                        <span class="tree-branch tree-branch-right"></span>
-                        <span class="tree-node tree-node-left"></span>
-                        <span class="tree-node tree-node-right"></span>
+                    <div class="visual-container tree-visual">
+
+                        <svg viewBox="0 0 280 125"
+                             role="img"
+                             aria-label="Tree structure with one root and four child nodes">
+
+                            <!-- Edges -->
+
+                            <line class="tree-edge"
+                                  x1="140"
+                                  y1="31"
+                                  x2="82"
+                                  y2="69">
+                            </line>
+
+                            <line class="tree-edge"
+                                  x1="140"
+                                  y1="31"
+                                  x2="198"
+                                  y2="69">
+                            </line>
+
+                            <line class="tree-edge"
+                                  x1="82"
+                                  y1="79"
+                                  x2="47"
+                                  y2="108">
+                            </line>
+
+                            <line class="tree-edge"
+                                  x1="82"
+                                  y1="79"
+                                  x2="117"
+                                  y2="108">
+                            </line>
+
+                            <!-- Nodes -->
+
+                            <circle class="tree-svg-node root"
+                                    cx="140"
+                                    cy="23"
+                                    r="16">
+                            </circle>
+
+                            <circle class="tree-svg-node"
+                                    cx="82"
+                                    cy="75"
+                                    r="14">
+                            </circle>
+
+                            <circle class="tree-svg-node"
+                                    cx="198"
+                                    cy="75"
+                                    r="14">
+                            </circle>
+
+                            <circle class="tree-svg-node leaf"
+                                    cx="47"
+                                    cy="110"
+                                    r="11">
+                            </circle>
+
+                            <circle class="tree-svg-node leaf"
+                                    cx="117"
+                                    cy="110"
+                                    r="11">
+                            </circle>
+
+                            <!-- Labels -->
+
+                            <text class="tree-node-label"
+                                  x="140"
+                                  y="28">
+                                R
+                            </text>
+
+                            <text class="tree-node-label"
+                                  x="82"
+                                  y="80">
+                                A
+                            </text>
+
+                            <text class="tree-node-label"
+                                  x="198"
+                                  y="80">
+                                B
+                            </text>
+
+                        </svg>
 
                     </div>
+
 
                     <h3>Tree</h3>
 
@@ -169,7 +272,7 @@
 
                 <!-- Graph -->
 
-                <article class="topic-card"
+                <article class="topic-card graph-card"
                          data-page="graph.html"
                          tabindex="0">
 
@@ -183,23 +286,131 @@
 
                     </div>
 
-                    <div class="graph-icon">
 
-                        <span class="graph-node graph-node-top"></span>
-                        <span class="graph-node graph-node-bottom-left"></span>
-                        <span class="graph-node graph-node-bottom-right"></span>
+                    <div class="visual-container graph-visual">
 
-                        <span class="graph-edge graph-edge-left"></span>
-                        <span class="graph-edge graph-edge-right"></span>
-                        <span class="graph-edge graph-edge-bottom"></span>
+                        <svg viewBox="0 0 280 125"
+                             role="img"
+                             aria-label="Graph with five vertices connected by edges">
+
+                            <!-- Edges -->
+
+                            <line class="graph-svg-edge"
+                                  x1="140"
+                                  y1="23"
+                                  x2="65"
+                                  y2="58">
+                            </line>
+
+                            <line class="graph-svg-edge"
+                                  x1="140"
+                                  y1="23"
+                                  x2="215"
+                                  y2="58">
+                            </line>
+
+                            <line class="graph-svg-edge"
+                                  x1="65"
+                                  y1="58"
+                                  x2="100"
+                                  y2="107">
+                            </line>
+
+                            <line class="graph-svg-edge"
+                                  x1="215"
+                                  y1="58"
+                                  x2="180"
+                                  y2="107">
+                            </line>
+
+                            <line class="graph-svg-edge"
+                                  x1="100"
+                                  y1="107"
+                                  x2="180"
+                                  y2="107">
+                            </line>
+
+                            <line class="graph-svg-edge"
+                                  x1="65"
+                                  y1="58"
+                                  x2="180"
+                                  y2="107">
+                            </line>
+
+                            <!-- Vertices -->
+
+                            <circle class="graph-svg-node"
+                                    cx="140"
+                                    cy="23"
+                                    r="14">
+                            </circle>
+
+                            <circle class="graph-svg-node"
+                                    cx="65"
+                                    cy="58"
+                                    r="14">
+                            </circle>
+
+                            <circle class="graph-svg-node"
+                                    cx="215"
+                                    cy="58"
+                                    r="14">
+                            </circle>
+
+                            <circle class="graph-svg-node"
+                                    cx="100"
+                                    cy="107"
+                                    r="14">
+                            </circle>
+
+                            <circle class="graph-svg-node"
+                                    cx="180"
+                                    cy="107"
+                                    r="14">
+                            </circle>
+
+                            <!-- Labels -->
+
+                            <text class="graph-node-label"
+                                  x="140"
+                                  y="28">
+                                A
+                            </text>
+
+                            <text class="graph-node-label"
+                                  x="65"
+                                  y="63">
+                                B
+                            </text>
+
+                            <text class="graph-node-label"
+                                  x="215"
+                                  y="63">
+                                C
+                            </text>
+
+                            <text class="graph-node-label"
+                                  x="100"
+                                  y="112">
+                                D
+                            </text>
+
+                            <text class="graph-node-label"
+                                  x="180"
+                                  y="112">
+                                E
+                            </text>
+
+                        </svg>
 
                     </div>
+
 
                     <h3>Graph</h3>
 
                     <p class="card-description">
                         A graph stores elements as vertices connected by
-                        edges, allowing complex, many-to-many
+                        edges, allowing complex many-to-many
                         relationships between elements.
                     </p>
 
@@ -218,9 +429,9 @@
                 </article>
 
 
-                <!-- HashMap -->
+                <!-- Hash Map -->
 
-                <article class="topic-card"
+                <article class="topic-card hashmap-card"
                          data-page="hashmap.html"
                          tabindex="0">
 
@@ -234,15 +445,152 @@
 
                     </div>
 
-                    <div class="hashmap-icon">
-                        <span>#</span>
+
+                    <div class="visual-container hashmap-visual">
+
+                        <svg viewBox="0 0 280 125"
+                             role="img"
+                             aria-label="Hash Map showing a key passing through a hash function into a bucket">
+
+                            <!-- Connecting Arrows -->
+
+                            <defs>
+                                <marker id="hashArrow"
+                                        markerWidth="8"
+                                        markerHeight="8"
+                                        refX="6"
+                                        refY="3"
+                                        orient="auto">
+
+                                    <path d="M0,0 L0,6 L7,3 z"
+                                          class="hash-arrow-head">
+                                    </path>
+
+                                </marker>
+                            </defs>
+
+                            <line class="hash-flow"
+                                  x1="61"
+                                  y1="61"
+                                  x2="101"
+                                  y2="61"
+                                  marker-end="url(#hashArrow)">
+                            </line>
+
+                            <line class="hash-flow"
+                                  x1="171"
+                                  y1="61"
+                                  x2="207"
+                                  y2="61"
+                                  marker-end="url(#hashArrow)">
+                            </line>
+
+                            <!-- Key -->
+
+                            <rect class="hash-key-box"
+                                  x="10"
+                                  y="42"
+                                  width="50"
+                                  height="38"
+                                  rx="8">
+                            </rect>
+
+                            <text class="hash-label"
+                                  x="35"
+                                  y="66">
+                                KEY
+                            </text>
+
+                            <!-- Hash Function -->
+
+                            <rect class="hash-function-box"
+                                  x="103"
+                                  y="34"
+                                  width="68"
+                                  height="54"
+                                  rx="10">
+                            </rect>
+
+                            <text class="hash-symbol"
+                                  x="137"
+                                  y="68">
+                                #
+                            </text>
+
+                            <!-- Bucket Table -->
+
+                            <rect class="hash-bucket"
+                                  x="210"
+                                  y="16"
+                                  width="58"
+                                  height="22"
+                                  rx="4">
+                            </rect>
+
+                            <rect class="hash-bucket active"
+                                  x="210"
+                                  y="42"
+                                  width="58"
+                                  height="22"
+                                  rx="4">
+                            </rect>
+
+                            <rect class="hash-bucket"
+                                  x="210"
+                                  y="68"
+                                  width="58"
+                                  height="22"
+                                  rx="4">
+                            </rect>
+
+                            <rect class="hash-bucket"
+                                  x="210"
+                                  y="94"
+                                  width="58"
+                                  height="22"
+                                  rx="4">
+                            </rect>
+
+                            <text class="bucket-label"
+                                  x="218"
+                                  y="31">
+                                0
+                            </text>
+
+                            <text class="bucket-label"
+                                  x="218"
+                                  y="57">
+                                1
+                            </text>
+
+                            <text class="bucket-label"
+                                  x="218"
+                                  y="83">
+                                2
+                            </text>
+
+                            <text class="bucket-label"
+                                  x="218"
+                                  y="109">
+                                3
+                            </text>
+
+                            <text class="bucket-value"
+                                  x="239"
+                                  y="57">
+                                VALUE
+                            </text>
+
+                        </svg>
+
                     </div>
 
-                    <h3>HashMap</h3>
+
+                    <h3>Hash Map</h3>
 
                     <p class="card-description">
-                        A hashmap stores key-value pairs using a hash
-                        function, allowing fast lookup, insertion and
+                        A Hash Map stores key–value pairs using a hash
+                        function, allowing fast lookup, insertion, and
                         deletion of data.
                     </p>
 
@@ -250,11 +598,11 @@
                         <span>Key</span>
                         <span>Value</span>
                         <span>Hashing</span>
-                        <span>O(1) Lookup</span>
+                        <span>O(1) Average</span>
                     </div>
 
                     <a href="hashmap.html" class="topic-button">
-                        Explore HashMap
+                        Explore Hash Map
                         <span>→</span>
                     </a>
 
@@ -267,16 +615,12 @@
     </main>
 
 
-    <!-- ================= Footer ================= -->
-
     <footer>
         <p>
             DataLab — Learn Data Structures Interactively
         </p>
     </footer>
 
-
-    <!-- Non-linear Page JavaScript -->
 
     <script src="../../js/nonlinearJS/nonlinear.js"></script>
 

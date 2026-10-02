@@ -14,14 +14,25 @@ body {
     min-height: 100vh;
     color: #cbd5e1;
     font-family: Arial, Helvetica, sans-serif;
-    background: radial-gradient( circle at 80% 10%, rgba(8, 145, 178, 0.16), transparent 32% ), radial-gradient( circle at 10% 70%, rgba(37, 99, 235, 0.12), transparent 35% ), #020617;
+    background:
+        radial-gradient(
+            circle at 80% 10%,
+            rgba(8, 145, 178, 0.16),
+            transparent 32%
+        ),
+        radial-gradient(
+            circle at 10% 70%,
+            rgba(37, 99, 235, 0.12),
+            transparent 35%
+        ),
+        #020617;
 }
 
 
 /* ================= Main Container ================= */
 
 .container {
-    width: min(1160px, calc(100% - 40px));
+    width: min(1240px, calc(100% - 40px));
     margin: 0 auto;
     padding: 70px 0 100px;
 }
@@ -30,7 +41,7 @@ body {
 /* ================= Introduction ================= */
 
 .introduction {
-    max-width: 850px;
+    max-width: 900px;
     margin-bottom: 70px;
 }
 
@@ -39,13 +50,16 @@ body {
     margin-bottom: 40px;
     color: #94a3b8;
     font-size: 14px;
-    transition: color 0.25s ease, transform 0.25s ease;
+    text-decoration: none;
+    transition:
+        color 0.25s ease,
+        transform 0.25s ease;
 }
 
-    .back-link:hover {
-        color: #22d3ee;
-        transform: translateX(-4px);
-    }
+.back-link:hover {
+    color: #22d3ee;
+    transform: translateX(-4px);
+}
 
 .section-label {
     margin-bottom: 10px;
@@ -64,11 +78,40 @@ body {
 }
 
 .introduction-text {
-    max-width: 760px;
+    max-width: 800px;
     margin-bottom: 12px;
     color: #94a3b8;
     font-size: 18px;
     line-height: 1.8;
+}
+
+
+/* ================= Learning Summary ================= */
+
+.learning-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 28px;
+}
+
+.learning-summary > div {
+    min-width: 170px;
+    padding: 12px 16px;
+    background-color: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(34, 211, 238, 0.17);
+    border-radius: 11px;
+}
+
+.learning-summary strong {
+    display: block;
+    color: #e0f2fe;
+    font-size: 14px;
+}
+
+.learning-summary span {
+    color: #64748b;
+    font-size: 12px;
 }
 
 
@@ -82,75 +125,91 @@ body {
     margin-bottom: 28px;
 }
 
-    .topics-heading h2 {
-        color: #f8fafc;
-        font-size: 32px;
-    }
+.topics-heading h2 {
+    color: #f8fafc;
+    font-size: 32px;
+}
 
-    .topics-heading > p {
-        max-width: 390px;
-        color: #64748b;
-        text-align: right;
-    }
+.topics-heading > p {
+    max-width: 390px;
+    color: #64748b;
+    text-align: right;
+}
 
 
 /* ================= Card Grid ================= */
 
 .card-grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 24px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 22px;
 }
 
 
-/* ================= Topic Cards ================= */
+/* ================= Topic Card ================= */
 
 .topic-card {
     position: relative;
     display: flex;
     flex-direction: column;
-    min-height: 430px;
-    padding: 30px;
+    min-height: 520px;
+    padding: 27px;
     overflow: hidden;
     cursor: pointer;
-    background: linear-gradient( 145deg, rgba(15, 23, 42, 0.94), rgba(7, 15, 30, 0.96) );
+    background:
+        linear-gradient(
+            145deg,
+            rgba(15, 23, 42, 0.94),
+            rgba(7, 15, 30, 0.96)
+        );
     border: 1px solid rgba(148, 163, 184, 0.16);
     border-radius: 22px;
-    transition: opacity 0.4s ease, transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    transition:
+        opacity 0.4s ease,
+        transform 0.3s ease,
+        border-color 0.3s ease,
+        box-shadow 0.3s ease;
 }
 
-    .topic-card::before {
-        content: "";
-        position: absolute;
-        top: -100px;
-        right: -100px;
-        width: 220px;
-        height: 220px;
-        opacity: 0;
-        background-color: rgba(34, 211, 238, 0.1);
-        border-radius: 50%;
-        filter: blur(20px);
-        transition: opacity 0.3s ease;
-    }
+.topic-card::before {
+    position: absolute;
+    top: -100px;
+    right: -100px;
+    width: 220px;
+    height: 220px;
+    content: "";
+    opacity: 0;
+    background-color: rgba(34, 211, 238, 0.1);
+    border-radius: 50%;
+    filter: blur(20px);
+    transition: opacity 0.3s ease;
+}
 
-    .topic-card:hover,
-    .topic-card:focus {
-        outline: none;
-        border-color: rgba(34, 211, 238, 0.65);
-        box-shadow: 0 25px 55px rgba(0, 0, 0, 0.35), 0 0 30px rgba(34, 211, 238, 0.08);
-        transform: translateY(-9px);
-    }
+.topic-card:hover,
+.topic-card:focus {
+    outline: none;
+    border-color: rgba(34, 211, 238, 0.65);
+    box-shadow:
+        0 25px 55px rgba(0, 0, 0, 0.35),
+        0 0 30px rgba(34, 211, 238, 0.08);
+    transform: translateY(-9px);
+}
 
-        .topic-card:hover::before,
-        .topic-card:focus::before {
-            opacity: 1;
-        }
+.topic-card:hover::before,
+.topic-card:focus::before {
+    opacity: 1;
+}
+
+
+/* ================= Card Header ================= */
 
 .card-top {
+    position: relative;
+    z-index: 1;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 22px;
+    margin-bottom: 18px;
 }
 
 .card-number {
@@ -169,14 +228,237 @@ body {
     border-radius: 999px;
 }
 
+
+/* ================= SVG Visual Container ================= */
+
+.visual-container {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    width: 100%;
+    min-height: 145px;
+    place-items: center;
+    padding: 8px 6px;
+    overflow: hidden;
+    background:
+        linear-gradient(
+            145deg,
+            rgba(2, 6, 23, 0.62),
+            rgba(15, 23, 42, 0.3)
+        );
+    border: 1px solid rgba(148, 163, 184, 0.1);
+    border-radius: 15px;
+}
+
+.visual-container svg {
+    display: block;
+    width: 100%;
+    max-width: 300px;
+    height: 125px;
+    overflow: visible;
+}
+
+
+/* ================= Tree SVG ================= */
+
+.tree-visual {
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(16, 185, 129, 0.1),
+            transparent 65%
+        ),
+        rgba(2, 6, 23, 0.5);
+}
+
+.tree-edge {
+    stroke: rgba(52, 211, 153, 0.66);
+    stroke-width: 3;
+    stroke-linecap: round;
+}
+
+.tree-svg-node {
+    fill: #064e3b;
+    stroke: #34d399;
+    stroke-width: 2;
+    transition:
+        fill 0.25s ease,
+        filter 0.25s ease;
+}
+
+.tree-svg-node.root {
+    fill: #047857;
+    stroke: #6ee7b7;
+    stroke-width: 3;
+}
+
+.tree-svg-node.leaf {
+    fill: #052e2b;
+}
+
+.tree-node-label {
+    fill: #d1fae5;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    text-anchor: middle;
+    pointer-events: none;
+}
+
+.topic-card:hover .tree-svg-node {
+    fill: #059669;
+    filter:
+        drop-shadow(
+            0 0 6px rgba(52, 211, 153, 0.55)
+        );
+}
+
+
+/* ================= Graph SVG ================= */
+
+.graph-visual {
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(244, 63, 94, 0.09),
+            transparent 65%
+        ),
+        rgba(2, 6, 23, 0.5);
+}
+
+.graph-svg-edge {
+    stroke: rgba(251, 113, 133, 0.58);
+    stroke-width: 3;
+    stroke-linecap: round;
+}
+
+.graph-svg-node {
+    fill: #4c0519;
+    stroke: #fb7185;
+    stroke-width: 2;
+    transition:
+        fill 0.25s ease,
+        filter 0.25s ease;
+}
+
+.graph-node-label {
+    fill: #ffe4e6;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    text-anchor: middle;
+    pointer-events: none;
+}
+
+.topic-card:hover .graph-svg-node {
+    fill: #9f1239;
+    filter:
+        drop-shadow(
+            0 0 6px rgba(251, 113, 133, 0.55)
+        );
+}
+
+
+/* ================= Hash Map SVG ================= */
+
+.hashmap-visual {
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(99, 102, 241, 0.11),
+            transparent 65%
+        ),
+        rgba(2, 6, 23, 0.5);
+}
+
+.hash-flow {
+    stroke: #818cf8;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+}
+
+.hash-arrow-head {
+    fill: #818cf8;
+}
+
+.hash-key-box {
+    fill: rgba(79, 70, 229, 0.18);
+    stroke: #818cf8;
+    stroke-width: 2;
+}
+
+.hash-function-box {
+    fill: rgba(88, 28, 135, 0.25);
+    stroke: #a78bfa;
+    stroke-width: 2;
+}
+
+.hash-bucket {
+    fill: rgba(30, 41, 59, 0.85);
+    stroke: #64748b;
+    stroke-width: 1.5;
+}
+
+.hash-bucket.active {
+    fill: rgba(79, 70, 229, 0.34);
+    stroke: #818cf8;
+    stroke-width: 2;
+}
+
+.hash-label,
+.hash-symbol,
+.bucket-label,
+.bucket-value {
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: 700;
+    text-anchor: middle;
+    pointer-events: none;
+}
+
+.hash-label {
+    fill: #e0e7ff;
+    font-size: 10px;
+}
+
+.hash-symbol {
+    fill: #ddd6fe;
+    font-size: 27px;
+}
+
+.bucket-label {
+    fill: #94a3b8;
+    font-family: monospace;
+    font-size: 9px;
+}
+
+.bucket-value {
+    fill: #c7d2fe;
+    font-size: 8px;
+}
+
+.topic-card:hover .hash-function-box {
+    fill: rgba(109, 40, 217, 0.5);
+    filter:
+        drop-shadow(
+            0 0 7px rgba(167, 139, 250, 0.5)
+        );
+}
+
+
+/* ================= Card Content ================= */
+
 .topic-card h3 {
-    margin: 22px 0 10px;
+    position: relative;
+    z-index: 1;
+    margin: 20px 0 9px;
     color: #f8fafc;
     font-size: 27px;
 }
 
 .card-description {
-    min-height: 88px;
+    position: relative;
+    z-index: 1;
+    min-height: 112px;
     color: #94a3b8;
     line-height: 1.7;
 }
@@ -185,25 +467,29 @@ body {
 /* ================= Topic Details ================= */
 
 .topic-details {
+    position: relative;
+    z-index: 1;
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
-    margin: 20px 0;
+    gap: 7px;
+    margin: 18px 0;
 }
 
-    .topic-details span {
-        padding: 5px 10px;
-        color: #bae6fd;
-        font-size: 11px;
-        background-color: rgba(14, 165, 233, 0.08);
-        border: 1px solid rgba(56, 189, 248, 0.18);
-        border-radius: 999px;
-    }
+.topic-details span {
+    padding: 5px 9px;
+    color: #bae6fd;
+    font-size: 10px;
+    background-color: rgba(14, 165, 233, 0.08);
+    border: 1px solid rgba(56, 189, 248, 0.18);
+    border-radius: 999px;
+}
 
 
 /* ================= Topic Button ================= */
 
 .topic-button {
+    position: relative;
+    z-index: 1;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -213,16 +499,20 @@ body {
     color: #e0f2fe;
     font-size: 14px;
     font-weight: 700;
+    text-decoration: none;
     background-color: rgba(30, 41, 59, 0.9);
     border: 1px solid rgba(148, 163, 184, 0.2);
     border-radius: 10px;
-    transition: color 0.25s ease, background-color 0.25s ease, border-color 0.25s ease;
+    transition:
+        color 0.25s ease,
+        background-color 0.25s ease,
+        border-color 0.25s ease;
 }
 
-    .topic-button span {
-        font-size: 19px;
-        transition: transform 0.25s ease;
-    }
+.topic-button span {
+    font-size: 19px;
+    transition: transform 0.25s ease;
+}
 
 .topic-card:hover .topic-button {
     color: #020617;
@@ -230,143 +520,12 @@ body {
     border-color: #22d3ee;
 }
 
-    .topic-card:hover .topic-button span {
-        transform: translateX(5px);
-    }
-
-
-/* ================= Tree Icon ================= */
-
-.tree-icon {
-    position: relative;
-    min-height: 60px;
-    padding-top: 4px;
-}
-
-.tree-node {
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    background-color: #064e3b;
-    border: 1px solid #34d399;
-    border-radius: 50%;
-}
-
-.tree-node-root {
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-.tree-node-left {
-    bottom: 0;
-    left: 18%;
-}
-
-.tree-node-right {
-    right: 18%;
-    bottom: 0;
-}
-
-.tree-branch {
-    position: absolute;
-    top: 18px;
-    width: 2px;
-    height: 26px;
-    background-color: rgba(52, 211, 153, 0.55);
-}
-
-.tree-branch-left {
-    left: 42%;
-    transform-origin: top;
-    transform: rotate(-32deg);
-}
-
-.tree-branch-right {
-    right: 42%;
-    transform-origin: top;
-    transform: rotate(32deg);
+.topic-card:hover .topic-button span {
+    transform: translateX(5px);
 }
 
 
-/* ================= Graph Icon ================= */
-
-.graph-icon {
-    position: relative;
-    min-height: 60px;
-    padding-top: 4px;
-}
-
-.graph-node {
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    background-color: rgba(225, 29, 72, 0.15);
-    border: 1px solid #fb7185;
-    border-radius: 50%;
-}
-
-.graph-node-top {
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-.graph-node-bottom-left {
-    bottom: 0;
-    left: 12%;
-}
-
-.graph-node-bottom-right {
-    right: 12%;
-    bottom: 0;
-}
-
-.graph-edge {
-    position: absolute;
-    top: 10px;
-    height: 2px;
-    background-color: rgba(251, 113, 133, 0.55);
-}
-
-.graph-edge-left {
-    left: 22%;
-    width: 42px;
-    transform-origin: left;
-    transform: rotate(48deg);
-}
-
-.graph-edge-right {
-    right: 22%;
-    width: 42px;
-    transform-origin: right;
-    transform: rotate(-48deg);
-}
-
-.graph-edge-bottom {
-    bottom: 9px;
-    left: 22%;
-    width: 56%;
-}
-
-
-/* ================= HashMap Icon ================= */
-
-.hashmap-icon {
-    display: grid;
-    place-items: center;
-    width: 58px;
-    height: 58px;
-    color: #e0e7ff;
-    font-size: 24px;
-    font-weight: 700;
-    background-color: rgba(79, 70, 229, 0.15);
-    border: 1px solid #818cf8;
-    border-radius: 10px;
-}
-
-
-/* ================= Animation ================= */
+/* ================= Card Animation ================= */
 
 .topic-card.card-hidden {
     opacity: 0;
@@ -389,12 +548,27 @@ footer {
 }
 
 
-/* ================= Responsive Design ================= */
+/* ================= Responsive ================= */
+
+@media screen and (max-width: 1050px) {
+    .card-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .hashmap-card {
+        grid-column: 1 / -1;
+        width: calc(50% - 11px);
+    }
+}
 
 @media screen and (max-width: 800px) {
-
     .card-grid {
         grid-template-columns: 1fr;
+    }
+
+    .hashmap-card {
+        grid-column: auto;
+        width: 100%;
     }
 
     .topics-heading {
@@ -402,19 +576,18 @@ footer {
         flex-direction: column;
     }
 
-        .topics-heading > p {
-            text-align: left;
-        }
+    .topics-heading > p {
+        text-align: left;
+    }
 
     .topic-card {
-        min-height: 400px;
+        min-height: 500px;
     }
 }
 
 @media screen and (max-width: 500px) {
-
     .container {
-        width: min(100% - 24px, 1160px);
+        width: min(100% - 24px, 1240px);
         padding-top: 45px;
     }
 
@@ -427,8 +600,21 @@ footer {
         font-size: 16px;
     }
 
+    .learning-summary {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
     .topic-card {
-        min-height: 430px;
-        padding: 23px;
+        min-height: 500px;
+        padding: 22px;
+    }
+
+    .visual-container {
+        min-height: 135px;
+    }
+
+    .visual-container svg {
+        height: 115px;
     }
 }

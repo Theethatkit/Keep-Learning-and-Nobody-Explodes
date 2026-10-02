@@ -1,25 +1,12 @@
 document.addEventListener("DOMContentLoaded", function () {
+    "use strict";
 
-    /* ================= Authentication ================= */
+    const $ = id => document.getElementById(id);
 
-    const authButton = document.getElementById("authButton");
-    const loggedInUser = localStorage.getItem("loggedInUser");
-
-    if (authButton) {
-        if (loggedInUser) {
-            authButton.textContent = "Profile";
-            authButton.href = "../profile.html";
-        } else {
-            authButton.textContent = "Log in";
-            authButton.href = "../login.html";
-        }
-    }
-
-    /* ================= Graph Settings ================= */
-
+    const LESSON_ID = "graph";
     const VERTICES = ["A", "B", "C", "D", "E", "F"];
 
-    const initialEdges = [
+    const INITIAL_EDGES = [
         ["A", "B"],
         ["A", "C"],
         ["B", "D"],
@@ -29,105 +16,84 @@ document.addEventListener("DOMContentLoaded", function () {
     ];
 
     const SVG_NS = "http://www.w3.org/2000/svg";
+    const positions = {
+        A: { x: 160, y: 35 },
+        B: { x: 275, y: 95 },
+        C: { x: 45, y: 95 },
+        D: { x: 160, y: 165 },
+        E: { x: 80, y: 275 },
+        F: { x: 240, y: 275 }
+    };
 
-    const NODE_RADIUS = 24;
-    const CIRCLE_RADIUS = 130;
-    const CENTER_X = 160;
-    const CENTER_Y = 160;
+    let adjacency;
+    let trace = null;
 
-    let adjacency = new Map();
+    /* ================= Authentication ================= */
 
-    const graphContainer =
-        document.getElementById("interactiveGraph");
+    try {
+        if (localStorage.getItem("loggedInUser")) {
+            $("authButton").textContent = "Profile";
+            $("authButton").href = "../profile.html";
+        }
+    } catch (error) {
+        console.warn("Login state could not be read.", error);
+    }
 
-    const resultText =
-        document.getElementById("visualizationResult");
+    /* ================= Graph State ================= */
 
-    const fromSelect =
-        document.getElementById("vertexFromInput");
-
-    const toSelect =
-        document.getElementById("vertexToInput");
-
-    const vertexCountLabel =
-        document.getElementById("vertexCount");
-
-    const edgeCountLabel =
-        document.getElementById("edgeCount");
-
-    const adjacencyListPanel =
-        document.getElementById("adjacencyList");
-
-    const operationButtons =
-        document.querySelectorAll(".operation-buttons button");
-
-
-    /* ================= Setup ================= */
-
-    function buildInitialGraph() {
+    function buildEmptyGraph() {
         adjacency = new Map();
 
         VERTICES.forEach(function (vertex) {
             adjacency.set(vertex, new Set());
         });
+    }
 
-        initialEdges.forEach(function ([a, b]) {
-            adjacency.get(a).add(b);
-            adjacency.get(b).add(a);
+    function isDirected() {
+        return $("graphType").value === "directed";
+    }
+
+    function addEdge(from, to) {
+        adjacency.get(from).add(to);
+
+        if (!isDirected()) {
+            adjacency.get(to).add(from);
+        }
+    }
+
+    function removeEdge(from, to) {
+        adjacency.get(from).delete(to);
+
+        if (!isDirected()) {
+            adjacency.get(to).delete(from);
+        }
+    }
+
+    function buildInitialGraph() {
+        buildEmptyGraph();
+
+        INITIAL_EDGES.forEach(function ([from, to]) {
+            addEdge(from, to);
         });
     }
 
-    function populateSelects() {
-        [fromSelect, toSelect].forEach(function (select) {
-            select.innerHTML = "";
-
-            VERTICES.forEach(function (vertex) {
-                const option = document.createElement("option");
-
-                option.value = vertex;
-                option.textContent = vertex;
-
-                select.appendChild(option);
-            });
-        });
-
-        toSelect.selectedIndex = 1;
+    function edgeKey(from, to) {
+        return isDirected()
+            ? `${from}->${to}`
+            : [from, to].sort().join("-");
     }
 
-
-    /* ================= Layout ================= */
-
-    function getPositions() {
-        const positions = new Map();
-
-        VERTICES.forEach(function (vertex, index) {
-            const angle =
-                (index / VERTICES.length) * 2 * Math.PI - Math.PI / 2;
-
-            positions.set(vertex, {
-                x: CENTER_X + CIRCLE_RADIUS * Math.cos(angle),
-                y: CENTER_Y + CIRCLE_RADIUS * Math.sin(angle)
-            });
-        });
-
-        return positions;
-    }
-
-    function edgeKey(a, b) {
-        return [a, b].sort().join("-");
-    }
-
-    function getEdgeList() {
-        const seen = new Set();
+    function edgeList() {
         const edges = [];
+        const seen = new Set();
 
-        adjacency.forEach(function (neighbors, vertex) {
-            neighbors.forEach(function (neighbor) {
-                const key = edgeKey(vertex, neighbor);
+        adjacency.forEach(function (neighbors, from) {
+            neighbors.forEach(function (to) {
+                const key = edgeKey(from, to);
 
                 if (!seen.has(key)) {
                     seen.add(key);
-                    edges.push([vertex, neighbor]);
+                    edges.push([from, to]);
                 }
             });
         });
@@ -135,154 +101,185 @@ document.addEventListener("DOMContentLoaded", function () {
         return edges;
     }
 
+    /* ================= Selects ================= */
 
-    /* ================= Render ================= */
+    function populateSelects() {
+        [$("vertexFromInput"), $("vertexToInput")]
+            .forEach(function (select) {
+                select.replaceChildren();
 
-    function displayGraph(highlightVertices = [], currentVertex = null, highlightEdges = []) {
-        graphContainer.innerHTML = "";
+                VERTICES.forEach(function (vertex) {
+                    const option =
+                        document.createElement("option");
 
-        vertexCountLabel.textContent = VERTICES.length;
-        edgeCountLabel.textContent = getEdgeList().length;
+                    option.value = vertex;
+                    option.textContent = vertex;
 
-        const positions = getPositions();
+                    select.append(option);
+                });
+            });
 
-        const svg = document.createElementNS(SVG_NS, "svg");
+        $("vertexToInput").selectedIndex = 1;
+    }
+
+    /* ================= Rendering ================= */
+
+    function svgElement(name) {
+        return document.createElementNS(SVG_NS, name);
+    }
+
+    function displayGraph(
+        visited = [],
+        current = null,
+        usedEdges = []
+    ) {
+        const container = $("interactiveGraph");
+
+        container.replaceChildren();
+
+        $("vertexCount").textContent = VERTICES.length;
+        $("edgeCount").textContent = edgeList().length;
+
+        const svg = svgElement("svg");
 
         svg.setAttribute("viewBox", "0 0 320 320");
-        svg.setAttribute("width", 320);
-        svg.setAttribute("height", 320);
+        svg.setAttribute("width", "420");
+        svg.setAttribute("height", "420");
 
-        const highlightEdgeKeys = highlightEdges.map(
-            ([a, b]) => edgeKey(a, b)
-        );
+        if (isDirected()) {
+            const definitions = svgElement("defs");
+            const marker = svgElement("marker");
 
+            marker.setAttribute("id", "arrowhead");
+            marker.setAttribute("markerWidth", "8");
+            marker.setAttribute("markerHeight", "6");
+            marker.setAttribute("refX", "24");
+            marker.setAttribute("refY", "3");
+            marker.setAttribute("orient", "auto");
 
-        /* Draw Edges */
+            const path = svgElement("path");
 
-        getEdgeList().forEach(function ([a, b]) {
-            const positionA = positions.get(a);
-            const positionB = positions.get(b);
+            path.setAttribute("d", "M0,0 L0,6 L8,3 z");
+            path.setAttribute("fill", "#64748b");
 
-            const line = document.createElementNS(SVG_NS, "line");
+            marker.append(path);
+            definitions.append(marker);
+            svg.append(definitions);
+        }
 
-            line.setAttribute("x1", positionA.x);
-            line.setAttribute("y1", positionA.y);
-            line.setAttribute("x2", positionB.x);
-            line.setAttribute("y2", positionB.y);
+        const usedKeys = usedEdges.map(function ([from, to]) {
+            return edgeKey(from, to);
+        });
 
+        edgeList().forEach(function ([from, to]) {
+            const line = svgElement("line");
+
+            line.setAttribute("x1", positions[from].x);
+            line.setAttribute("y1", positions[from].y);
+            line.setAttribute("x2", positions[to].x);
+            line.setAttribute("y2", positions[to].y);
             line.classList.add("tree-edge");
 
-            if (highlightEdgeKeys.includes(edgeKey(a, b))) {
+            if (isDirected()) {
+                line.setAttribute(
+                    "marker-end",
+                    "url(#arrowhead)"
+                );
+            }
+
+            if (usedKeys.includes(edgeKey(from, to))) {
                 line.classList.add("visited");
             }
 
-            svg.appendChild(line);
+            svg.append(line);
         });
 
-
-        /* Draw Vertices */
-
         VERTICES.forEach(function (vertex) {
-            const position = positions.get(vertex);
+            const group = svgElement("g");
+            const circle = svgElement("circle");
+            const text = svgElement("text");
 
-            const group = document.createElementNS(SVG_NS, "g");
             group.classList.add("tree-node");
 
-            if (vertex === currentVertex) {
+            if (vertex === current) {
                 group.classList.add("current");
-            } else if (highlightVertices.includes(vertex)) {
+            } else if (visited.includes(vertex)) {
                 group.classList.add("selected");
             }
 
-            const circle = document.createElementNS(SVG_NS, "circle");
-
-            circle.setAttribute("cx", position.x);
-            circle.setAttribute("cy", position.y);
-            circle.setAttribute("r", NODE_RADIUS);
-
+            circle.setAttribute("cx", positions[vertex].x);
+            circle.setAttribute("cy", positions[vertex].y);
+            circle.setAttribute("r", "24");
             circle.classList.add("tree-node-circle");
 
-            const text = document.createElementNS(SVG_NS, "text");
-
-            text.setAttribute("x", position.x);
-            text.setAttribute("y", position.y);
-
+            text.setAttribute("x", positions[vertex].x);
+            text.setAttribute("y", positions[vertex].y);
             text.classList.add("tree-node-text");
             text.textContent = vertex;
 
-            group.appendChild(circle);
-            group.appendChild(text);
-
-            svg.appendChild(group);
+            group.append(circle, text);
+            svg.append(group);
         });
 
-        graphContainer.appendChild(svg);
+        container.append(svg);
     }
 
+    function updateAdjacencyList() {
+        const panel = $("adjacencyList");
 
-    /* ================= Adjacency Panel ================= */
-
-    function updateAdjacencyPanel() {
-        adjacencyListPanel.innerHTML = "";
+        panel.replaceChildren();
 
         VERTICES.forEach(function (vertex) {
-            const neighbors = Array.from(adjacency.get(vertex)).sort();
-
             const row = document.createElement("div");
-            row.classList.add("adjacency-row");
+            const title = document.createElement("strong");
+            const neighbors = Array
+                .from(adjacency.get(vertex))
+                .sort();
 
-            row.innerHTML =
-                `<strong>${vertex}</strong> → ${neighbors.length ? neighbors.join(", ") : "—"}`;
+            row.className = "adjacency-row";
+            title.textContent = vertex;
 
-            adjacencyListPanel.appendChild(row);
+            row.append(
+                title,
+                document.createTextNode(
+                    ` → ${neighbors.join(", ") || "—"}`
+                )
+            );
+
+            panel.append(row);
         });
     }
 
+    function showResult(message, type = "") {
+        const result = $("visualizationResult");
 
-    /* ================= Result Message ================= */
-
-    function showResult(message, type = "normal") {
-        resultText.textContent = message;
-
-        resultText.classList.remove(
-            "result-success",
-            "result-error"
-        );
+        result.textContent = message;
+        result.className = "visualization-result";
 
         if (type === "success") {
-            resultText.classList.add("result-success");
+            result.classList.add("result-success");
         }
 
         if (type === "error") {
-            resultText.classList.add("result-error");
+            result.classList.add("result-error");
         }
     }
 
+    /* ================= Edge Operations ================= */
 
-    /* ================= Helper Functions ================= */
-
-    function wait(milliseconds) {
-        return new Promise(function (resolve) {
-            setTimeout(resolve, milliseconds);
-        });
+    function selectedVertices() {
+        return {
+            from: $("vertexFromInput").value,
+            to: $("vertexToInput").value
+        };
     }
-
-    function disableButtons(disabled) {
-        operationButtons.forEach(function (button) {
-            button.disabled = disabled;
-        });
-    }
-
-
-    /* ================= Add / Remove Edge ================= */
 
     function handleAddEdge() {
-        const from = fromSelect.value;
-        const to = toSelect.value;
+        const { from, to } = selectedVertices();
 
         if (from === to) {
             showResult(
-                "Choose two different vertices to connect.",
+                "Choose two different vertices.",
                 "error"
             );
 
@@ -290,174 +287,263 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         if (adjacency.get(from).has(to)) {
-            displayGraph([from, to]);
-
             showResult(
-                `An edge between ${from} and ${to} already exists.`,
+                `${from}${isDirected() ? "→" : "—"}${to} already exists.`,
                 "error"
             );
 
             return;
         }
 
-        adjacency.get(from).add(to);
-        adjacency.get(to).add(from);
-
+        addEdge(from, to);
         displayGraph([from, to], null, [[from, to]]);
-        updateAdjacencyPanel();
+        updateAdjacencyList();
 
         showResult(
-            `Add Edge: ${from} and ${to} are now connected.`,
+            `Added ${from}${isDirected() ? "→" : "—"}${to}.`,
             "success"
         );
     }
 
     function handleRemoveEdge() {
-        const from = fromSelect.value;
-        const to = toSelect.value;
+        const { from, to } = selectedVertices();
 
         if (!adjacency.get(from).has(to)) {
-            displayGraph([from, to]);
-
             showResult(
-                `There is no edge between ${from} and ${to}.`,
+                `No edge exists from ${from} to ${to}.`,
                 "error"
             );
 
             return;
         }
 
-        adjacency.get(from).delete(to);
-        adjacency.get(to).delete(from);
-
+        removeEdge(from, to);
         displayGraph([from, to]);
-        updateAdjacencyPanel();
+        updateAdjacencyList();
 
         showResult(
-            `Remove Edge: the connection between ${from} and ${to} was removed.`,
+            `Removed ${from}${isDirected() ? "→" : "—"}${to}.`,
             "success"
         );
     }
 
+    /* ================= Traversal Frames ================= */
 
-    /* ================= Traversals ================= */
-
-    async function runBFS() {
-        const start = fromSelect.value;
-
-        disableButtons(true);
-
-        const visited = [start];
-        const order = [start];
+    function buildBFS(start) {
+        const discovered = new Set([start]);
         const queue = [start];
+        const order = [];
         const usedEdges = [];
+        const frames = [];
 
         while (queue.length > 0) {
             const current = queue.shift();
-            const neighbors = Array.from(adjacency.get(current)).sort();
 
-            neighbors.forEach(function (neighbor) {
-                if (!visited.includes(neighbor)) {
-                    visited.push(neighbor);
-                    order.push(neighbor);
-                    usedEdges.push([current, neighbor]);
-                    queue.push(neighbor);
-                }
+            order.push(current);
+
+            Array.from(adjacency.get(current))
+                .sort()
+                .forEach(function (neighbor) {
+                    if (!discovered.has(neighbor)) {
+                        discovered.add(neighbor);
+                        queue.push(neighbor);
+                        usedEdges.push([current, neighbor]);
+                    }
+                });
+
+            frames.push({
+                current,
+                visited: [...order],
+                working: [...queue],
+                usedEdges: [...usedEdges],
+                message:
+                    `Visit ${current}. Queue now: ` +
+                    `${queue.join(" → ") || "Empty"}.`
             });
         }
 
-        for (let i = 0; i < order.length; i++) {
-            const edgesSoFar = usedEdges.filter(
-                ([, to]) => order.indexOf(to) <= i
-            );
-
-            displayGraph(
-                order.slice(0, i + 1),
-                order[i],
-                edgesSoFar
-            );
-
-            showResult(
-                `BFS from ${start}: visiting ${order[i]}...`
-            );
-
-            await wait(600);
-        }
-
-        displayGraph(order, null, usedEdges);
-
-        showResult(
-            `BFS from ${start} completed: ${order.join(" → ")}`,
-            "success"
-        );
-
-        disableButtons(false);
+        return {
+            name: "BFS",
+            label: "Queue · Front → Rear",
+            frames
+        };
     }
 
-    async function runDFS() {
-        const start = fromSelect.value;
-
-        disableButtons(true);
-
+    function buildDFS(start) {
         const visited = new Set();
+        const stack = [{ vertex: start, parent: null }];
         const order = [];
         const usedEdges = [];
+        const frames = [];
 
-        function visit(vertex, parent) {
-            visited.add(vertex);
-            order.push(vertex);
+        while (stack.length > 0) {
+            const item = stack.pop();
 
-            if (parent !== null) {
-                usedEdges.push([parent, vertex]);
+            if (visited.has(item.vertex)) {
+                continue;
             }
 
-            const neighbors = Array.from(adjacency.get(vertex)).sort();
+            visited.add(item.vertex);
+            order.push(item.vertex);
+
+            if (item.parent !== null) {
+                usedEdges.push([
+                    item.parent,
+                    item.vertex
+                ]);
+            }
+
+            const neighbors = Array
+                .from(adjacency.get(item.vertex))
+                .sort()
+                .reverse();
 
             neighbors.forEach(function (neighbor) {
                 if (!visited.has(neighbor)) {
-                    visit(neighbor, vertex);
+                    stack.push({
+                        vertex: neighbor,
+                        parent: item.vertex
+                    });
                 }
+            });
+
+            frames.push({
+                current: item.vertex,
+                visited: [...order],
+                working: stack.map(entry => entry.vertex),
+                usedEdges: [...usedEdges],
+                message:
+                    `Visit ${item.vertex}. Stack bottom → top: ` +
+                    `${stack.map(entry => entry.vertex).join(" → ") || "Empty"}.`
             });
         }
 
-        visit(start, null);
-
-        for (let i = 0; i < order.length; i++) {
-            const edgesSoFar = usedEdges.filter(
-                ([, to]) => order.indexOf(to) <= i
-            );
-
-            displayGraph(
-                order.slice(0, i + 1),
-                order[i],
-                edgesSoFar
-            );
-
-            showResult(
-                `DFS from ${start}: visiting ${order[i]}...`
-            );
-
-            await wait(600);
-        }
-
-        displayGraph(order, null, usedEdges);
-
-        showResult(
-            `DFS from ${start} completed: ${order.join(" → ")}`,
-            "success"
-        );
-
-        disableButtons(false);
+        return {
+            name: "DFS",
+            label: "Stack · Bottom → Top",
+            frames
+        };
     }
 
+    /* ================= Trace Engine ================= */
 
-    /* ================= Reset ================= */
+    const controlIds = [
+        "addEdgeButton",
+        "removeEdgeButton",
+        "bfsButton",
+        "dfsButton",
+        "resetButton"
+    ];
 
-    function resetGraph() {
-        buildInitialGraph();
+    function lockControls(locked) {
+        controlIds.forEach(function (id) {
+            $(id).disabled = locked;
+        });
+
+        $("graphType").disabled = locked;
+        $("vertexFromInput").disabled = locked;
+        $("vertexToInput").disabled = locked;
+    }
+
+    function startTrace(type) {
+        const start = $("vertexFromInput").value;
+
+        trace = type === "BFS"
+            ? buildBFS(start)
+            : buildDFS(start);
+
+        trace.index = 0;
+
+        $("stepHistory").replaceChildren();
+        $("workingLabel").textContent = trace.label;
+        $("workingStructure").textContent = start;
+        $("visitedOrder").textContent = "Empty";
+        $("stepStatus").textContent =
+            `${trace.name}: 0 / ${trace.frames.length}`;
+
+        $("nextStepButton").disabled = false;
+
+        lockControls(true);
 
         displayGraph();
-        updateAdjacencyPanel();
+
+        showResult(
+            `${trace.name} is ready from ${start}. ` +
+            "Predict the next vertex, then press Next Step."
+        );
+    }
+
+    function nextStep() {
+        if (!trace) {
+            return;
+        }
+
+        const active = trace;
+        const frame = active.frames[active.index];
+
+        active.index++;
+
+        displayGraph(
+            frame.visited,
+            frame.current,
+            frame.usedEdges
+        );
+
+        $("workingStructure").textContent =
+            frame.working.join(" → ") || "Empty";
+
+        $("visitedOrder").textContent =
+            frame.visited.join(" → ");
+
+        showResult(frame.message);
+
+        const historyItem =
+            document.createElement("li");
+
+        historyItem.textContent = frame.message;
+        $("stepHistory").append(historyItem);
+
+        const finished =
+            active.index === active.frames.length;
+
+        if (finished) {
+            showResult(
+                `${active.name} completed: ` +
+                `${frame.visited.join(" → ")}`,
+                "success"
+            );
+
+            $("stepStatus").textContent =
+                `${active.name}: completed`;
+
+            $("nextStepButton").disabled = true;
+
+            trace = null;
+            lockControls(false);
+        } else {
+            $("stepStatus").textContent =
+                `${active.name}: ${active.index} / ` +
+                `${active.frames.length}`;
+        }
+    }
+
+    /* ================= Reset and Type ================= */
+
+    function resetGraph() {
+        trace = null;
+        buildInitialGraph();
+
+        lockControls(false);
+
+        $("nextStepButton").disabled = true;
+        $("stepHistory").replaceChildren();
+        $("workingStructure").textContent = "Empty";
+        $("visitedOrder").textContent = "Empty";
+        $("stepStatus").textContent =
+            "No traversal in progress";
+
+        displayGraph();
+        updateAdjacencyList();
 
         showResult(
             "The graph has been reset.",
@@ -465,52 +551,291 @@ document.addEventListener("DOMContentLoaded", function () {
         );
     }
 
-    /* ================= Lesson Completion ================= */
-    const completeLessonButton =
-    document.getElementById("completeLessonButton");
+    function changeGraphType() {
+        resetGraph();
 
-    if (isLessonCompleted("graph")) {
-        completeLessonButton.textContent = "Completed ✓";
-        completeLessonButton.classList.add("completed");
+        showResult(
+            `${isDirected() ? "Directed" : "Undirected"} graph selected. ` +
+            "The initial edges were rebuilt using this rule.",
+            "success"
+        );
     }
 
-    completeLessonButton.addEventListener("click", function () {
-    const saved = completeLesson("graph");
+    /* ================= Challenge ================= */
 
-    if (saved) {
-        completeLessonButton.textContent = "Completed ✓";
-        completeLessonButton.classList.add("completed");
+    function findPath(start, target) {
+        const queue = [[start]];
+        const visited = new Set([start]);
 
-        alert("Graph lesson completed!");
+        while (queue.length > 0) {
+            const path = queue.shift();
+            const current = path[path.length - 1];
+
+            if (current === target) {
+                return path;
+            }
+
+            Array.from(adjacency.get(current))
+                .sort()
+                .forEach(function (neighbor) {
+                    if (!visited.has(neighbor)) {
+                        visited.add(neighbor);
+                        queue.push([...path, neighbor]);
+                    }
+                });
+        }
+
+        return null;
     }
+
+    function challengeMessage(message, type = "") {
+        const result = $("challengeResult");
+
+        result.textContent = message;
+        result.className = "visualization-result";
+
+        if (type === "success") {
+            result.classList.add("result-success");
+        }
+
+        if (type === "error") {
+            result.classList.add("result-error");
+        }
+    }
+
+    function checkChallengePath() {
+        const path = findPath("A", "F");
+
+        if (!path) {
+            challengeMessage(
+                "No path currently exists from A to F. Add more edges.",
+                "error"
+            );
+
+            return;
+        }
+
+        const pathEdges = [];
+
+        for (let i = 0; i < path.length - 1; i++) {
+            pathEdges.push([path[i], path[i + 1]]);
+        }
+
+        displayGraph(path, null, pathEdges);
+
+        challengeMessage(
+            `Path found: ${path.join(" → ")}`,
+            "success"
+        );
+    }
+
+    function clearForChallenge() {
+        buildEmptyGraph();
+        displayGraph();
+        updateAdjacencyList();
+
+        challengeMessage(
+            "All edges removed. Build a path from A to F."
+        );
+
+        showResult(
+            "Challenge graph ready. Add edges using From and To."
+        );
+    }
+
+    /* ================= Practice ================= */
+
+    const questions = {
+        bfs: {
+            correct: 1,
+            feedback: [
+                "A Stack processes the most recently added item first.",
+                "Correct. BFS uses a Queue to process discoveries in FIFO order.",
+                "An array can implement a Queue, but the required behavior is FIFO."
+            ]
+        },
+
+        directed: {
+            correct: 0,
+            feedback: [
+                "Correct. A→B permits movement from A toward B.",
+                "B→A requires another directed edge or a different path.",
+                "A→B is a connection from A to B."
+            ]
+        },
+
+        complexity: {
+            correct: 1,
+            feedback: [
+                "Traversal depends on the number of vertices and edges.",
+                "Correct. Each reachable vertex and edge is processed a limited number of times.",
+                "BFS and DFS with adjacency lists do not require this squared cost."
+            ]
+        }
+    };
+
+    const solved = new Set();
+
+    document.querySelectorAll(".question-card")
+        .forEach(function (card) {
+            const id = card.dataset.question;
+            const data = questions[id];
+            const buttons =
+                card.querySelectorAll("[data-answer]");
+            const feedback =
+                card.querySelector(".question-feedback");
+
+            buttons.forEach(function (button) {
+                button.setAttribute(
+                    "aria-pressed",
+                    "false"
+                );
+
+                button.addEventListener("click", function () {
+                    const answer =
+                        Number(this.dataset.answer);
+
+                    const correct =
+                        answer === data.correct;
+
+                    buttons.forEach(function (item) {
+                        item.setAttribute(
+                            "aria-pressed",
+                            "false"
+                        );
+                    });
+
+                    this.setAttribute(
+                        "aria-pressed",
+                        "true"
+                    );
+
+                    feedback.textContent =
+                        data.feedback[answer];
+
+                    feedback.className =
+                        "question-feedback " +
+                        (
+                            correct
+                                ? "result-success"
+                                : "result-error"
+                        );
+
+                    if (correct) {
+                        solved.add(id);
+                    }
+
+                    $("practiceStatus").textContent =
+                        `Questions solved: ${solved.size} / 3`;
+                });
+            });
+        });
+
+    /* ================= Events ================= */
+
+    $("addEdgeButton").addEventListener(
+        "click",
+        handleAddEdge
+    );
+
+    $("removeEdgeButton").addEventListener(
+        "click",
+        handleRemoveEdge
+    );
+
+    $("bfsButton").addEventListener(
+        "click",
+        () => startTrace("BFS")
+    );
+
+    $("dfsButton").addEventListener(
+        "click",
+        () => startTrace("DFS")
+    );
+
+    $("nextStepButton").addEventListener(
+        "click",
+        nextStep
+    );
+
+    $("resetButton").addEventListener(
+        "click",
+        resetGraph
+    );
+
+    $("graphType").addEventListener(
+        "change",
+        changeGraphType
+    );
+
+    $("checkPathButton").addEventListener(
+        "click",
+        checkChallengePath
+    );
+
+    $("challengeResetButton").addEventListener(
+        "click",
+        clearForChallenge
+    );
+
+    /* ================= Progress ================= */
+
+    const completeButton =
+        $("completeLessonButton");
+
+    function setCompleted() {
+        completeButton.textContent = "Completed ✓";
+        completeButton.classList.add("completed");
+        completeButton.disabled = true;
+    }
+
+    try {
+        if (
+            typeof isLessonCompleted === "function" &&
+            isLessonCompleted(LESSON_ID)
+        ) {
+            setCompleted();
+        }
+    } catch (error) {
+        console.warn("Completion could not be read.", error);
+    }
+
+    completeButton.addEventListener("click", async function () {
+        if (typeof completeLesson !== "function") {
+            $("completionMessage").textContent =
+                "Progress is unavailable. Check progress.js.";
+            return;
+        }
+
+        completeButton.disabled = true;
+
+        try {
+            const saved =
+                await completeLesson(LESSON_ID);
+
+            if (saved) {
+                setCompleted();
+
+                $("completionMessage").textContent =
+                    "Graph lesson completion saved.";
+            } else {
+                completeButton.disabled = false;
+
+                $("completionMessage").textContent =
+                    "Completion was not saved. Check your login.";
+            }
+        } catch (error) {
+            completeButton.disabled = false;
+
+            $("completionMessage").textContent =
+                "Completion could not be saved.";
+
+            console.warn(error);
+        }
     });
 
-    /* ================= Button Events ================= */
-
-    document
-        .getElementById("addEdgeButton")
-        .addEventListener("click", handleAddEdge);
-
-    document
-        .getElementById("removeEdgeButton")
-        .addEventListener("click", handleRemoveEdge);
-
-    document
-        .getElementById("bfsButton")
-        .addEventListener("click", runBFS);
-
-    document
-        .getElementById("dfsButton")
-        .addEventListener("click", runDFS);
-
-    document
-        .getElementById("resetButton")
-        .addEventListener("click", resetGraph);
-
-
-    /* ================= Initial Display ================= */
+    /* ================= Start ================= */
 
     populateSelects();
     resetGraph();
-
 });

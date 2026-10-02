@@ -1,32 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-
     <meta
         name="viewport"
-        content="width=device-width, initial-scale=1.0"
+        content="width=device-width, initial-scale=1"
     >
 
-    <title>Array | DataLab</title>
+    <title>Array | DataLab DataLab</title>
 
-    <!-- Shared Navigation CSS -->
+    <!-- Shared styles -->
     <link rel="stylesheet" href="../../css/navbar.css">
-
-    <!-- Array Page CSS -->
-    <link rel="stylesheet" href="../../css/linearCSS/array.css">
-
-    <!-- Global CSS -->
     <link rel="stylesheet" href="../../css/style.css">
+
+    <!-- Array page styles -->
+    <link rel="stylesheet" href="../../css/linearCSS/array.css">
 </head>
 
-<body>
+<body class="array-page">
 
-    <!-- ================= Navigation Bar ================= -->
+    <!-- ================= Navigation ================= -->
 
     <header class="navbar">
-
         <a href="../../index.html" class="logo-link">
             <img
                 src="../../images/Logo.png"
@@ -35,8 +30,7 @@
             >
         </a>
 
-        <nav class="nav-links">
-
+        <nav class="nav-links" aria-label="Main navigation">
             <a href="../../index.html" class="nav-link">
                 Home
             </a>
@@ -52,136 +46,190 @@
             <a href="../team.html" class="nav-link">
                 Team
             </a>
-
         </nav>
 
-        <a href="../login.html" id="authButton" class="auth-button">
+        <a
+            href="../login.html"
+            id="authButton"
+            class="auth-button"
+        >
             Log in
         </a>
-
     </header>
-
-
-    <!-- ================= Main Content ================= -->
 
     <main class="container">
 
-        <!-- Page Header -->
+        <!-- ================= Page Header ================= -->
 
         <section class="page-header">
-
             <a href="linear.html" class="back-link">
                 ← Back to Linear Structures
             </a>
 
-            <p class="category">
-                LINEAR DATA STRUCTURE
-            </p>
+            <p class="category">LINEAR DATA STRUCTURE</p>
 
             <h1>Array</h1>
 
-            <p>
-                Learn how arrays store elements, how indexes work and
-                how basic array operations are performed.
+            <p class="page-description">
+                Understand indexes, trace operations and discover
+                why moving data takes time.
             </p>
 
+            <div class="lesson-tags">
+                <span>Beginner → Intermediate</span>
+                <span>Step-by-step learning</span>
+                <span>Interactive practice</span>
+            </div>
         </section>
 
+        <!-- ================= Lesson Navigation ================= -->
+
+        <nav class="lesson-navigation" aria-label="Lesson sections">
+            <a href="#understand">01 Understand</a>
+            <a href="#operations">02 Operations</a>
+            <a href="#experiment">03 Experiment</a>
+            <a href="#code-examples">04 Code</a>
+            <a href="#practice">05 Practice</a>
+            <a href="#apply">06 Apply</a>
+        </nav>
 
         <!-- ================= Introduction ================= -->
 
-        <section class="lesson-card">
+        <section id="understand" class="lesson-card">
+            <p class="small-heading">01 / UNDERSTAND</p>
 
-            <h2>Introduction</h2>
+            <h2>Find a value by its position.</h2>
 
             <p>
-                An array is a collection of elements of the same data type
-                stored in contiguous memory locations. It is one of the
-                simplest and most commonly used data structures in
-                programming.
+                Imagine storing seven daily temperatures. Rather than
+                creating seven separate variables, an array groups
+                them under one name. An index identifies each position.
             </p>
 
-        </section>
+            <p>
+                In C, an array stores elements of the same type in
+                contiguous memory locations. Indexes start at 0.
+                This lesson uses that conventional array model.
+            </p>
 
+            <div class="learning-box">
+                <h3>By the end, you should be able to:</h3>
 
-        <!-- ================= Structure ================= -->
+                <ul class="information-list">
+                    <li>
+                        Distinguish an index from an element's value.
+                    </li>
+                    <li>
+                        Trace access, update, insertion and deletion.
+                    </li>
+                    <li>
+                        Explain linear search and traversal.
+                    </li>
+                    <li>
+                        Read and modify C code for each operation.
+                    </li>
+                    <li>
+                        Explain why some operations need O(n) time.
+                    </li>
+                </ul>
+            </div>
 
-        <section class="lesson-card">
+            <h3 class="section-subheading">Read the structure</h3>
 
-            <h2>Array Structure</h2>
-
-            <ul class="information-list">
-
-                <li>
-                    <strong>Array Element:</strong>
-                    An individual value stored in the array.
-                </li>
-
-                <li>
-                    <strong>Array Index:</strong>
-                    A number representing the position of an element.
-                    Indexes normally begin at 0.
-                </li>
-
-                <li>
-                    <strong>Contiguous Memory:</strong>
-                    Array elements are stored next to one another in
-                    memory.
-                </li>
-
-            </ul>
-
-
-            <div class="static-array">
-
+            <div
+                class="static-array"
+                role="group"
+                aria-label="Array containing 10, 20, 30 and 40"
+            >
                 <div class="array-item">
                     <div class="array-value">10</div>
-                    <span class="array-index">0</span>
+                    <span class="array-index">index 0</span>
                 </div>
 
                 <div class="array-item">
                     <div class="array-value">20</div>
-                    <span class="array-index">1</span>
+                    <span class="array-index">index 1</span>
                 </div>
 
                 <div class="array-item">
                     <div class="array-value">30</div>
-                    <span class="array-index">2</span>
+                    <span class="array-index">index 2</span>
                 </div>
 
                 <div class="array-item">
                     <div class="array-value">40</div>
-                    <span class="array-index">3</span>
+                    <span class="array-index">index 3</span>
                 </div>
-
-                <div class="array-item">
-                    <div class="array-value">50</div>
-                    <span class="array-index">4</span>
-                </div>
-
             </div>
 
             <p class="example-caption">
-                The values are array elements and the numbers below
-                are their indexes.
+                a[2] is 30. Index 2 refers to the third element.
             </p>
 
-        </section>
+            <div class="definition-grid">
+                <article class="small-card">
+                    <h3>Element</h3>
 
+                    <p>
+                        An individual stored value, such as 30.
+                    </p>
+                </article>
+
+                <article class="small-card">
+                    <h3>Index</h3>
+
+                    <p>
+                        A position used to access an element,
+                        such as index 2.
+                    </p>
+                </article>
+
+                <article class="small-card">
+                    <h3>Size vs capacity</h3>
+
+                    <p>
+                        Size counts active elements.
+                        Capacity counts available storage slots.
+                    </p>
+                </article>
+            </div>
+
+            <details>
+                <summary>Why is access O(1)?</summary>
+
+                <p>
+                    For a conventional array, an element's address
+                    can be calculated from the starting address,
+                    its index and the element size:
+                </p>
+
+                <pre><code>address(a[i]) = base_address + i * element_size</code></pre>
+
+                <p>
+                    We do not need to inspect earlier elements
+                    to reach a valid index.
+                </p>
+            </details>
+        </section>
 
         <!-- ================= Operations ================= -->
 
-        <section class="lesson-card">
+        <section id="operations" class="lesson-card">
+            <p class="small-heading">02 / OPERATIONS</p>
 
-            <h2>Basic Operations and Time Complexity</h2>
+            <h2>What changes, and what does it cost?</h2>
+
+            <p>
+                Let n be the number of active elements.
+                Insertion and deletion below preserve element order.
+            </p>
 
             <div class="operation-grid">
-
                 <article class="operation-card">
                     <h3>Access</h3>
 
                     <p>
-                        Retrieve an element directly using its index.
+                        Read an existing position. Nothing moves.
                     </p>
 
                     <span class="complexity">O(1)</span>
@@ -191,7 +239,7 @@
                     <h3>Update</h3>
 
                     <p>
-                        Change the value stored at a specified index.
+                        Replace one value. Size stays the same.
                     </p>
 
                     <span class="complexity">O(1)</span>
@@ -201,124 +249,172 @@
                     <h3>Insert</h3>
 
                     <p>
-                        Add a new element and shift the following
-                        elements when necessary.
+                        Shift elements right to make room.
+                        Requires spare capacity.
                     </p>
 
-                    <span class="complexity">O(n)</span>
+                    <span class="complexity">O(n) worst case</span>
                 </article>
 
                 <article class="operation-card">
                     <h3>Delete</h3>
 
                     <p>
-                        Remove an element and shift the remaining
-                        elements.
+                        Shift later elements left to close the gap.
                     </p>
 
-                    <span class="complexity">O(n)</span>
+                    <span class="complexity">O(n) worst case</span>
                 </article>
 
                 <article class="operation-card">
-                    <h3>Search</h3>
+                    <h3>Linear search</h3>
 
                     <p>
-                        Find an element by checking values one by one.
+                        Compare values until a match is found or
+                        all elements have been checked.
                     </p>
 
-                    <span class="complexity">O(n)</span>
+                    <span class="complexity">O(n) worst case</span>
                 </article>
 
                 <article class="operation-card">
                     <h3>Traversal</h3>
 
                     <p>
-                        Visit every element in the array from beginning
-                        to end.
+                        Visit every active element once.
                     </p>
 
                     <span class="complexity">O(n)</span>
                 </article>
-
             </div>
 
+            <div class="learning-box">
+                <h3>Important conditions</h3>
+
+                <ul class="information-list">
+                    <li>
+                        Inserting at the end is O(1) when spare
+                        capacity exists.
+                    </li>
+
+                    <li>
+                        Deleting the last active element needs
+                        no shifts.
+                    </li>
+
+                    <li>
+                        A fixed array cannot grow its allocated
+                        capacity. A dynamic array may allocate
+                        larger storage and copy elements.
+                    </li>
+
+                    <li>
+                        Linear search works on unsorted data.
+                        Binary search requires sorted data and
+                        takes O(log n) comparisons.
+                    </li>
+                </ul>
+            </div>
+
+            <details>
+                <summary>
+                    Common mistake: update is not insertion
+                </summary>
+
+                <p>
+                    Starting with [10, 20, 30], updating index 1
+                    to 99 gives [10, 99, 30].
+                </p>
+
+                <p>
+                    Inserting 99 at index 1 gives [10, 99, 20, 30].
+                    Existing values are preserved and size increases.
+                </p>
+            </details>
         </section>
 
+        <!-- ================= Interactive Lab ================= -->
 
-        <!-- ================= Interactive Visualization ================= -->
-
-        <section class="lesson-card">
-
+        <section id="experiment" class="lesson-card">
             <div class="visualization-heading">
-
                 <div>
-                    <p class="small-heading">
-                        INTERACTIVE LEARNING
-                    </p>
+                    <p class="small-heading">03 / EXPERIMENT</p>
 
-                    <h2>Array Visualization</h2>
+                    <h2>Trace the algorithm yourself.</h2>
                 </div>
 
                 <span class="visualization-label">
-                    Try it yourself
+                    Capacity: 8
                 </span>
-
             </div>
 
+            <p class="lab-introduction">
+                Start by inserting 99 at index 1. Then press
+                <strong>Next step</strong> to inspect each move.
+                Predict what will happen before advancing.
+            </p>
 
-            <!-- Interactive Array -->
+            <p class="supporting-note">
+                This simulates an ordered sequence stored in a
+                fixed-capacity array. JavaScript draws the model;
+                JavaScript arrays do not have all the same memory
+                rules as C arrays.
+            </p>
 
             <div
                 id="interactiveArray"
                 class="interactive-array"
+                role="group"
+                aria-label="Array visualization"
             ></div>
 
-
-            <!-- Result Message -->
+            <p id="arrayState" class="state-line"></p>
 
             <p
                 id="visualizationResult"
                 class="visualization-result"
+                role="status"
+                aria-live="polite"
             >
-                Select an operation to interact with the array.
+                Select an operation to begin.
             </p>
 
-
-            <!-- Input Controls -->
-
             <div class="input-controls">
-
                 <div class="input-group">
-                    <label for="indexInput">
-                        Index
-                    </label>
+                    <label for="indexInput">Index</label>
 
                     <input
                         type="number"
                         id="indexInput"
+                        min="0"
+                        step="1"
                         placeholder="Example: 1"
+                        aria-describedby="inputHelp"
                     >
                 </div>
 
                 <div class="input-group">
-                    <label for="valueInput">
-                        Value
-                    </label>
+                    <label for="valueInput">Integer value</label>
 
                     <input
                         type="number"
                         id="valueInput"
-                        placeholder="Example: 25"
+                        min="-999"
+                        max="999"
+                        step="1"
+                        placeholder="Example: 99"
+                        aria-describedby="inputHelp"
                     >
                 </div>
-
             </div>
 
-
-            <!-- Operation Buttons -->
+            <p id="inputHelp" class="supporting-note">
+                Access/Delete need Index. Update/Insert need both.
+                Search needs Value. Values must be −999 to 999.
+                Traversal needs neither input.
+            </p>
 
             <div class="operation-buttons">
-
                 <button type="button" id="accessButton">
                     Access
                 </button>
@@ -350,132 +446,394 @@
                 >
                     Reset
                 </button>
-
             </div>
 
+            <div class="trace-panel">
+                <div class="trace-toolbar">
+                    <span id="stepStatus">
+                        No operation in progress
+                    </span>
+
+                    <button
+                        type="button"
+                        id="nextStepButton"
+                        disabled
+                    >
+                        Next step →
+                    </button>
+                </div>
+
+                <ol id="stepHistory" class="step-history"></ol>
+            </div>
+
+            <p class="supporting-note">
+                During a trace, operation controls are locked.
+                Reset cancels the trace and restores [10, 20, 30, 40].
+                Temporary duplicate values during shifting are expected.
+                An unused slot is shown as “—”.
+            </p>
+
+            <noscript>
+                <p>
+                    Enable JavaScript to use the visualization.
+                    The lesson text can still be read.
+                </p>
+            </noscript>
         </section>
 
+        <!-- ================= External Code Examples ================= -->
+
+        <section id="code-examples" class="lesson-card">
+            <p class="small-heading">
+                04 / CONNECT THE VISUAL TO CODE
+            </p>
+
+            <h2>Array Operations in C</h2>
+
+            <p>
+                Explore all six operations. Open an example to see
+                its code, explanation, output and time complexity.
+            </p>
+
+            <div class="learning-box">
+                <h3>Before you start</h3>
+
+                <ul class="information-list">
+                    <li>
+                        Each example is a separate C program.
+                        Copy and run one example at a time
+                        using C99 or later.
+                    </li>
+
+                    <li>
+                        All examples start with the active values
+                        [10, 20, 30, 40].
+                    </li>
+
+                    <li>
+                        Capacity is 8, while n = 4 means that only
+                        the first four elements are active.
+                    </li>
+
+                    <li>
+                        Access, update and deletion require
+                        0 ≤ index &lt; n.
+                    </li>
+
+                    <li>
+                        Insertion allows 0 ≤ index ≤ n and
+                        requires available capacity.
+                    </li>
+
+                    <li>
+                        Complexity describes the operation itself.
+                        Printing the entire array separately takes O(n).
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Filled by array-examples.js -->
+            <div id="codeExamplesContainer">
+                <p>
+                    Code examples are unavailable until the
+                    examples script loads.
+                </p>
+            </div>
+
+            <noscript>
+                <p>
+                    Enable JavaScript to display the code examples.
+                    The rest of the lesson can still be read.
+                </p>
+            </noscript>
+        </section>
+
+        <!-- ================= Practice ================= -->
+
+        <section id="practice" class="lesson-card">
+            <p class="small-heading">05 / PRACTICE</p>
+
+            <h2>Predict, then check.</h2>
+
+            <p>
+                These questions use their own starting arrays,
+                independently of the lab above.
+            </p>
+
+            <!-- Question 1 -->
+            <article class="question-card" data-question="index">
+                <h3>1. Index or value?</h3>
+
+                <p>
+                    For [10, 20, 30, 40], what does a[2] return?
+                </p>
+
+                <div class="answer-buttons">
+                    <button
+                        type="button"
+                        data-answer="0"
+                        aria-pressed="false"
+                    >
+                        20
+                    </button>
+
+                    <button
+                        type="button"
+                        data-answer="1"
+                        aria-pressed="false"
+                    >
+                        30
+                    </button>
+
+                    <button
+                        type="button"
+                        data-answer="2"
+                        aria-pressed="false"
+                    >
+                        2
+                    </button>
+                </div>
+
+                <p class="question-feedback" aria-live="polite">
+                    Choose an answer.
+                </p>
+            </article>
+
+            <!-- Question 2 -->
+            <article class="question-card" data-question="shift">
+                <h3>2. Count the movement</h3>
+
+                <p>
+                    Insert 99 at index 1 in [10, 20, 30, 40].
+                    How many existing elements shift?
+                </p>
+
+                <div class="answer-buttons">
+                    <button
+                        type="button"
+                        data-answer="0"
+                        aria-pressed="false"
+                    >
+                        1
+                    </button>
+
+                    <button
+                        type="button"
+                        data-answer="1"
+                        aria-pressed="false"
+                    >
+                        2
+                    </button>
+
+                    <button
+                        type="button"
+                        data-answer="2"
+                        aria-pressed="false"
+                    >
+                        3
+                    </button>
+                </div>
+
+                <p class="question-feedback" aria-live="polite">
+                    Choose an answer.
+                </p>
+            </article>
+
+            <!-- Question 3 -->
+            <article class="question-card" data-question="search">
+                <h3>3. Search an unsorted array</h3>
+
+                <p>
+                    Linear search looks for 8 in [5, 2, 8, 1].
+                    How many comparisons are needed?
+                </p>
+
+                <div class="answer-buttons">
+                    <button
+                        type="button"
+                        data-answer="0"
+                        aria-pressed="false"
+                    >
+                        2
+                    </button>
+
+                    <button
+                        type="button"
+                        data-answer="1"
+                        aria-pressed="false"
+                    >
+                        3
+                    </button>
+
+                    <button
+                        type="button"
+                        data-answer="2"
+                        aria-pressed="false"
+                    >
+                        4
+                    </button>
+                </div>
+
+                <p class="question-feedback" aria-live="polite">
+                    Choose an answer.
+                </p>
+            </article>
+
+            <p id="practiceStatus" class="practice-status">
+                Questions solved: 0 / 3
+            </p>
+
+            <p class="supporting-note">
+                Practice results last for this page session.
+                Lesson completion uses the existing progress system.
+            </p>
+        </section>
 
         <!-- ================= Applications ================= -->
 
-        <section class="lesson-card">
+        <section id="apply" class="lesson-card">
+            <p class="small-heading">06 / APPLY</p>
 
-            <h2>Applications</h2>
+            <h2>Choose the right structure.</h2>
 
             <div class="application-grid">
-
                 <article class="small-card">
-
-                    <h3>Matrices</h3>
+                    <h3>Daily measurements</h3>
 
                     <p>
-                        Arrays can represent tables, grids and
-                        mathematical matrices.
+                        An array is useful when readings have known
+                        positions and you often access them by index.
                     </p>
-
                 </article>
 
                 <article class="small-card">
-
-                    <h3>Stacks</h3>
+                    <h3>Grids and matrices</h3>
 
                     <p>
-                        Arrays can implement stacks by using the final
-                        index as the top.
+                        Multidimensional arrays can represent
+                        a game board or a matrix.
                     </p>
-
                 </article>
 
                 <article class="small-card">
-
-                    <h3>Queues</h3>
+                    <h3>Stacks and queues</h3>
 
                     <p>
-                        Arrays can implement queues, although a simple
-                        implementation may require shifting elements.
+                        Arrays can store both. A circular queue
+                        avoids shifting items on every dequeue.
                     </p>
-
                 </article>
-
             </div>
 
+            <div class="learning-box">
+                <h3>Investigation: where should you insert?</h3>
+
+                <ol class="information-list">
+                    <li>
+                        Reset the lab. Insert 99 at index 0.
+                    </li>
+                    <li>
+                        Finish the trace and count the shifts.
+                    </li>
+                    <li>
+                        Reset again. Insert 99 at index 4.
+                    </li>
+                    <li>
+                        Explain why the same operation has
+                        different costs.
+                    </li>
+                </ol>
+            </div>
+
+            <details>
+                <summary>Check your explanation</summary>
+
+                <p>
+                    Inserting at index 0 shifts all four values.
+                    Inserting at index 4 appends the value and
+                    shifts none. Both write the new value once.
+                </p>
+
+                <p>
+                    Worst-case insertion takes O(n), while
+                    appending with spare capacity takes O(1).
+                </p>
+            </details>
         </section>
 
-
-        <!-- ================= Advantages and Disadvantages ================= -->
+        <!-- ================= Advantages and Limitations ================= -->
 
         <section class="comparison-grid">
-
             <article class="lesson-card advantage-card">
-
                 <h2>Advantages</h2>
 
                 <ul class="information-list">
-
                     <li>
-                        Elements can be accessed directly using an index.
+                        O(1) access to a valid index.
                     </li>
-
                     <li>
-                        Elements are stored next to one another in memory.
+                        Contiguous storage often helps cache locality.
                     </li>
-
                     <li>
-                        Arrays can represent lists, tables and matrices.
+                        No per-element next pointer is needed.
                     </li>
-
                     <li>
-                        Arrays work efficiently with low-level memory
-                        operations.
+                        Useful for tables, grids and indexed records.
                     </li>
-
                 </ul>
-
             </article>
-
 
             <article class="lesson-card disadvantage-card">
-
-                <h2>Disadvantages</h2>
+                <h2>Limitations</h2>
 
                 <ul class="information-list">
-
                     <li>
-                        A fixed-size array cannot change its size after
-                        initialization.
+                        A fixed array has a fixed allocated capacity.
                     </li>
-
                     <li>
-                        Insertion and deletion may require other elements
-                        to be shifted.
+                        Ordered insertion and deletion may shift values.
                     </li>
-
                     <li>
-                        Elements normally need to have the same data type.
+                        Unused capacity still occupies storage.
                     </li>
-
+                    <li>
+                        In C, accessing outside allocated array bounds
+                        can cause undefined behavior.
+                    </li>
                 </ul>
-
             </article>
-
         </section>
+
+        <!-- ================= Completion ================= -->
 
         <section class="complete-section">
             <div>
                 <h2>Finished this lesson?</h2>
-                <p>Mark the Array lesson as completed.</p>
+
+                <p>
+                    Can you explain indexes, shifts and linear search?
+                    Mark the lesson as completed when you are ready.
+                </p>
+
+                <p
+                    id="completionMessage"
+                    role="status"
+                    aria-live="polite"
+                ></p>
             </div>
 
-            <button type="button" id="completeLessonButton" class="complete-lesson-button">
+            <button
+                type="button"
+                id="completeLessonButton"
+                class="complete-lesson-button"
+            >
                 Mark as Completed
             </button>
         </section>
 
-
         <!-- ================= Bottom Navigation ================= -->
 
         <div class="bottom-navigation">
-
             <a href="linear.html" class="back-button">
                 ← Back to Linear Structures
             </a>
@@ -483,25 +841,24 @@
             <a href="linked-list.html" class="next-button">
                 Next: Linked List →
             </a>
-
         </div>
 
     </main>
 
-
     <!-- ================= Footer ================= -->
 
     <footer>
-        <p>
-            DataLab — Learn Data Structures Interactively
-        </p>
+        <p>DataLab — Learn Data Structures Interactively</p>
     </footer>
 
-
-    <!-- Array JavaScript -->
+    <!-- Existing progress system -->
     <script src="../../js/progress.js"></script>
+
+    <!-- C examples and their display -->
+    <script src="../../js/linearJS/array-examples.js"></script>
+
+    <!-- Visualization, practice and completion -->
     <script src="../../js/linearJS/array.js"></script>
 
 </body>
-
 </html>

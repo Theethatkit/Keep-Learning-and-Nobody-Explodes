@@ -611,3 +611,272 @@ footer {
         text-align: center;
     }
 }
+
+/* ================= Improved Stack Lesson ================= */
+
+.stack-page .page-description {
+    color: #94a3b8;
+    font-size: 18px;
+}
+
+.stack-page .lesson-tags,
+.stack-page .lesson-navigation,
+.stack-page .answer-buttons,
+.stack-page .challenge-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.stack-page .lesson-tags {
+    margin-top: 22px;
+}
+
+.stack-page .lesson-tags span {
+    padding: 5px 12px;
+    border: 1px solid #334155;
+    border-radius: 30px;
+    font-size: 12px;
+}
+
+.stack-page .lesson-navigation {
+    margin-bottom: 28px;
+}
+
+.stack-page .lesson-navigation a {
+    padding: 10px 14px;
+    color: #cbd5e1;
+    text-decoration: none;
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.stack-page .lesson-navigation a:hover {
+    color: #67e8f9;
+    border-color: #22d3ee;
+}
+
+.stack-page .learning-box {
+    margin: 24px 0;
+    padding: 20px;
+    background: rgba(8, 145, 178, 0.08);
+    border-left: 3px solid #22d3ee;
+    border-radius: 0 12px 12px 0;
+}
+
+.stack-page .lesson-card {
+    scroll-margin-top: 24px;
+}
+
+.stack-page .lesson-card details {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid #334155;
+}
+
+.stack-page .lesson-card summary {
+    color: #e2e8f0;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.stack-page .stack-node {
+    position: relative;
+}
+
+.stack-page .stack-node:first-child::after {
+    content: "TOP";
+    position: absolute;
+    right: -52px;
+    padding: 2px 6px;
+    color: #67e8f9;
+    font-size: 9px;
+    font-family: monospace;
+}
+
+.stack-page .stack-state {
+    color: #94a3b8;
+    text-align: center;
+    font-size: 14px;
+}
+
+.stack-page .supporting-note {
+    color: #94a3b8;
+    font-size: 13px;
+    text-align: center;
+}
+
+.stack-page .operation-history {
+    margin-top: 24px;
+    padding: 18px;
+    background: rgba(2, 6, 23, 0.65);
+    border: 1px solid #334155;
+    border-radius: 12px;
+}
+
+.stack-page .operation-history ol {
+    max-height: 190px;
+    overflow-y: auto;
+    padding-left: 24px;
+    color: #94a3b8;
+    font-size: 14px;
+}
+
+.stack-page .operation-history li {
+    margin-bottom: 7px;
+}
+
+.stack-page .lesson-card pre {
+    max-width: 100%;
+    overflow-x: auto;
+    margin: 16px 0;
+    padding: 20px;
+    color: #d9edff;
+    background: #020617;
+    border: 1px solid #29374c;
+    border-radius: 10px;
+    font-size: 13px;
+    line-height: 1.8;
+}
+
+.stack-page .lesson-card code {
+    font-family: Consolas, monospace;
+}
+
+.stack-page .question-card {
+    margin-top: 20px;
+    padding: 20px;
+    background: #0a1324;
+    border: 1px solid #334155;
+    border-radius: 12px;
+}
+
+.stack-page .answer-buttons {
+    margin: 16px 0;
+}
+
+.stack-page .answer-buttons button,
+.stack-page .challenge-buttons button {
+    max-width: 100%;
+    padding: 10px 16px;
+    color: #e2e8f0;
+    background: #1e293b;
+    border: 1px solid #475569;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.stack-page .answer-buttons button:hover,
+.stack-page .challenge-buttons button:hover {
+    color: #082f49;
+    background: #67e8f9;
+    border-color: #67e8f9;
+}
+
+.stack-page .answer-buttons button[aria-pressed="true"] {
+    outline: 2px solid #67e8f9;
+    outline-offset: 2px;
+}
+
+.stack-page .question-feedback {
+    min-height: 54px;
+    padding: 14px;
+    color: #94a3b8;
+    background: #080f20;
+    border-left: 3px solid #a78bfa;
+    border-radius: 7px;
+}
+
+.stack-page .question-feedback.result-success {
+    color: #a7f3d0;
+    border-left-color: #34d399;
+}
+
+.stack-page .question-feedback.result-error {
+    color: #fed7aa;
+    border-left-color: #fb923c;
+}
+
+.stack-page #practiceStatus {
+    margin-top: 20px;
+    color: #67e8f9;
+    font-weight: bold;
+}
+
+.stack-page .challenge-board {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    margin-top: 22px;
+}
+
+.stack-page .challenge-board article {
+    padding: 17px;
+    background: #080f20;
+    border: 1px solid #334155;
+    border-radius: 10px;
+}
+
+.stack-page .challenge-board span {
+    color: #94a3b8;
+    font-size: 11px;
+    letter-spacing: 1px;
+}
+
+.stack-page .challenge-board p {
+    min-height: 34px;
+    color: #67e8f9;
+    font-size: 18px;
+}
+
+.stack-page .challenge-buttons {
+    margin: 18px 0;
+}
+
+.stack-page .complete-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 28px;
+    padding: 26px;
+    background: #102837;
+    border: 1px solid #226375;
+    border-radius: 16px;
+}
+
+.stack-page .complete-section > div {
+    flex: 1;
+}
+
+.stack-page .complete-lesson-button {
+    flex-shrink: 0;
+    padding: 10px 16px;
+    color: #e2e8f0;
+    background: #1e293b;
+    border: 1px solid #475569;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.stack-page .complete-lesson-button.completed {
+    color: #a7f3d0;
+    border-color: #34d399;
+}
+
+@media screen and (max-width: 700px) {
+    .stack-page .challenge-board {
+        grid-template-columns: 1fr;
+    }
+
+    .stack-page .complete-section {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .stack-page .stack-node:first-child::after {
+        display: none;
+    }
+}
