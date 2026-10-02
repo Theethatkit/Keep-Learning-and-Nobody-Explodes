@@ -68,6 +68,7 @@ const MODULE5_QUESTION_BANK = {
         // ----------------------------- easy -----------------------------
         {
             topic: "Queues",
+            category: "queue",
             difficulty: "easy",
             prompt: "The system receives customers in the order they arrive. The first customer must be processed first. Which structure should be used?",
             options: [
@@ -80,6 +81,7 @@ const MODULE5_QUESTION_BANK = {
         },
         {
             topic: "Stacks",
+            category: "stack",
             difficulty: "easy",
             prompt: "A text editor needs to undo the user's most recent action first, then the one before that. Which structure fits best?",
             options: [
@@ -92,6 +94,7 @@ const MODULE5_QUESTION_BANK = {
         },
         {
             topic: "Arrays",
+            category: "array",
             difficulty: "easy",
             prompt: "You need to store exactly 10 temperature readings and access any of them instantly by their position (e.g. the 3rd reading). Which structure fits best?",
             options: [
@@ -104,6 +107,7 @@ const MODULE5_QUESTION_BANK = {
         },
         {
             topic: "Queues",
+            category: "queue",
             difficulty: "easy",
             prompt: "Print jobs sent to a shared office printer should come out in the same order they were sent. Which structure should be used?",
             options: [
@@ -116,6 +120,7 @@ const MODULE5_QUESTION_BANK = {
         },
         {
             topic: "Stacks",
+            category: "stack",
             difficulty: "easy",
             prompt: "A browser's \"Back\" button should return to the most recently visited page first. Which structure should be used?",
             options: [
@@ -130,6 +135,7 @@ const MODULE5_QUESTION_BANK = {
         // -------------------------- intermediate --------------------------
         {
             topic: "Linked Lists",
+            category: "linkedList",
             difficulty: "intermediate",
             prompt: "You're building a playlist where songs are frequently inserted and removed from the middle, and you never need to jump straight to song #47. Which structure fits best?",
             options: [
@@ -142,6 +148,7 @@ const MODULE5_QUESTION_BANK = {
         },
         {
             topic: "Queues",
+            category: "queue",
             difficulty: "intermediate",
             prompt: "Support tickets should be handled in the order they came in, and new tickets keep arriving while old ones are still being processed. Which structure should be used?",
             options: [
@@ -154,6 +161,7 @@ const MODULE5_QUESTION_BANK = {
         },
         {
             topic: "Arrays",
+            category: "array",
             difficulty: "intermediate",
             prompt: "You need to store a fixed set of 7 days of the week and quickly access \"day 4\" without walking through the others. Which structure fits best?",
             options: [
@@ -166,6 +174,7 @@ const MODULE5_QUESTION_BANK = {
         },
         {
             topic: "Stacks",
+            category: "stack",
             difficulty: "intermediate",
             prompt: "A calculator needs to check whether every open parenthesis in an expression has a matching close parenthesis, in the right order. Which structure should be used?",
             options: [
@@ -178,6 +187,7 @@ const MODULE5_QUESTION_BANK = {
         },
         {
             topic: "Linked Lists",
+            category: "linkedList",
             difficulty: "intermediate",
             prompt: "A music app needs to insert a new song right after the currently playing one without shifting every other song in memory. Which structure fits best?",
             options: [
@@ -190,6 +200,7 @@ const MODULE5_QUESTION_BANK = {
         },
         {
             topic: "Queues",
+            category: "queue",
             difficulty: "intermediate",
             prompt: "A call center needs callers answered in the exact order they dialed in. Which structure should be used?",
             options: [
@@ -204,6 +215,7 @@ const MODULE5_QUESTION_BANK = {
         // ------------------------------ hard ------------------------------
         {
             topic: "Stacks",
+            category: "stack",
             difficulty: "hard",
             prompt: "A function-call tracker needs to know which function to return control to when the currently running one finishes - always the most recently called, still-running one. Which structure should be used?",
             options: [
@@ -216,6 +228,7 @@ const MODULE5_QUESTION_BANK = {
         },
         {
             topic: "Queues",
+            category: "queue",
             difficulty: "hard",
             prompt: "A ride-share app needs to match drivers to riders in the order the ride requests came in, with requests constantly being added. Which structure should be used?",
             options: [
@@ -228,6 +241,7 @@ const MODULE5_QUESTION_BANK = {
         },
         {
             topic: "Linked Lists",
+            category: "linkedList",
             difficulty: "hard",
             prompt: "A note-taking app frequently removes notes from anywhere in a long list and never accesses notes by their position number. Which structure fits best?",
             options: [
@@ -240,6 +254,7 @@ const MODULE5_QUESTION_BANK = {
         },
         {
             topic: "Arrays",
+            category: "array",
             difficulty: "hard",
             prompt: "A grading app stores exactly 30 students' fixed seat numbers and needs to jump straight to seat #18 instantly. Which structure fits best?",
             options: [
@@ -252,6 +267,7 @@ const MODULE5_QUESTION_BANK = {
         },
         {
             topic: "Stacks",
+            category: "stack",
             difficulty: "hard",
             prompt: "A maze-solving robot needs to backtrack to its most recent unexplored junction whenever it hits a dead end. Which structure should be used?",
             options: [
@@ -264,6 +280,7 @@ const MODULE5_QUESTION_BANK = {
         },
         {
             topic: "Queues",
+            category: "queue",
             difficulty: "hard",
             prompt: "A video game's matchmaking system pairs players in the order they queued up for a match. Which structure should be used?",
             options: [
@@ -276,6 +293,7 @@ const MODULE5_QUESTION_BANK = {
         },
         {
             topic: "Arrays",
+            category: "array",
             difficulty: "hard",
             prompt: "A spreadsheet-like tool needs to store a fixed 5x5 grid of values and read/write any cell by its row and column instantly. Which structure fits best?",
             options: [
@@ -290,6 +308,7 @@ const MODULE5_QUESTION_BANK = {
         // ----------------------------- expert -----------------------------
         {
             topic: "Stacks",
+            category: "stack",
             difficulty: "expert",
             prompt: "A compiler needs to verify that brackets, braces, and parentheses in source code all close in the correct nested order. Which structure should be used?",
             options: [
@@ -302,6 +321,7 @@ const MODULE5_QUESTION_BANK = {
         },
         {
             topic: "Queues",
+            category: "queue",
             difficulty: "expert",
             prompt: "A print server must process documents from multiple offices strictly in the order they were submitted, with new documents constantly arriving. Which structure should be used?",
             options: [
@@ -314,6 +334,7 @@ const MODULE5_QUESTION_BANK = {
         },
         {
             topic: "Linked Lists",
+            category: "linkedList",
             difficulty: "expert",
             prompt: "A version-history feature needs to insert and remove entries from anywhere in a long, frequently changing sequence, with no need to jump to entry #200 directly. Which structure fits best?",
             options: [
@@ -326,6 +347,7 @@ const MODULE5_QUESTION_BANK = {
         },
         {
             topic: "Arrays",
+            category: "array",
             difficulty: "expert",
             prompt: "A lookup table of exactly 100 fixed product IDs needs instant access to any entry by its index. Which structure fits best?",
             options: [
@@ -338,6 +360,7 @@ const MODULE5_QUESTION_BANK = {
         },
         {
             topic: "Stacks",
+            category: "stack",
             difficulty: "expert",
             prompt: "A recursive algorithm's call frames must unwind in exactly the reverse order they were created. Which structure models this?",
             options: [
@@ -350,6 +373,7 @@ const MODULE5_QUESTION_BANK = {
         },
         {
             topic: "Queues",
+            category: "queue",
             difficulty: "expert",
             prompt: "A task scheduler runs background jobs strictly in the order they were submitted, and jobs keep getting added while others are still waiting. Which structure should be used?",
             options: [
@@ -362,6 +386,7 @@ const MODULE5_QUESTION_BANK = {
         },
         {
             topic: "Linked Lists",
+            category: "linkedList",
             difficulty: "expert",
             prompt: "A large contact list needs frequent inserts/deletes anywhere in the middle, and the app never needs to fetch \"the 500th contact\" directly. Which structure fits best?",
             options: [
@@ -374,6 +399,7 @@ const MODULE5_QUESTION_BANK = {
         },
         {
             topic: "Arrays",
+            category: "array",
             difficulty: "expert",
             prompt: "An image is stored as a fixed grid of pixels, and the app needs to read pixel (x, y) instantly without scanning other pixels. Which structure fits best?",
             options: [

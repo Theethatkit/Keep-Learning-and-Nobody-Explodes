@@ -18,10 +18,7 @@ body {
     min-height: 100vh;
     color: var(--text);
     font-family: Arial, Helvetica, sans-serif;
-    background:
-        radial-gradient(circle at 10% 10%, rgba(8, 145, 178, 0.11), transparent 30%),
-        radial-gradient(circle at 90% 35%, rgba(99, 102, 241, 0.10), transparent 32%),
-        var(--page-bg);
+    background: radial-gradient(circle at 10% 10%, rgba(8, 145, 178, 0.11), transparent 30%), radial-gradient(circle at 90% 35%, rgba(99, 102, 241, 0.10), transparent 32%), var(--page-bg);
 }
 
 .logout-button {
@@ -36,11 +33,11 @@ body {
     transition: 0.25s ease;
 }
 
-.logout-button:hover {
-    color: #020617;
-    background: var(--cyan);
-    transform: translateY(-2px);
-}
+    .logout-button:hover {
+        color: #020617;
+        background: var(--cyan);
+        transform: translateY(-2px);
+    }
 
 .profile-container {
     width: min(1160px, calc(100% - 40px));
@@ -49,6 +46,7 @@ body {
 
 .profile-card,
 .overall-progress,
+.achievements-progress,
 .lesson-progress {
     padding: 32px;
     margin-bottom: 28px;
@@ -104,20 +102,20 @@ body {
     margin-bottom: 25px;
 }
 
-.section-heading h2,
-.lesson-heading h2 {
-    font-size: 28px;
-}
+    .section-heading h2,
+    .lesson-heading h2 {
+        font-size: 28px;
+    }
 
 .progress-count {
     color: #cbd5e1;
 }
 
-.progress-count #completedNumber {
-    color: var(--cyan);
-    font-size: 25px;
-    font-weight: 800;
-}
+    .progress-count #completedNumber {
+        color: var(--cyan);
+        font-size: 25px;
+        font-weight: 800;
+    }
 
 .progress-bar {
     width: 100%;
@@ -141,6 +139,53 @@ body {
     text-align: right;
 }
 
+.achievement-badge-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 6px;
+}
+
+.achievement-badge {
+    display: grid;
+    width: 44px;
+    height: 44px;
+    flex: 0 0 44px;
+    place-items: center;
+    color: var(--muted);
+    font-size: 16px;
+    font-weight: 800;
+    border: 1px solid var(--panel-border);
+    border-radius: 50%;
+    background: rgba(15, 23, 42, 0.6);
+    transition: 0.25s ease;
+}
+
+    .achievement-badge.unlocked {
+        color: #020617;
+        border-color: transparent;
+        background: linear-gradient(135deg, var(--cyan), #818cf8);
+        box-shadow: 0 6px 18px rgba(34, 211, 238, 0.35);
+    }
+
+.achievements-view-all {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 22px;
+    padding-top: 18px;
+    color: var(--cyan-light);
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    border-top: 1px solid rgba(148, 163, 184, 0.18);
+    width: 100%;
+}
+
+    .achievements-view-all:hover {
+        color: #fff;
+    }
+
 .lesson-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -159,11 +204,11 @@ body {
     transition: 0.3s ease;
 }
 
-.lesson-card:hover {
-    border-color: rgba(34, 211, 238, 0.65);
-    box-shadow: 0 18px 34px rgba(0, 0, 0, 0.24);
-    transform: translateY(-7px);
-}
+    .lesson-card:hover {
+        border-color: rgba(34, 211, 238, 0.65);
+        box-shadow: 0 18px 34px rgba(0, 0, 0, 0.24);
+        transform: translateY(-7px);
+    }
 
 .lesson-card-top {
     display: flex;
@@ -187,11 +232,11 @@ body {
     background: rgba(16, 185, 129, 0.10);
 }
 
-.lesson-level.intermediate {
-    color: var(--cyan-light);
-    border-color: rgba(34, 211, 238, 0.35);
-    background: rgba(34, 211, 238, 0.10);
-}
+    .lesson-level.intermediate {
+        color: var(--cyan-light);
+        border-color: rgba(34, 211, 238, 0.35);
+        background: rgba(34, 211, 238, 0.10);
+    }
 
 .lesson-card h3 {
     margin-bottom: 12px;
@@ -233,25 +278,25 @@ body {
     transition: 0.25s ease;
 }
 
-.lesson-footer a:hover {
-    color: #020617;
-    border-color: var(--cyan);
-    background: var(--cyan);
-}
+    .lesson-footer a:hover {
+        color: #020617;
+        border-color: var(--cyan);
+        background: var(--cyan);
+    }
 
 .lesson-card.completed {
     border-color: rgba(34, 211, 238, 0.7);
     background: rgba(8, 47, 73, 0.58);
 }
 
-.lesson-card.completed .lesson-status {
-    color: var(--cyan-light);
-    font-weight: 700;
-}
+    .lesson-card.completed .lesson-status {
+        color: var(--cyan-light);
+        font-weight: 700;
+    }
 
-.lesson-card.completed .lesson-status::before {
-    content: "\2713  ";
-}
+        .lesson-card.completed .lesson-status::before {
+            content: "\2713  ";
+        }
 
 footer {
     padding: 24px;

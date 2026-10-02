@@ -63,70 +63,71 @@ const SFX = (function () {
         });
     }
 
-    // ---------------- Custom audio file support ----------------
-    // customBuffers maps an event name ("correct", "exploded", etc.)
-    // to a decoded AudioBuffer, once loadCustomSound() has fetched
-    // and decoded a real audio file for it. Events with no entry here
-    // just keep using their synthesized tone - nothing else changes.
-    const customBuffers = {};
+        // ---------------- Custom audio file support ----------------
+// customAudio maps an event name ("exploded", "defused", etc.) to a
+// loaded <audio> element. Uses plain Audio elements instead of
+// fetch()/decodeAudioData because fetch is blocked on file:// pages
+// (the site gets opened straight from an unzipped folder).
+    const customAudio = {};
 
-    // Plays a decoded AudioBuffer through the same AudioContext (and
-    // therefore the same volume handling) as the synthesized tones.
-    function playBuffer(buffer, volume) {
-        const ctx = getContext();
-        const source = ctx.createBufferSource();
-        const gainNode = ctx.createGain();
-
-        source.buffer = buffer;
-        gainNode.gain.value = volume != null ? volume : 1;
-
-        source.connect(gainNode);
-        gainNode.connect(ctx.destination);
-
-        source.start(0);
-    }
-
-    // Fetches an audio file (mp3/wav/ogg all work) and decodes it
-    // into an AudioBuffer, then stores it under `eventName`. From
-    // then on, playing that event uses this clip instead of its
-    // built-in synthesized tone. Call this once per sound you want to
-    // swap in - e.g. right after the SFX object is created:
-    //
-    //   SFX.loadCustomSound("exploded", "../audio/explosion.mp3");
-    //
-    // Loading happens in the background; until it resolves (or if it
-    // fails - missing file, bad format, etc.) the synthesized
-    // fallback keeps playing, so a slow network never leaves a sound
-    // silent.
     function loadCustomSound(eventName, url) {
-        return fetch(url)
-            .then(function (response) {
-                return response.arrayBuffer();
-            })
-            .then(function (arrayBuffer) {
-                return getContext().decodeAudioData(arrayBuffer);
-            })
-            .then(function (audioBuffer) {
-                customBuffers[eventName] = audioBuffer;
-            })
-            .catch(function (error) {
-                console.error(
-                    "SFX: couldn't load custom sound \"" + eventName + "\" from " + url,
-                    error
-                );
-            });
+        const audio = new Audio(url);
+        audio.preload = "auto";
+
+        audio.addEventListener("canplaythrough", function () {
+            customAudio[eventName] = audio;
+        }, { once: true });
+
+        audio.addEventListener("error", function () {
+            console.error("SFX: couldn't load custom sound \"" + eventName + "\" from " + url);
+        });
     }
 
-    // Plays the custom clip for `eventName` if one's been loaded,
-    // otherwise falls back to the synthesized sound. Every public
-    // playX() method below is just this, wrapping its old body as
-    // the fallback.
+    function playCustomAudio(audio, volume) {
+        // clone so rapid repeats can overlap instead of cutting each other off
+        const clip = audio.cloneNode();
+        clip.volume = volume != null ? volume : 1;
+        clip.play().catch(function () {});
+    }
+
     function playWithFallback(eventName, fallbackFn, customVolume) {
-        if (customBuffers[eventName]) {
-            playBuffer(customBuffers[eventName], customVolume);
+        if (customAudio[eventName]) {
+            playCustomAudio(customAudio[eventName], customVolume);
         } else {
             fallbackFn();
         }
+    }
+
+        // ---------------- Looping soundtrack ----------------
+    // One long-running <audio> element, separate from the one-shot
+    // custom clips above. startSoundtrack() is safe to call every
+    // tick - it does nothing if the track is already playing.
+    let soundtrack = null;
+
+    function loadSoundtrack(url, volume) {
+        soundtrack = new Audio(url);
+        soundtrack.loop = true;
+        soundtrack.preload = "auto";
+        soundtrack.volume = volume != null ? volume : 0.6;
+
+        soundtrack.addEventListener("error", function () {
+            console.error("SFX: couldn't load soundtrack from " + url);
+        });
+    }
+
+    function startSoundtrack() {
+        if (!soundtrack || !soundtrack.paused) {
+            return;
+        }
+        soundtrack.play().catch(function () {});
+    }
+
+    function stopSoundtrack() {
+        if (!soundtrack) {
+            return;
+        }
+        soundtrack.pause();
+        soundtrack.currentTime = 0;
     }
 
     return {
@@ -136,6 +137,10 @@ const SFX = (function () {
         // "keyTap", "correct", "wrong", "moduleSolved", "defused",
         // "exploded", "timerWarningTick".
         loadCustomSound: loadCustomSound,
+        loadSoundtrack: loadSoundtrack,
+        startSoundtrack: startSoundtrack,
+        stopSoundtrack: stopSoundtrack,
+
         // Keypad tap / typing a character - short, quiet click
         playKeyTap: function () {
             playWithFallback("keyTap", function () {

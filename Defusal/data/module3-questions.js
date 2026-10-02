@@ -1,45 +1,47 @@
 // ===================================================================
 // data/module3-questions.js
 //
-// Module 3 - TRACE. Reuses the existing Connect-the-Dots matching
-// engine in defusal.js (renderConnectQuestion / submitConnectAnswer)
-// completely unmodified - only the CONTENT changes.
+// Module 3 - CONSTRUCT. (Replaces the old Trace / Connect-the-Dots
+// bank.) Each question gives a CURRENT state and a TARGET state; the
+// player drags operation blocks into a limited number of slots to
+// build a sequence that transforms one into the other.
 //
-// The educational shift from the old "vocabulary term -> definition"
-// version of this module: each pair.term is now a starting state
-// plus one or more operations, and pair.definition is the correct
-// resulting state after tracing those operations through. When a
-// question has several pairs, the other pairs' correct results act
-// as the shuffled distractors on the right-hand column - the player
-// has to actually trace each one to avoid connecting it to a
-// DIFFERENT pair's answer.
+// The engine in defusal.js SIMULATES whatever the player builds, so
+// any valid sequence is accepted - not just the authored one.
 //
-// Schema (matches MODULE3_QUESTION_BANK as read by defusal.js):
+// Schema (MODULE3_QUESTION_BANK as read by defusal.js):
 //
 //   difficulties: {
 //     <difficultyId>: {
 //       label, startingTimeSeconds, mistakesAllowed, questionCount,
-//       baseScore, timeBonusCap
+//       baseScore, timeBonusCap,
+//       // --- Construct-specific constraints, all scale with difficulty ---
+//       slackSlots,      // slots = solution.length + slackSlots
+//       distractorCount, // how many decoy blocks get mixed into the tray
+//       exactCount,      // true: must use EXACTLY slots operations
+//       livePreview      // true: shows the running result while building
 //     }
 //   },
 //   questions: [
 //     {
-//       difficulty: "<difficultyId>",
-//       topic: string,
-//       prompt: string,
-//       pairs: [
-//         { id: "p1", term: "<starting state + operation(s)>", definition: "<resulting state>" },
-//         ...
-//       ]
+//       id, difficulty, topic,
+//       category: string | string[],   // see CATEGORY_NAMES in defusal.js
+//       kind: "stack" | "queue" | "list" | "array",   // labels + rendering
+//       prompt, explanation,
+//       current: string[], target: string[],  // index 0 = top/front/head
+//       solution: string[],      // one valid op sequence (also the block set)
+//       distractors: string[]    // decoy pool; difficulty picks how many
 //     }
 //   ]
 //
-// Notation used throughout, kept consistent so results are
-// unambiguous to trace:
-//   Stack   -> written top-to-bottom: "Stack (top->bottom): X, Y, Z"
-//   Queue   -> written front-to-back: "Queue (front->back): X, Y, Z"
-//   List    -> written head to NULL:  "A -> B -> NULL"
-//   Array   -> written index 0 first: "[a, b, c]"
+// Op strings: "name" or "name:arg". Supported ops:
+//   reverse | delHead | delTail | insHead:v | insTail:v |
+//   rotate (head moves to tail) | dup (duplicate head) | swap:i,j
+// Applying an op to a structure it can't run on (e.g. delHead on an
+// empty one) makes the whole sequence invalid.
+//
+// Each block can be used once, so a solution that needs the same op
+// twice (e.g. two rotates) simply lists it twice.
 // ===================================================================
 
 const MODULE3_QUESTION_BANK = {
@@ -50,7 +52,11 @@ const MODULE3_QUESTION_BANK = {
             mistakesAllowed: 3,
             questionCount: 4,
             baseScore: 100,
-            timeBonusCap: 50
+            timeBonusCap: 50,
+            slackSlots: 2,
+            distractorCount: 1,
+            exactCount: false,
+            livePreview: true
         },
         intermediate: {
             label: "Intermediate",
@@ -58,7 +64,11 @@ const MODULE3_QUESTION_BANK = {
             mistakesAllowed: 3,
             questionCount: 3,
             baseScore: 150,
-            timeBonusCap: 75
+            timeBonusCap: 75,
+            slackSlots: 1,
+            distractorCount: 2,
+            exactCount: false,
+            livePreview: true
         },
         hard: {
             label: "Hard",
@@ -66,7 +76,11 @@ const MODULE3_QUESTION_BANK = {
             mistakesAllowed: 2,
             questionCount: 3,
             baseScore: 200,
-            timeBonusCap: 100
+            timeBonusCap: 100,
+            slackSlots: 0,
+            distractorCount: 3,
+            exactCount: false,
+            livePreview: false
         },
         expert: {
             label: "Expert",
@@ -74,171 +88,350 @@ const MODULE3_QUESTION_BANK = {
             mistakesAllowed: 1,
             questionCount: 2,
             baseScore: 300,
-            timeBonusCap: 150
+            timeBonusCap: 150,
+            slackSlots: 0,
+            distractorCount: 4,
+            exactCount: true,
+            livePreview: false
         }
     },
 
     questions: [
-
-        // ----------------------------- EASY -----------------------------
-        // Single-operation traces only.
+        // -------------------- EASY --------------------
+        // 1-2 operations, small structures, one decoy, spare slots, live preview on.
         {
-            difficulty: "easy",
-            topic: "Stacks & Queues",
-            prompt: "Trace each operation and connect it to its correct resulting state.",
-            pairs: [
-                { id: "p1", term: "Stack (top->bottom): 10. Operation: PUSH 20.", definition: "Result (top->bottom): 20, 10" },
-                { id: "p2", term: "Stack (top->bottom): 15, 5. Operation: POP.", definition: "Result (top->bottom): 5" },
-                { id: "p3", term: "Queue (front->back): A, B. Operation: ENQUEUE C.", definition: "Result (front->back): A, B, C" }
-            ]
-        },
-        {
-            difficulty: "easy",
-            topic: "Queues & Stacks",
-            prompt: "Trace each operation and connect it to its correct resulting state.",
-            pairs: [
-                { id: "p1", term: "Queue (front->back): A, B, C. Operation: DEQUEUE.", definition: "Result (front->back): B, C" },
-                { id: "p2", term: "Queue (front->back): X, Y. Operation: ENQUEUE Z.", definition: "Result (front->back): X, Y, Z" },
-                { id: "p3", term: "Stack (top->bottom): 1. Operation: PUSH 2.", definition: "Result (top->bottom): 2, 1" }
-            ]
-        },
-        {
+            id: "m3c-easy-1",
             difficulty: "easy",
             topic: "Linked Lists",
-            prompt: "Trace each operation and connect it to its correct resulting state.",
-            pairs: [
-                { id: "p1", term: "List: 10 -> 20 -> NULL. Operation: Insert 30 at the end.", definition: "Result: 10 -> 20 -> 30 -> NULL" },
-                { id: "p2", term: "List: 5 -> 10 -> 15 -> NULL. Operation: Delete the head node.", definition: "Result: 10 -> 15 -> NULL" },
-                { id: "p3", term: "Stack (top->bottom): 7. Operation: POP.", definition: "Result: Stack is empty" }
-            ]
+            category: "linkedList",
+            kind: "list",
+            prompt: "Build a sequence of operations that turns CURRENT into TARGET.",
+            current: ["C", "B", "A"],
+            target: ["A", "B", "C"],
+            solution: ["reverse"],
+            distractors: ["delHead", "delTail", "insHead:A", "insTail:C", "insTail:B"],
+            explanation: "Reversing the list swaps head and tail, so C → B → A becomes A → B → C in one operation."
         },
         {
+            id: "m3c-easy-2",
             difficulty: "easy",
-            topic: "Arrays & Queues",
-            prompt: "Trace each operation and connect it to its correct resulting state.",
-            pairs: [
-                { id: "p1", term: "Array: [1, 2, 3]. Operation: Append 4.", definition: "Result: [1, 2, 3, 4]" },
-                { id: "p2", term: "Array: [1, 2, 3, 4]. Operation: Remove the last element.", definition: "Result: [1, 2, 3]" },
-                { id: "p3", term: "Queue (front->back): P, Q, R. Operation: DEQUEUE.", definition: "Result (front->back): Q, R" }
-            ]
+            topic: "Stacks",
+            category: "stack",
+            kind: "stack",
+            prompt: "Build a sequence of operations that turns CURRENT into TARGET.",
+            current: ["5", "2"],
+            target: ["7", "9", "5", "2"],
+            solution: ["insHead:9", "insHead:7"],
+            distractors: ["delHead", "dup", "insHead:3", "swap:0,1"],
+            explanation: "PUSH always lands on top, so the last value pushed ends up on top: push 9 first, then 7."
         },
         {
+            id: "m3c-easy-3",
             difficulty: "easy",
-            topic: "Stacks & Lists",
-            prompt: "Trace each operation and connect it to its correct resulting state.",
-            pairs: [
-                { id: "p1", term: "Stack (top->bottom): 6, 3. Operations: POP, then PUSH 9.", definition: "Result (top->bottom): 9, 3" },
-                { id: "p2", term: "Queue (front->back): M, N. Operations: DEQUEUE, then ENQUEUE O.", definition: "Result (front->back): N, O" },
-                { id: "p3", term: "List: 1 -> 2 -> NULL. Operation: Insert 0 at the head.", definition: "Result: 0 -> 1 -> 2 -> NULL" }
-            ]
-        },
-
-        // ------------------------- INTERMEDIATE -------------------------
-        // Multiple chained operations per pair.
-        {
-            difficulty: "intermediate",
-            topic: "Stacks & Queues",
-            prompt: "Trace each operation sequence and connect it to its correct resulting state.",
-            pairs: [
-                { id: "p1", term: "Stack (top->bottom): 10, 20, 30. Operations: POP, PUSH 50, POP.", definition: "Result (top->bottom): 20, 30" },
-                { id: "p2", term: "Stack (top->bottom): 3, 2, 1. Operations: POP, POP, PUSH 9.", definition: "Result (top->bottom): 9, 1" },
-                { id: "p3", term: "Queue (front->back): 1, 2, 3, 4. Operations: DEQUEUE, DEQUEUE, ENQUEUE 5.", definition: "Result (front->back): 3, 4, 5" },
-                { id: "p4", term: "Queue (front->back): A, B, C. Operations: DEQUEUE, then ENQUEUE D.", definition: "Result (front->back): B, C, D" }
-            ]
+            topic: "Queues",
+            category: "queue",
+            kind: "queue",
+            prompt: "Build a sequence of operations that turns CURRENT into TARGET.",
+            current: ["A", "B"],
+            target: ["B", "C"],
+            solution: ["insTail:C", "delHead"],
+            distractors: ["rotate", "reverse", "insTail:D", "insTail:A"],
+            explanation: "ENQUEUE adds C at the back and DEQUEUE removes A from the front. Either order works here."
         },
         {
-            difficulty: "intermediate",
-            topic: "Linked Lists",
-            prompt: "Trace each operation sequence and connect it to its correct resulting state.",
-            pairs: [
-                { id: "p1", term: "List: 10 -> 20 -> 30 -> NULL. Operation: Delete the node with value 20.", definition: "Result: 10 -> 30 -> NULL" },
-                { id: "p2", term: "List: 1 -> 2 -> 3 -> NULL. Operations: Insert 4 after 2, then delete 1.", definition: "Result: 2 -> 4 -> 3 -> NULL" },
-                { id: "p3", term: "Stack (top->bottom): 5. Operations: PUSH 10, PUSH 15, POP.", definition: "Result (top->bottom): 10, 5" },
-                { id: "p4", term: "Queue (front->back): X, Y, Z. Operations: DEQUEUE, DEQUEUE.", definition: "Result (front->back): Z" }
-            ]
-        },
-        {
-            difficulty: "intermediate",
+            id: "m3c-easy-4",
+            difficulty: "easy",
             topic: "Arrays",
-            prompt: "Trace each operation sequence and connect it to its correct resulting state.",
-            pairs: [
-                { id: "p1", term: "Array: [8, 3, 5, 1]. Operation: One bubble-sort pass (adjacent swaps, left to right).", definition: "Result: [3, 5, 1, 8]" },
-                { id: "p2", term: "Array: [4, 2, 7, 1]. Operation: Sort in ascending order.", definition: "Result: [1, 2, 4, 7]" },
-                { id: "p3", term: "Stack (top->bottom): 6, 4, 2. Operations: POP, POP.", definition: "Result (top->bottom): 2" },
-                { id: "p4", term: "Queue (front->back): 1, 2, 3. Operations: ENQUEUE 4, then DEQUEUE.", definition: "Result (front->back): 2, 3, 4" }
-            ]
+            category: "array",
+            kind: "array",
+            prompt: "Build a sequence of operations that turns CURRENT into TARGET.",
+            current: ["1", "2", "3"],
+            target: ["2", "3", "4"],
+            solution: ["insTail:4", "delHead"],
+            distractors: ["reverse", "delTail", "insHead:4", "insTail:1"],
+            explanation: "Append 4 at the end, then remove the first element."
+        },
+        {
+            id: "m3c-easy-5",
+            difficulty: "easy",
+            topic: "Stacks",
+            category: "stack",
+            kind: "stack",
+            prompt: "The stack starts empty. Build the target.",
+            current: [],
+            target: ["2", "1"],
+            solution: ["insHead:1", "insHead:2"],
+            distractors: ["insHead:3", "delHead", "dup", "swap:0,1"],
+            explanation: "Starting from an empty stack, push 1 and then 2 - the later push sits on top."
+        },
+        {
+            id: "m3c-easy-6",
+            difficulty: "easy",
+            topic: "Queues",
+            category: "queue",
+            kind: "queue",
+            prompt: "Build a sequence of operations that turns CURRENT into TARGET.",
+            current: ["X", "Y", "Z"],
+            target: ["Z"],
+            solution: ["delHead", "delHead"],
+            distractors: ["rotate", "reverse", "insTail:Z", "insTail:X"],
+            explanation: "A queue removes from the front: two DEQUEUEs drop X and then Y, leaving Z."
+        },
+        {
+            id: "m3c-easy-7",
+            difficulty: "easy",
+            topic: "Linked Lists",
+            category: "linkedList",
+            kind: "list",
+            prompt: "Build a sequence of operations that turns CURRENT into TARGET.",
+            current: ["10", "20"],
+            target: ["20", "30"],
+            solution: ["insTail:30", "delHead"],
+            distractors: ["delTail", "insHead:30", "reverse", "insHead:10"],
+            explanation: "Insert 30 at the tail, then delete the head node (10)."
+        },
+        {
+            id: "m3c-easy-8",
+            difficulty: "easy",
+            topic: "Linked Lists",
+            category: "linkedList",
+            kind: "list",
+            prompt: "Build a sequence of operations that turns CURRENT into TARGET.",
+            current: ["1", "2", "3", "4"],
+            target: ["2", "3"],
+            solution: ["delHead", "delTail"],
+            distractors: ["reverse", "insHead:1", "insTail:4", "rotate"],
+            explanation: "Trim one node from each end: delete the head (1) and the tail (4)."
         },
 
-        // ----------------------------- HARD -----------------------------
-        // Structural changes on lists, plus trees and graphs introduced.
+        // -------------------- INTERMEDIATE --------------------
+        // 3 operations, two decoys, one spare slot, live preview on.
         {
-            difficulty: "hard",
-            topic: "Linked Lists & Trees",
-            prompt: "Trace each operation sequence and connect it to its correct resulting state.",
-            pairs: [
-                { id: "p1", term: "List: 10 -> 20 -> 30 -> 40 -> NULL. Operations: Delete 20, then insert 25 after 30.", definition: "Result: 10 -> 30 -> 25 -> 40 -> NULL" },
-                { id: "p2", term: "List: 1 -> 2 -> 3 -> NULL. Operation: Reverse the list.", definition: "Result: 3 -> 2 -> 1 -> NULL" },
-                { id: "p3", term: "BST: root 50, left child 30, right child 70 (70 has left 60, right 80). Operation: Search for 60.", definition: "Nodes visited: 50 -> 70 -> 60" },
-                { id: "p4", term: "Stack (top->bottom): 3, 2, 1. Operations: POP, POP, PUSH 9, PUSH 8.", definition: "Result (top->bottom): 8, 9, 1" }
-            ]
+            id: "m3c-int-1",
+            difficulty: "intermediate",
+            topic: "Stacks",
+            category: "stack",
+            kind: "stack",
+            prompt: "Build a sequence of operations that turns CURRENT into TARGET.",
+            current: ["10", "20", "30"],
+            target: ["20", "50", "30"],
+            solution: ["delHead", "insHead:50", "swap:0,1"],
+            distractors: ["dup", "insHead:10", "insHead:20", "delHead"],
+            explanation: "POP removes 10, PUSH 50 gives 50, 20, 30, then swapping the top two gives 20, 50, 30."
         },
         {
-            difficulty: "hard",
-            topic: "Trees & Queues",
-            prompt: "Trace each operation sequence and connect it to its correct resulting state.",
-            pairs: [
-                { id: "p1", term: "BST insert order: 50, 30, 70, 20, 40. Operation: In-order traversal.", definition: "Result: 20, 30, 40, 50, 70" },
-                { id: "p2", term: "BST: root 50, left child 30, right child 70 (70 has left 60, right 80). Operation: Search for 80.", definition: "Nodes visited: 50 -> 70 -> 80" },
-                { id: "p3", term: "Queue (front->back): A, B, C, D. Operations: DEQUEUE, ENQUEUE E, DEQUEUE, ENQUEUE F.", definition: "Result (front->back): C, D, E, F" },
-                { id: "p4", term: "Array: [5, 1, 4, 2]. Operation: One selection-sort pass (place the minimum at index 0).", definition: "Result: [1, 5, 4, 2]" }
-            ]
+            id: "m3c-int-2",
+            difficulty: "intermediate",
+            topic: "Queues",
+            category: "queue",
+            kind: "queue",
+            prompt: "Build a sequence of operations that turns CURRENT into TARGET.",
+            current: ["A", "B", "C"],
+            target: ["C", "D"],
+            solution: ["delHead", "insTail:D", "delHead"],
+            distractors: ["rotate", "insTail:A", "reverse", "insTail:C"],
+            explanation: "Two DEQUEUEs remove A and B; ENQUEUE D adds it behind C."
         },
         {
-            difficulty: "hard",
-            topic: "Graphs & Lists",
-            prompt: "Trace each operation sequence and connect it to its correct resulting state.",
-            pairs: [
-                { id: "p1", term: "Graph edges: A-B, A-C, B-D, C-D. Operation: BFS starting at A (visit neighbors alphabetically).", definition: "Visit order: A, B, C, D" },
-                { id: "p2", term: "List: 10 -> 20 -> 30 -> NULL. Operation: Delete the tail node.", definition: "Result: 10 -> 20 -> NULL" },
-                { id: "p3", term: "Stack (top->bottom): empty. Operations: PUSH 1, PUSH 2, PUSH 3, POP, POP.", definition: "Result (top->bottom): 1" },
-                { id: "p4", term: "Array: [3, 6, 1, 8, 2, 4]. Operations: Sort ascending, then remove the first element.", definition: "Result: [2, 3, 4, 6, 8]" }
-            ]
+            id: "m3c-int-3",
+            difficulty: "intermediate",
+            topic: "Linked Lists",
+            category: "linkedList",
+            kind: "list",
+            prompt: "Build a sequence of operations that turns CURRENT into TARGET.",
+            current: ["1", "2", "3"],
+            target: ["0", "2", "3", "4"],
+            solution: ["delHead", "insHead:0", "insTail:4"],
+            distractors: ["delTail", "reverse", "rotate", "insHead:4", "insTail:0"],
+            explanation: "Delete the old head (1), insert 0 at the head, then append 4 at the tail."
+        },
+        {
+            id: "m3c-int-4",
+            difficulty: "intermediate",
+            topic: "Sorting",
+            category: ["array", "sorting"],
+            kind: "array",
+            prompt: "Reproduce one bubble-sort pass using adjacent swaps (swap i ↔ j).",
+            current: ["8", "3", "5", "1"],
+            target: ["3", "5", "1", "8"],
+            solution: ["swap:0,1", "swap:1,2", "swap:2,3"],
+            distractors: ["swap:0,2", "swap:0,3", "reverse", "swap:1,3"],
+            explanation: "This is one bubble-sort pass: each adjacent swap carries the largest value (8) one step toward the end. Order matters - the 8 has to be the one being swapped each time."
+        },
+        {
+            id: "m3c-int-5",
+            difficulty: "intermediate",
+            topic: "Queues",
+            category: "queue",
+            kind: "queue",
+            prompt: "Build a sequence of operations that turns CURRENT into TARGET.",
+            current: ["A", "B", "C", "D"],
+            target: ["C", "D", "A", "B"],
+            solution: ["rotate", "rotate"],
+            distractors: ["reverse", "delHead", "insTail:A", "insTail:B"],
+            explanation: "Each HEAD → TAIL moves the front element to the back. Two rotations put A and B behind C and D."
+        },
+        {
+            id: "m3c-int-6",
+            difficulty: "intermediate",
+            topic: "Linked Lists",
+            category: "linkedList",
+            kind: "list",
+            prompt: "Build a sequence of operations that turns CURRENT into TARGET.",
+            current: ["1", "2", "3", "4"],
+            target: ["5", "4", "3", "2"],
+            solution: ["reverse", "delTail", "insHead:5"],
+            distractors: ["delHead", "insTail:5", "rotate", "insHead:1"],
+            explanation: "Reverse gives 4, 3, 2, 1; deleting the tail drops the 1; inserting 5 at the head finishes it."
         },
 
-        // ---------------------------- EXPERT ----------------------------
-        // Algorithm tracing, longer chains, multiple interacting structures.
+        // -------------------- HARD --------------------
+        // Slots = exactly the optimal length, three decoys, no preview.
         {
-            difficulty: "expert",
-            topic: "Sorting & Graphs",
-            prompt: "Trace each operation sequence and connect it to its correct resulting state.",
-            pairs: [
-                { id: "p1", term: "Array: [5, 2, 9, 1, 5, 6]. Operation: First TWO passes of bubble sort (adjacent swaps, left to right).", definition: "Result: [2, 1, 5, 5, 6, 9]" },
-                { id: "p2", term: "Array: [8, 3, 5, 1]. Operation: Full selection sort to completion.", definition: "Result: [1, 3, 5, 8]" },
-                { id: "p3", term: "BST insert order: 40, 20, 60, 10, 30, 50, 70. Operation: Determine the height of the resulting tree (root at height 0).", definition: "Result: Height = 2" },
-                { id: "p4", term: "Graph edges: A-B, A-C, B-D, C-D. Operation: DFS starting at A, visiting the alphabetically smallest unvisited neighbor first.", definition: "Visit order: A, B, D, C" }
-            ]
+            id: "m3c-hard-1",
+            difficulty: "hard",
+            topic: "Linked Lists",
+            category: "linkedList",
+            kind: "list",
+            prompt: "Build a sequence of operations that turns CURRENT into TARGET.",
+            current: ["10", "20", "30", "40"],
+            target: ["25", "30", "20"],
+            solution: ["reverse", "delTail", "delHead", "insHead:25"],
+            distractors: ["insTail:25", "rotate", "insHead:10", "delHead", "delTail"],
+            explanation: "Reverse: 40, 30, 20, 10. Delete the tail (10) and the head (40) to leave 30, 20. Insert 25 at the head."
         },
         {
-            difficulty: "expert",
-            topic: "Queues & Lists",
-            prompt: "Trace each operation sequence and connect it to its correct resulting state.",
-            pairs: [
-                { id: "p1", term: "A queue is built from two stacks. Stack A (top->bottom): 4, 3, 2, 1. All elements are moved onto stack B, then DEQUEUE is called three times.", definition: "Dequeued values, in order: 1, 2, then 3" },
-                { id: "p2", term: "List: 1 -> 2 -> 3 -> 4 -> 5 -> NULL. Operations: Reverse the list, then delete the new head.", definition: "Result: 4 -> 3 -> 2 -> 1 -> NULL" },
-                { id: "p3", term: "BST: root 50, left child 30 (30 has left 20, right 40), right child 70. Operation: In-order traversal.", definition: "Result: 20, 30, 40, 50, 70" },
-                { id: "p4", term: "Array: [3, 1, 4, 1, 5, 9, 2, 6]. Operation: Sort ascending (needed before binary search can be used).", definition: "Result: [1, 1, 2, 3, 4, 5, 6, 9]" }
-            ]
+            id: "m3c-hard-2",
+            difficulty: "hard",
+            topic: "Stacks",
+            category: "stack",
+            kind: "stack",
+            prompt: "Build a sequence of operations that turns CURRENT into TARGET.",
+            current: ["4", "7", "2"],
+            target: ["7", "4", "7", "2"],
+            solution: ["delHead", "dup", "insHead:4", "swap:0,1"],
+            distractors: ["insHead:7", "delHead", "dup", "insHead:2"],
+            explanation: "POP (7, 2), DUP (7, 7, 2), PUSH 4 (4, 7, 7, 2), then swap the top two to get 7, 4, 7, 2."
         },
         {
+            id: "m3c-hard-3",
+            difficulty: "hard",
+            topic: "Sorting",
+            category: ["array", "sorting"],
+            kind: "array",
+            prompt: "Reproduce selection sort with swaps (swap i ↔ j). Skip any pass where the minimum is already in place.",
+            current: ["29", "10", "14", "37", "13"],
+            target: ["10", "13", "14", "29", "37"],
+            solution: ["swap:0,1", "swap:1,4", "swap:3,4"],
+            distractors: ["swap:2,3", "swap:0,4", "swap:2,4", "swap:1,2", "reverse"],
+            explanation: "Selection sort: swap the minimum (10) into index 0, then 13 into index 1, index 2 (14) is already correct, then 29 into index 3."
+        },
+        {
+            id: "m3c-hard-4",
+            difficulty: "hard",
+            topic: "Linked Lists",
+            category: "linkedList",
+            kind: "list",
+            prompt: "Build a sequence of operations that turns CURRENT into TARGET.",
+            current: ["1", "2", "3", "4", "5"],
+            target: ["4", "5", "1", "2"],
+            solution: ["rotate", "rotate", "rotate", "delTail"],
+            distractors: ["reverse", "delHead", "insTail:3", "insHead:5"],
+            explanation: "Three HEAD → TAIL rotations give 4, 5, 1, 2, 3. Delete the tail (3) to finish."
+        },
+        {
+            id: "m3c-hard-5",
+            difficulty: "hard",
+            topic: "Arrays",
+            category: "array",
+            kind: "array",
+            prompt: "Build a sequence of operations that turns CURRENT into TARGET.",
+            current: ["3", "1", "2"],
+            target: ["2", "3", "1", "9"],
+            solution: ["rotate", "rotate", "insTail:9"],
+            distractors: ["reverse", "delTail", "insHead:9", "swap:0,1"],
+            explanation: "Two left-rotations turn 3, 1, 2 into 2, 3, 1; then append 9."
+        },
+        {
+            id: "m3c-hard-6",
+            difficulty: "hard",
+            topic: "Linked Lists",
+            category: "linkedList",
+            kind: "list",
+            prompt: "Build a sequence of operations that turns CURRENT into TARGET.",
+            current: ["P", "Q", "R", "S"],
+            target: ["T", "S", "R"],
+            solution: ["reverse", "delTail", "delTail", "insHead:T"],
+            distractors: ["insTail:T", "rotate", "delHead", "insHead:S"],
+            explanation: "Reverse: S, R, Q, P. Delete the tail twice to leave S, R, then insert T at the head."
+        },
+
+        // -------------------- EXPERT --------------------
+        // Exactly N operations, up to four decoys, no preview, one strike.
+        {
+            id: "m3c-exp-1",
             difficulty: "expert",
-            topic: "Trees & Sorting",
-            prompt: "Trace each operation sequence and connect it to its correct resulting state.",
-            pairs: [
-                { id: "p1", term: "BST insert order: 8, 3, 10, 1, 6, 14, 4, 7, 13. Operation: In-order traversal.", definition: "Result: 1, 3, 4, 6, 7, 8, 10, 13, 14" },
-                { id: "p2", term: "Array: [9, 7, 5, 3, 1]. Operation: First pass of insertion sort (i = 1 only).", definition: "Result: [7, 9, 5, 3, 1]" },
-                { id: "p3", term: "Graph edges: A-B, A-C, B-D, C-D. Operation: BFS starting at A (visit neighbors alphabetically).", definition: "Visit order: A, B, C, D" },
-                { id: "p4", term: "List: 1 -> 2 -> 3 -> 4 -> NULL. Operation: Reverse the list.", definition: "Result: 4 -> 3 -> 2 -> 1 -> NULL" }
-            ]
+            topic: "Sorting",
+            category: ["array", "sorting"],
+            kind: "array",
+            prompt: "Reproduce two bubble-sort passes (stop right after the second pass's last swap).",
+            current: ["8", "3", "5", "1"],
+            target: ["3", "1", "5", "8"],
+            solution: ["swap:0,1", "swap:1,2", "swap:2,3", "swap:1,2"],
+            distractors: ["swap:0,2", "swap:0,3", "swap:1,3", "reverse"],
+            explanation: "Bubble sort across two passes. Pass 1: swap (0,1), (1,2), (2,3) gives 3, 5, 1, 8. Pass 2: 3 and 5 are in order, then swap (1,2) gives 3, 1, 5, 8."
+        },
+        {
+            id: "m3c-exp-2",
+            difficulty: "expert",
+            topic: "Linked Lists",
+            category: "linkedList",
+            kind: "list",
+            prompt: "Build a sequence of operations that turns CURRENT into TARGET.",
+            current: ["1", "2", "3", "4", "5"],
+            target: ["9", "4", "3", "2", "0"],
+            solution: ["reverse", "delHead", "delTail", "insHead:9", "insTail:0"],
+            distractors: ["rotate", "insHead:0", "insTail:9", "delHead"],
+            explanation: "Reverse (5, 4, 3, 2, 1), drop the head (5) and the tail (1), then insert 9 at the head and 0 at the tail."
+        },
+        {
+            id: "m3c-exp-3",
+            difficulty: "expert",
+            topic: "Stacks",
+            category: "stack",
+            kind: "stack",
+            prompt: "The stack starts empty. Build the target using exactly the number of slots shown.",
+            current: [],
+            target: ["1", "3", "1", "2"],
+            solution: ["insHead:2", "insHead:1", "dup", "insHead:3", "swap:0,1"],
+            distractors: ["delHead", "insHead:1", "insHead:3", "dup"],
+            explanation: "Push 2, push 1, DUP the top (1, 1, 2), push 3 (3, 1, 1, 2), then swap the top two to get 1, 3, 1, 2."
+        },
+        {
+            id: "m3c-exp-4",
+            difficulty: "expert",
+            topic: "Sorting",
+            category: ["array", "sorting"],
+            kind: "array",
+            prompt: "Sort the array with swaps only, using selection sort's minimum number of swaps.",
+            current: ["5", "2", "4", "1", "3"],
+            target: ["1", "2", "3", "4", "5"],
+            solution: ["swap:0,3", "swap:2,4", "swap:3,4"],
+            distractors: ["swap:0,1", "swap:1,3", "swap:2,3", "swap:0,4"],
+            explanation: "Selection sort: 1 swaps into index 0 (swap 0,3). Index 1 already holds 2. 3 swaps into index 2 (swap 2,4). 4 swaps into index 3 (swap 3,4)."
+        },
+        {
+            id: "m3c-exp-5",
+            difficulty: "expert",
+            topic: "Queues",
+            category: "queue",
+            kind: "queue",
+            prompt: "Build a sequence of operations that turns CURRENT into TARGET.",
+            current: ["A", "B", "C"],
+            target: ["D", "B", "E"],
+            solution: ["delHead", "insTail:D", "rotate", "insTail:E", "delHead"],
+            distractors: ["reverse", "insTail:A", "insTail:B", "delHead"],
+            explanation: "Trace it: dequeue A (B, C); enqueue D (B, C, D); rotate (C, D, B); enqueue E (C, D, B, E); dequeue C (D, B, E)."
         }
     ]
 };
