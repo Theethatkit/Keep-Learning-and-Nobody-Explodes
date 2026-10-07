@@ -441,6 +441,8 @@ function armBomb(difficultyId, isPracticeMode) {
         timeRemaining: bombDifficulty.startingTimeSeconds,
         timerId: null,
         moduleResults: {},
+        suspendedRuns: {},   // <-- new: modules left mid-run, keyed by moduleId
+
         // Correct/total counts per question topic, merged in from each
         // module's runState as it's completed (or captured mid-question
         // if the bomb explodes) - this is what feeds the History
@@ -452,6 +454,7 @@ function armBomb(difficultyId, isPracticeMode) {
         answerLog: []
     };
     runState = null;
+    resetAnswerStreak();
 
     resetModuleCellsVisual();
 
@@ -501,30 +504,34 @@ function enterModule(moduleId) {
     }
 
     const moduleConfig = MODULE_REGISTRY[moduleId];
-    const difficulty = moduleConfig.questionBank.difficulties[armedConfig.difficultyId];
 
-    const questionPool = moduleConfig.questionBank.questions.filter(function (question) {
-        return question.difficulty === armedConfig.difficultyId;
-    });
+    if (armedConfig.suspendedRuns[moduleId]) {
+        // Resume exactly where the player left off
+        runState = armedConfig.suspendedRuns[moduleId];
+        delete armedConfig.suspendedRuns[moduleId];
+    } else {
+        const difficulty = moduleConfig.questionBank.difficulties[armedConfig.difficultyId];
 
-    const selectedQuestions = pickRandomQuestions(
-        questionPool,
-        difficulty.questionCount
-    );
+        const questionPool = moduleConfig.questionBank.questions.filter(function (question) {
+            return question.difficulty === armedConfig.difficultyId;
+        });
 
-    runState = {
-        moduleId: moduleId,
-        difficultyId: armedConfig.difficultyId,
-        difficulty: difficulty,
-        isPracticeMode: armedConfig.isPracticeMode,
-        questions: selectedQuestions,
-        currentIndex: 0,
-        correctCount: 0,
-        strikesUsed: 0,
-        isAnswerLocked: false,
-        topicStats: {},
-        answerLog: []
-    };
+        const selectedQuestions = pickRandomQuestions(questionPool, difficulty.questionCount);
+
+        runState = {
+            moduleId: moduleId,
+            difficultyId: armedConfig.difficultyId,
+            difficulty: difficulty,
+            isPracticeMode: armedConfig.isPracticeMode,
+            questions: selectedQuestions,
+            currentIndex: 0,
+            correctCount: 0,
+            strikesUsed: 0,
+            isAnswerLocked: false,
+            topicStats: {},
+            answerLog: []
+        };
+    }
 
     renderStrikes();
     renderProgress();
@@ -1647,6 +1654,10 @@ function applyWrongAnswerTimePenalty() {
 }
 
 function advanceAfterAnswer() {
+    if (!runState || !armedConfig) {
+        return; // the bomb already ended (e.g. time penalty hit 0) or the player left
+    }
+
     const isOutOfStrikes =
         !runState.isPracticeMode &&
         runState.strikesUsed >= runState.difficulty.mistakesAllowed;
@@ -1711,6 +1722,10 @@ function completeModule(moduleId) {
     markModuleSolved(moduleId);
     SFX.playModuleSolved();
 
+    if (!armedConfig.isPracticeMode) {
+        updateModuleAchievementStats(moduleId, runState.correctCount === runState.questions.length);
+    }
+
     runState = null;
 
     renderModulesSolvedLabel();
@@ -1772,7 +1787,11 @@ function finishBomb(isDefused) {
     }
 
     if (!armedConfig.isPracticeMode) {
-        updateBombLevelAchievementStats(isDefused, armedConfig.difficultyId);
+        updateBombLevelAchievementStats(isDefused, armedConfig.difficultyId, {
+            strikesUsed: getAggregatedResults().strikesUsed,
+            timeRemaining: armedConfig.timeRemaining,
+            startingTimeSeconds: armedConfig.startingTimeSeconds
+        });
     }
 
     const score = calculateOverallScore();
@@ -1786,6 +1805,8 @@ function finishBomb(isDefused) {
 
     renderResultScreen(isDefused, score);
     resetSaveAttemptButton();
+
+    runState = null;
 
     showScreen(resultScreen);
 }
@@ -2170,6 +2191,12 @@ function getAchievementsStorageKey() {
 // The persisted shape matches the `progress` object described at the
 // top of achievements-data.js. Missing/corrupt storage just starts
 // fresh rather than throwing.
+function pushUnique(list, value) {
+    if (list.indexOf(value) === -1) {
+        list.push(value);
+    }
+}
+
 function loadAchievementProgress() {
     const raw = localStorage.getItem(getAchievementsStorageKey());
     let saved = null;
@@ -2180,11 +2207,25 @@ function loadAchievementProgress() {
         saved = null;
     }
 
+    const defusedDifficulties = (saved && saved.defusedDifficulties) || [];
+    if (saved && saved.hasDefusedExpertBomb) {
+        pushUnique(defusedDifficulties, "expert"); // old save format
+    }
+
     return {
         categoryStats: (saved && saved.categoryStats) || {},
         completedQuestionKeys: (saved && saved.completedQuestionKeys) || [],
-        hasDefusedExpertBomb: !!(saved && saved.hasDefusedExpertBomb),
-        unlockedAchievementIds: (saved && saved.unlockedAchievementIds) || []
+        unlockedAchievementIds: (saved && saved.unlockedAchievementIds) || [],
+        defusedDifficulties: defusedDifficulties,
+        flawlessDifficulties: (saved && saved.flawlessDifficulties) || [],
+        fastDifficulties: (saved && saved.fastDifficulties) || [],
+        explodedDifficulties: (saved && saved.explodedDifficulties) || [],
+        perfectModules: (saved && saved.perfectModules) || [],
+        bombsDefused: (saved && saved.bombsDefused) || 0,
+        bombsExploded: (saved && saved.bombsExploded) || 0,
+        bestStreak: (saved && saved.bestStreak) || 0,
+        hadPhotoFinish: !!(saved && saved.hadPhotoFinish),
+        hasDefusedAfterExploding: !!(saved && saved.hasDefusedAfterExploding)
     };
 }
 
@@ -2269,8 +2310,14 @@ function getQuestionCatalog() {
 // it correctly genuinely demonstrates both. On a correct answer, the
 // question is also marked completed once (a single "moduleId:id" key
 // works across every one of its categories - see buildQuestionCatalog()).
+let answerStreak = 0; // in-memory, per bomb
+function resetAnswerStreak() { answerStreak = 0; }
+
 function updateAchievementStats(question, moduleId, isCorrect) {
     const progress = loadAchievementProgress();
+
+    answerStreak = isCorrect ? answerStreak + 1 : 0;
+    progress.bestStreak = Math.max(progress.bestStreak, answerStreak);
     const categories = getQuestionCategories(question);
 
     categories.forEach(function (category) {
@@ -2298,13 +2345,40 @@ function updateAchievementStats(question, moduleId, isCorrect) {
 // currently depends on the bomb's overall outcome rather than a
 // per-question stat, but this is the natural place for any future
 // achievement like it (e.g. a full-bomb no-strikes run).
-function updateBombLevelAchievementStats(isDefused, difficultyId) {
+function updateBombLevelAchievementStats(isDefused, difficultyId, details) {
     const progress = loadAchievementProgress();
 
-    if (isDefused && difficultyId === "expert") {
-        progress.hasDefusedExpertBomb = true;
+    if (isDefused) {
+        progress.bombsDefused += 1;
+        pushUnique(progress.defusedDifficulties, difficultyId);
+
+        if (details.strikesUsed === 0) {
+            pushUnique(progress.flawlessDifficulties, difficultyId);
+        }
+        if (details.timeRemaining / details.startingTimeSeconds >= ACH_FAST_FRACTION) {
+            pushUnique(progress.fastDifficulties, difficultyId);
+        }
+        if (details.timeRemaining > 0 && details.timeRemaining <= ACH_PHOTO_FINISH_SECONDS) {
+            progress.hadPhotoFinish = true;
+        }
+        if (progress.explodedDifficulties.indexOf(difficultyId) !== -1) {
+            progress.hasDefusedAfterExploding = true;
+        }
+    } else {
+        progress.bombsExploded += 1;
+        pushUnique(progress.explodedDifficulties, difficultyId);
     }
 
+    saveAchievementProgress(progress);
+    checkAchievements(progress);
+}
+
+function updateModuleAchievementStats(moduleId, wasPerfect) {
+    if (!wasPerfect) {
+        return;
+    }
+    const progress = loadAchievementProgress();
+    pushUnique(progress.perfectModules, moduleId);
     saveAchievementProgress(progress);
     checkAchievements(progress);
 }
@@ -2323,6 +2397,9 @@ function checkAchievements(progress) {
         }
 
         const achievement = ACHIEVEMENT_REGISTRY[achievementId];
+        if (achievement.isAvailable && !achievement.isAvailable(progress, catalog)) {
+            return;
+        }
         if (achievement.check(progress, catalog)) {
             progress.unlockedAchievementIds.push(achievementId);
             didUnlockSomething = true;
@@ -2368,23 +2445,51 @@ function renderAchievementsScreen() {
 
     achievementList.innerHTML = "";
 
+    const idsByGroup = {};
+    const groupOrder = [];
+
     Object.keys(ACHIEVEMENT_REGISTRY).forEach(function (achievementId) {
         const achievement = ACHIEVEMENT_REGISTRY[achievementId];
-        const isUnlocked = progress.unlockedAchievementIds.indexOf(achievementId) !== -1;
+        if (achievement.isAvailable && !achievement.isAvailable(progress, catalog)) {
+            return;
+        }
+        const groupName = achievement.group || "Other";
+        if (!idsByGroup[groupName]) {
+            idsByGroup[groupName] = [];
+            groupOrder.push(groupName);
+        }
+        idsByGroup[groupName].push(achievementId);
+    });
 
-        const card = document.createElement("div");
-        card.className = "achievement-card" + (isUnlocked ? " achievement-unlocked" : " achievement-locked");
+    groupOrder.forEach(function (groupName) {
+        const ids = idsByGroup[groupName];
+        const unlockedCount = ids.filter(function (id) {
+            return progress.unlockedAchievementIds.indexOf(id) !== -1;
+        }).length;
 
-        const statusText = isUnlocked
-            ? "Unlocked"
-            : achievement.getProgressText(progress, catalog);
+        const heading = document.createElement("h3");
+        heading.className = "section-heading";
+        heading.textContent = groupName + " \u00B7 " + unlockedCount + " / " + ids.length;
+        achievementList.appendChild(heading);
 
-        card.innerHTML =
-            '<p class="achievement-card-label">' + achievement.label + "</p>" +
-            '<p class="achievement-card-description">' + achievement.description + "</p>" +
-            '<p class="achievement-card-status">' + statusText + "</p>";
+        ids.forEach(function (achievementId) {
+            const achievement = ACHIEVEMENT_REGISTRY[achievementId];
+            const isUnlocked = progress.unlockedAchievementIds.indexOf(achievementId) !== -1;
 
-        achievementList.appendChild(card);
+            const card = document.createElement("div");
+            card.className = "achievement-card" + (isUnlocked ? " achievement-unlocked" : " achievement-locked");
+
+            const statusText = isUnlocked
+                ? "Unlocked"
+                : achievement.getProgressText(progress, catalog);
+
+            card.innerHTML =
+                '<p class="achievement-card-label">' + achievement.label + "</p>" +
+                '<p class="achievement-card-description">' + achievement.description + "</p>" +
+                '<p class="achievement-card-status">' + statusText + "</p>";
+
+            achievementList.appendChild(card);
+        });
     });
 }
 
@@ -2524,8 +2629,21 @@ Object.keys(MODULE_REGISTRY).forEach(function (moduleId) {
     });
 
     moduleConfig.backButton.addEventListener("click", function () {
-        
+        // Ignore Back during the short pause after an answer: that answer is
+        // already counted and the move to the next question is still pending.
+        if (!runState || runState.isAnswerLocked) {
+            return;
+        }
+
+        // Park the run so re-entering resumes it (strikes included)
+        armedConfig.suspendedRuns[runState.moduleId] = runState;
         runState = null;
+
+        const hint = moduleConfig.slot.querySelector(".cell-hint");
+        if (hint) {
+            hint.textContent = "Tap to resume";
+        }
+
         showScreen(overviewScreen);
     });
 });

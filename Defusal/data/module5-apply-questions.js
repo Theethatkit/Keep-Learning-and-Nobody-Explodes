@@ -1,7 +1,7 @@
 // ===================================================================
-// Module 5 - Defuse question bank
+// Module 5 - Apply question bank
 //
-// Defuse's job is "apply everything to a problem": each question
+// Apply's job is "apply everything to a problem": each question
 // poses a real-world scenario (`prompt`) and a short list of
 // candidate data structures (`options`, an array of { id, text }),
 // exactly one of which is right (`correctOptionId`). Unlike the old
@@ -18,7 +18,7 @@
 // used by the other modules' banks, since the overview's difficulty
 // dropdown and its "X:XX on the clock" preview are built from
 // IDENTIFY_QUESTION_BANK, not this one (see populateDifficultyOptions
-// in defusal.js) - only the numbers below are Defuse's own.
+// in defusal.js) - only the numbers below are Apply's own.
 //
 // NOTE: the numbers below (time/mistakes/question count/scoring) are
 // reasonable placeholders, not pulled from the site's existing

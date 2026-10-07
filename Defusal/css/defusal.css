@@ -1655,6 +1655,7 @@ a {
     flex-direction: column;
     gap: 14px;
     max-width: 560px;
+    margin: 0 auto; /* add to the existing rule */
 }
 
 .topic-bar-row {
@@ -1711,11 +1712,19 @@ a {
 
 /* ================= Achievements screen ================= */
 
+/* Center the constrained-width blocks on the centered "result-style" screens
+   (Achievements, History, Review) */
+.result-screen .intro-text {
+    margin-left: auto;
+    margin-right: auto;
+}
+
 .achievement-list {
     display: flex;
     flex-direction: column;
     gap: 14px;
     max-width: 560px;
+    margin: 0 auto;
 }
 
 .achievement-card {
@@ -1724,15 +1733,20 @@ a {
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-left: 4px solid #64748b;
     border-radius: 10px;
+    text-align: center; /* explicit, so it doesn't depend on the parent */
 }
 
-    .achievement-card.achievement-locked {
-        opacity: 0.7;
-    }
+.achievement-list .section-heading:first-child {
+    margin-top: 0;
+}
 
-    .achievement-card.achievement-unlocked {
+.achievement-card.achievement-locked {
+        opacity: 0.7;
+}
+
+.achievement-card.achievement-unlocked {
         border-left-color: #4ade80;
-    }
+}
 
 .achievement-card-label {
     margin: 0 0 6px;
@@ -1816,6 +1830,8 @@ a {
     flex-direction: column;
     gap: 14px;
     max-width: 640px;
+    margin: 0 auto; 
+    text-align: left; /* long explanations read better left-aligned */
 }
 
 .review-card {

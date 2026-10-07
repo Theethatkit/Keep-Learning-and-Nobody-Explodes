@@ -2,121 +2,423 @@
 // Achievement definitions
 //
 // Loaded as a plain <script> tag, same convention as the question
-// bank files (identify-questions.js, module2-questions.js, etc.) -
-// this file just needs to run before defusal.js and it hands off
-// ACHIEVEMENT_REGISTRY as a global.
+// bank files - this file just needs to run before defusal.js and it
+// hands off ACHIEVEMENT_REGISTRY as a global.
 //
-// Each achievement is checked against a `progress` snapshot built by
-// defusal.js (see buildAchievementProgressSnapshot()). progress has
-// this shape:
+// Each achievement is checked against a `progress` snapshot loaded by
+// defusal.js (see loadAchievementProgress()). progress has this shape:
 //
 //   {
-//     categoryStats: {
-//       stack: { correct: 7, total: 8 },
-//       queue: { correct: 3, total: 3 },
-//       linkedList: { ... }, tree: { ... }, hash: { ... },
-//       graph: { ... }, sorting: { ... }, array: { ... }
-//     },
-//     completedQuestionKeys: ["module3:ll-insert-01", "identify:ll-04", ...],
-//     hasDefusedExpertBomb: false
+//     categoryStats: { stack: { correct, total }, queue: {...}, ... },
+//     completedQuestionKeys: ["module3:ll-insert-01", ...],
+//     unlockedAchievementIds: [...],
+//
+//     // bomb-level stats (updated when a bomb ends)
+//     defusedDifficulties:   ["easy", "hard", ...],
+//     flawlessDifficulties:  [...]   defused with 0 strikes
+//     fastDifficulties:      [...]   defused with >= ACH_FAST_FRACTION of the clock left
+//     explodedDifficulties:  [...]   exploded at least once
+//     bombsDefused: 0, bombsExploded: 0,
+//     hadPhotoFinish: false,         defused with <= ACH_PHOTO_FINISH_SECONDS left
+//     hasDefusedAfterExploding: false,
+//
+//     // module-level / streak stats
+//     perfectModules: ["identify", "module3", ...],
+//     bestStreak: 0
 //   }
 //
-// A question's own `category` field (in its data/*-questions.js
-// entry) can be either a single string ("stack") or an array of
-// strings (["stack", "queue"]) for a question that genuinely spans
-// more than one structure - e.g. a Connect-the-Dots round whose pairs
-// mix a stack operation with a queue operation. Answering it counts
-// toward every category it's tagged with (see updateAchievementStats()
-// in defusal.js).
+// Every achievement entry has:
+//   group            heading it is listed under on the Achievements screen
+//   label            display name
+//   description      one-line goal
+//   getProgressText  (progress, catalog) -> string shown while locked
+//   check            (progress, catalog) -> true once it should unlock
+//   isAvailable      OPTIONAL (progress, catalog) -> false hides the
+//                    achievement and skips its check. Used so that
+//                    category achievements don't show up (and can't
+//                    be impossible) until that category actually has
+//                    tagged questions.
 //
-// `check(progress, catalog)` returns true once the achievement should
-// be considered unlocked. `catalog` is the read-only category ->
-// full list of "moduleId:questionId" keys that exist across every
-// question bank (see buildQuestionCatalog() in defusal.js) - it's
-// what "complete ALL linked-list simulations" is measured against,
-// since that requires knowing the denominator.
+// `catalog` is category -> every "moduleId:questionId" key that exists
+// across the question banks (see buildQuestionCatalog() in defusal.js).
 //
-// Achievements are only ever evaluated outside practice mode - see
-// updateAchievementStats()/updateBombLevelAchievementStats() in
-// defusal.js, which simply never get called during a practice run.
+// Achievements are only ever evaluated outside practice mode.
+//
+// Registry key order = display order within each group. The four
+// original keys (stackSpecialist, pointerTechnician, treeNavigator,
+// masterDefuser) are unchanged so players keep what they unlocked.
 // ===================================================================
 
-const ACHIEVEMENT_REGISTRY = {
-    stackSpecialist: {
-        label: "Stack Specialist",
-        description: "Complete 10 stack questions with \u2265 90% accuracy.",
-        // Progress is shown on the Achievements screen as
-        // "correct / target" while locked, e.g. "7 / 10".
+// ---- tuning knobs ----
+const ACH_SPECIALIST_MIN_QUESTIONS = 10;
+const ACH_SPECIALIST_MIN_ACCURACY = 0.9;
+const ACH_COMPLETIONIST_MIN_POOL = 5;     // hide "complete every X" until X has this many questions
+const ACH_WELL_ROUNDED_MIN_QUESTIONS = 5;
+const ACH_FAST_FRACTION = 0.5;            // "Speed Demon": this much of the clock left
+const ACH_PHOTO_FINISH_SECONDS = 10;
+const ACH_STREAK_SMALL = 10;
+const ACH_STREAK_BIG = 25;
+const ACH_BOMBS_SEASONED = 5;
+const ACH_BOMBS_LEGEND = 25;
+
+const ACH_CATEGORY_NOUN = {
+    stack: "stack",
+    queue: "queue",
+    linkedList: "linked-list",
+    tree: "tree",
+    hash: "hash table",
+    graph: "graph",
+    sorting: "sorting",
+    array: "array"
+};
+
+const ACH_ALL_DIFFICULTIES = ["easy", "intermediate", "hard", "expert"];
+
+function achHas(list, value) {
+    return list.indexOf(value) !== -1;
+}
+
+function achHasAny(list, values) {
+    return values.some(function (value) {
+        return achHas(list, value);
+    });
+}
+
+// ---- factories ----
+
+// "Defuse a bomb on <difficulty>"
+function makeDefuseAchievement(difficultyId, label, description) {
+    return {
+        group: "Bomb Disposal",
+        label: label,
+        description: description,
         getProgressText: function (progress) {
-            const stats = progress.categoryStats.stack;
+            return achHas(progress.defusedDifficulties, difficultyId) ? "Complete" : "Not yet";
+        },
+        check: function (progress) {
+            return achHas(progress.defusedDifficulties, difficultyId);
+        }
+    };
+}
+
+// "Complete N <category> questions with >= 90% accuracy" (lifetime stats)
+function makeCategorySpecialist(category, label) {
+    const noun = ACH_CATEGORY_NOUN[category];
+
+    return {
+        group: "Specialists",
+        label: label,
+        description: "Complete " + ACH_SPECIALIST_MIN_QUESTIONS + " " + noun +
+            " questions with \u2265 " + Math.round(ACH_SPECIALIST_MIN_ACCURACY * 100) + "% accuracy.",
+        isAvailable: function (progress, catalog) {
+            return catalog[category].length > 0;
+        },
+        getProgressText: function (progress) {
+            const stats = progress.categoryStats[category];
             const total = stats ? stats.total : 0;
-            return Math.min(total, 10) + " / 10 attempted";
+
+            if (total < ACH_SPECIALIST_MIN_QUESTIONS) {
+                return total + " / " + ACH_SPECIALIST_MIN_QUESTIONS + " attempted";
+            }
+
+            // Enough attempts, so the only thing holding it back is accuracy -
+            // show that instead of a "10 / 10" that looks finished but isn't.
+            const percent = Math.round((stats.correct / total) * 100);
+            return total + " attempted \u00B7 " + percent + "% accuracy (need " +
+                Math.round(ACH_SPECIALIST_MIN_ACCURACY * 100) + "%)";
         },
         check: function (progress) {
-            const stats = progress.categoryStats.stack;
-            if (!stats || stats.total < 10) {
+            const stats = progress.categoryStats[category];
+            if (!stats || stats.total < ACH_SPECIALIST_MIN_QUESTIONS) {
                 return false;
             }
-            return (stats.correct / stats.total) >= 0.9;
+            return (stats.correct / stats.total) >= ACH_SPECIALIST_MIN_ACCURACY;
         }
-    },
+    };
+}
 
-    pointerTechnician: {
-        label: "Pointer Technician",
-        description: "Complete every linked-list question across the whole bomb.",
-        getProgressText: function (progress, catalog) {
-            const totalKeys = catalog.linkedList.length;
-            const doneCount = catalog.linkedList.filter(function (key) {
-                return progress.completedQuestionKeys.indexOf(key) !== -1;
-            }).length;
-            return doneCount + " / " + totalKeys + " questions";
-        },
-        check: function (progress, catalog) {
-            if (!catalog.linkedList.length) {
-                return false; // nothing tagged yet - can't be completed
-            }
-            return catalog.linkedList.every(function (key) {
-                return progress.completedQuestionKeys.indexOf(key) !== -1;
-            });
-        }
-    },
-
-    treeNavigator: {
-        label: "Tree Navigator",
-        description: "Complete every tree-traversal question across the whole bomb.",
-        getProgressText: function (progress, catalog) {
-            const totalKeys = catalog.tree.length;
-            const doneCount = catalog.tree.filter(function (key) {
-                return progress.completedQuestionKeys.indexOf(key) !== -1;
-            }).length;
-            return doneCount + " / " + totalKeys + " questions";
-        },
-        check: function (progress, catalog) {
-            if (!catalog.tree.length) {
-                return false;
-            }
-            return catalog.tree.every(function (key) {
-                return progress.completedQuestionKeys.indexOf(key) !== -1;
-            });
-        }
-    },
-
-    masterDefuser: {
-        label: "Master Defuser",
-        description: "Defuse an Expert-difficulty bomb without it exploding.",
-        getProgressText: function (progress) {
-            return progress.hasDefusedExpertBomb ? "Complete" : "Not yet";
-        },
-        check: function (progress) {
-            return !!progress.hasDefusedExpertBomb;
-        }
+// "Complete every <category> question across the whole bomb"
+function makeCategoryCompletionist(category, label, noun) {
+    function countDone(progress, catalog) {
+        return catalog[category].filter(function (key) {
+            return achHas(progress.completedQuestionKeys, key);
+        }).length;
     }
 
-    // Add a new achievement by adding another entry here - the
-    // Achievements screen and the unlock-toast both iterate this
-    // registry automatically (see renderAchievementsScreen() and
-    // checkAchievements() in defusal.js), so nothing else needs to
-    // change to add one. A "Hash Handler" or "Graph Grappler"
-    // achievement can reuse the same categoryStats shape (hash/graph
-    // are already tracked) as soon as those questions exist.
+    return {
+        group: "Completionist",
+        label: label,
+        description: "Complete every " + noun + " question across the whole bomb.",
+        isAvailable: function (progress, catalog) {
+            return catalog[category].length >= ACH_COMPLETIONIST_MIN_POOL;
+        },
+        getProgressText: function (progress, catalog) {
+            return countDone(progress, catalog) + " / " + catalog[category].length + " questions";
+        },
+        check: function (progress, catalog) {
+            return catalog[category].length > 0 &&
+                countDone(progress, catalog) === catalog[category].length;
+        }
+    };
+}
+
+// ---- the registry ----
+const ACHIEVEMENT_REGISTRY = {
+
+    // ===== Bomb Disposal: the difficulty ladder + volume =====
+    rookieDefuser: makeDefuseAchievement(
+        "easy", "Rookie Defuser", "Defuse an Easy-difficulty bomb."),
+
+    fieldAgent: makeDefuseAchievement(
+        "intermediate", "Field Agent", "Defuse an Intermediate-difficulty bomb."),
+
+    squadVeteran: makeDefuseAchievement(
+        "hard", "Bomb Squad Veteran", "Defuse a Hard-difficulty bomb."),
+
+    masterDefuser: makeDefuseAchievement(
+        "expert", "Master Defuser", "Defuse an Expert-difficulty bomb without it exploding."),
+
+    fullSpectrum: {
+        group: "Bomb Disposal",
+        label: "Full Spectrum",
+        description: "Defuse a bomb on every difficulty.",
+        getProgressText: function (progress) {
+            return progress.defusedDifficulties.length + " / " + ACH_ALL_DIFFICULTIES.length + " difficulties";
+        },
+        check: function (progress) {
+            return ACH_ALL_DIFFICULTIES.every(function (id) {
+                return achHas(progress.defusedDifficulties, id);
+            });
+        }
+    },
+
+    seasonedAgent: {
+        group: "Bomb Disposal",
+        label: "Seasoned Agent",
+        description: "Defuse " + ACH_BOMBS_SEASONED + " bombs in total.",
+        getProgressText: function (progress) {
+            return Math.min(progress.bombsDefused, ACH_BOMBS_SEASONED) + " / " + ACH_BOMBS_SEASONED + " bombs";
+        },
+        check: function (progress) {
+            return progress.bombsDefused >= ACH_BOMBS_SEASONED;
+        }
+    },
+
+    squadLegend: {
+        group: "Bomb Disposal",
+        label: "Bomb Squad Legend",
+        description: "Defuse " + ACH_BOMBS_LEGEND + " bombs in total.",
+        getProgressText: function (progress) {
+            return Math.min(progress.bombsDefused, ACH_BOMBS_LEGEND) + " / " + ACH_BOMBS_LEGEND + " bombs";
+        },
+        check: function (progress) {
+            return progress.bombsDefused >= ACH_BOMBS_LEGEND;
+        }
+    },
+
+    // ===== Clutch Plays: style points, not just survival =====
+    cleanCut: {
+        group: "Clutch Plays",
+        label: "Clean Cut",
+        description: "Defuse a bomb without a single strike.",
+        getProgressText: function (progress) {
+            return progress.flawlessDifficulties.length ? "Complete" : "Not yet";
+        },
+        check: function (progress) {
+            return progress.flawlessDifficulties.length > 0;
+        }
+    },
+
+    surgeonsHands: {
+        group: "Clutch Plays",
+        label: "Surgeon's Hands",
+        description: "Defuse a Hard or Expert bomb without a single strike.",
+        getProgressText: function (progress) {
+            return achHasAny(progress.flawlessDifficulties, ["hard", "expert"]) ? "Complete" : "Not yet";
+        },
+        check: function (progress) {
+            return achHasAny(progress.flawlessDifficulties, ["hard", "expert"]);
+        }
+    },
+
+    speedDemon: {
+        group: "Clutch Plays",
+        label: "Speed Demon",
+        description: "Defuse an Intermediate or harder bomb with at least " +
+            Math.round(ACH_FAST_FRACTION * 100) + "% of the clock left.",
+        getProgressText: function (progress) {
+            return achHasAny(progress.fastDifficulties, ["intermediate", "hard", "expert"]) ? "Complete" : "Not yet";
+        },
+        check: function (progress) {
+            return achHasAny(progress.fastDifficulties, ["intermediate", "hard", "expert"]);
+        }
+    },
+
+    photoFinish: {
+        group: "Clutch Plays",
+        label: "Photo Finish",
+        description: "Defuse a bomb with " + ACH_PHOTO_FINISH_SECONDS + " seconds or less left on the clock.",
+        getProgressText: function (progress) {
+            return progress.hadPhotoFinish ? "Complete" : "Not yet";
+        },
+        check: function (progress) {
+            return !!progress.hadPhotoFinish;
+        }
+    },
+
+    backFromTheBlast: {
+        group: "Clutch Plays",
+        label: "Back From the Blast",
+        description: "Defuse a bomb on a difficulty where you've exploded before.",
+        getProgressText: function (progress) {
+            return progress.hasDefusedAfterExploding ? "Complete" : "Not yet";
+        },
+        check: function (progress) {
+            return !!progress.hasDefusedAfterExploding;
+        }
+    },
+
+    onARoll: {
+        group: "Clutch Plays",
+        label: "On a Roll",
+        description: "Answer " + ACH_STREAK_SMALL + " questions in a row correctly in one bomb.",
+        getProgressText: function (progress) {
+            return Math.min(progress.bestStreak, ACH_STREAK_SMALL) + " / " + ACH_STREAK_SMALL + " best streak";
+        },
+        check: function (progress) {
+            return progress.bestStreak >= ACH_STREAK_SMALL;
+        }
+    },
+
+    unstoppable: {
+        group: "Clutch Plays",
+        label: "Unstoppable",
+        description: "Answer " + ACH_STREAK_BIG + " questions in a row correctly in one bomb.",
+        getProgressText: function (progress) {
+            return Math.min(progress.bestStreak, ACH_STREAK_BIG) + " / " + ACH_STREAK_BIG + " best streak";
+        },
+        check: function (progress) {
+            return progress.bestStreak >= ACH_STREAK_BIG;
+        }
+    },
+
+    // ===== Module Mastery =====
+    flawlessModule: {
+        group: "Module Mastery",
+        label: "Flawless Module",
+        description: "Finish any module with every question answered correctly.",
+        getProgressText: function (progress) {
+            return progress.perfectModules.length ? "Complete" : "Not yet";
+        },
+        check: function (progress) {
+            return progress.perfectModules.length > 0;
+        }
+    },
+
+    perfectPanel: {
+        group: "Module Mastery",
+        label: "Perfect Panel",
+        description: "Finish every module flawlessly at least once (they don't have to be in the same run).",
+        // MODULE_REGISTRY lives in defusal.js; these functions only run
+        // after it exists, so reading it here is safe.
+        getProgressText: function (progress) {
+            return progress.perfectModules.length + " / " + Object.keys(MODULE_REGISTRY).length + " modules";
+        },
+        check: function (progress) {
+            return Object.keys(MODULE_REGISTRY).every(function (moduleId) {
+                return achHas(progress.perfectModules, moduleId);
+            });
+        }
+    }
 };
+
+// ===== Specialists: one per category (Stack Specialist keeps its original key) =====
+[
+    ["stack", "stackSpecialist", "Stack Specialist"],
+    ["queue", "queueSpecialist", "FIFO Fanatic"],
+    ["linkedList", "linkedListSpecialist", "Link Master"],
+    ["tree", "treeSpecialist", "Root Access"],
+    ["hash", "hashSpecialist", "Hash Handler"],
+    ["graph", "graphSpecialist", "Graph Grappler"],
+    ["sorting", "sortingSpecialist", "Sorting Savant"],
+    ["array", "arraySpecialist", "Array Architect"]
+].forEach(function (entry) {
+    ACHIEVEMENT_REGISTRY[entry[1]] = makeCategorySpecialist(entry[0], entry[2]);
+});
+
+// ===== Completionists: every question in a category (Pointer Technician / Tree Navigator keep their keys) =====
+[
+    ["stack", "stackCompletionist", "LIFO Legend", "stack"],
+    ["queue", "queueCompletionist", "Front of the Line", "queue"],
+    ["linkedList", "pointerTechnician", "Pointer Technician", "linked-list"],
+    ["tree", "treeNavigator", "Tree Navigator", "tree-traversal"],
+    ["hash", "hashCompletionist", "Collision Resolver", "hash table"],
+    ["graph", "graphCompletionist", "Cartographer", "graph"],
+    ["sorting", "sortingCompletionist", "Order Restored", "sorting"],
+    ["array", "arrayCompletionist", "Index Inspector", "array"]
+].forEach(function (entry) {
+    ACHIEVEMENT_REGISTRY[entry[1]] = makeCategoryCompletionist(entry[0], entry[2], entry[3]);
+});
+
+// ===== Grand Challenge (added last so it's evaluated after everything else) =====
+ACHIEVEMENT_REGISTRY.wellRounded = {
+    group: "Grand Challenge",
+    label: "Well Rounded",
+    description: "Answer at least " + ACH_WELL_ROUNDED_MIN_QUESTIONS + " questions in every topic.",
+    getProgressText: function (progress, catalog) {
+        const topics = Object.keys(catalog).filter(function (category) {
+            return catalog[category].length > 0;
+        });
+        const covered = topics.filter(function (category) {
+            const stats = progress.categoryStats[category];
+            return stats && stats.total >= ACH_WELL_ROUNDED_MIN_QUESTIONS;
+        });
+        return covered.length + " / " + topics.length + " topics";
+    },
+    check: function (progress, catalog) {
+        const topics = Object.keys(catalog).filter(function (category) {
+            return catalog[category].length > 0;
+        });
+        if (!topics.length) {
+            return false;
+        }
+        return topics.every(function (category) {
+            const stats = progress.categoryStats[category];
+            return stats && stats.total >= ACH_WELL_ROUNDED_MIN_QUESTIONS;
+        });
+    }
+};
+
+// Unlock every other (currently available) achievement. Must stay the
+// LAST entry: checkAchievements() walks the registry in order, so by
+// the time this runs, anything unlocked earlier in the same pass is
+// already counted.
+ACHIEVEMENT_REGISTRY.dataStructureSage = (function () {
+    function otherIds(progress, catalog) {
+        return Object.keys(ACHIEVEMENT_REGISTRY).filter(function (id) {
+            if (id === "dataStructureSage") {
+                return false;
+            }
+            const achievement = ACHIEVEMENT_REGISTRY[id];
+            return !achievement.isAvailable || achievement.isAvailable(progress, catalog);
+        });
+    }
+
+    return {
+        group: "Grand Challenge",
+        label: "Data Structure Sage",
+        description: "Unlock every other achievement.",
+        getProgressText: function (progress, catalog) {
+            const ids = otherIds(progress, catalog);
+            const done = ids.filter(function (id) {
+                return achHas(progress.unlockedAchievementIds, id);
+            }).length;
+            return done + " / " + ids.length + " achievements";
+        },
+        check: function (progress, catalog) {
+            return otherIds(progress, catalog).every(function (id) {
+                return achHas(progress.unlockedAchievementIds, id);
+            });
+        }
+    };
+})();

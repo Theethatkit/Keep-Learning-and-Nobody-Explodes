@@ -1,5 +1,5 @@
 // ===================================================================
-// Identify (Module 1) + Analyze (Module 4) question banks
+// Identify (Module 1) question banks
 //
 // Replaces the old module1-questions.js (MC only) and
 // module4-questions.js (True/False only). Both banks below use the
@@ -38,7 +38,7 @@ const IDENTIFY_QUESTION_BANK = {
         intermediate: {
             label: "Intermediate",
             startingTimeSeconds: 420,
-            mistakesAllowed: 2,
+            mistakesAllowed: 3,
             questionCount: 6,
             baseScore: 1000,
             timeBonusCap: 750
@@ -58,7 +58,7 @@ const IDENTIFY_QUESTION_BANK = {
             questionCount: 8,
             baseScore: 3000,
             timeBonusCap: 1500
-        }
+        } 
     },
 
     questions: [
