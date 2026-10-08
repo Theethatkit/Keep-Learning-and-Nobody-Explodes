@@ -39,7 +39,7 @@ const ANALYZE_QUESTION_BANK = {
         intermediate: {
             label: "Intermediate",
             startingTimeSeconds: 420,
-            mistakesAllowed: 2,
+            mistakesAllowed: 3,
             questionCount: 6,
             baseScore: 1000,
             timeBonusCap: 750
