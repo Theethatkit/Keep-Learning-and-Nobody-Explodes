@@ -1,0 +1,1894 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEFUSE: HANSEN</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fontsource@5.0.0/jetbrains-mono/index.css">
+    <style>
+        @import url('https://cdn.jsdelivr.net/npm/fontsource@5.0.0/jetbrains-mono/latin-400.css');
+        @import url('https://cdn.jsdelivr.net/npm/fontsource@5.0.0/jetbrains-mono/latin-700.css');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #0d0d0d;
+            --panel: #1a1a1e;
+            --panel-border: #2a2a2e;
+            --red: #ff2a2a;
+            --red-dim: #8b1a1a;
+            --green: #00ff41;
+            --green-dim: #005a17;
+            --amber: #ffaa00;
+            --text: #c8c8c8;
+            --text-dim: #666;
+            --wire-red: #ff3333;
+            --wire-blue: #3366ff;
+            --wire-yellow: #ffcc00;
+            --wire-green: #33ff33;
+        }
+
+        body {
+            font-family: 'JetBrains Mono', 'Courier New', monospace;
+            background: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+            body::after {
+                content: '';
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: repeating-linear-gradient( 0deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px );
+                pointer-events: none;
+                z-index: 9999;
+            }
+
+        /* ===== LANDING PAGE ===== */
+        #landing {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+            background: radial-gradient(ellipse at center, #1a1a2e 0%, #0d0d0d 70%);
+        }
+
+        .bomb-panel {
+            background: var(--panel);
+            border: 2px dashed var(--text-dim);
+            border-radius: 8px;
+            padding: 2.5rem;
+            max-width: 560px;
+            width: 100%;
+            position: relative;
+            box-shadow: 0 0 40px rgba(255,42,42,0.05), inset 0 0 60px rgba(0,0,0,0.5);
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: none;
+            border: 1px solid var(--text-dim);
+            color: var(--text-dim);
+            padding: 6px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+            .copy-btn:hover {
+                border-color: var(--text);
+                color: var(--text);
+            }
+
+        /* ===== PROFILE PICTURE AREA ===== */
+        .profile-pic-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .profile-pic-frame {
+            position: relative;
+            width: 220px;
+            height: 260px;
+            border-radius: 12px;
+            padding: 4px;
+            background: conic-gradient(from 0deg, var(--red), var(--amber), var(--green), var(--red));
+            animation: rotateBorder 6s linear infinite;
+            box-shadow: 0 0 30px rgba(255,42,42,0.15), 0 8px 32px rgba(0,0,0,0.4);
+        }
+
+        @keyframes rotateBorder {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .profile-pic-inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 10px;
+            background: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            animation: rotateBorder 6s linear infinite reverse;
+            position: relative;
+        }
+
+            .profile-pic-inner img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                border-radius: 10px;
+                display: block;
+            }
+
+        .profile-pic-placeholder {
+            font-size: 4rem;
+            color: var(--text-dim);
+            user-select: none;
+        }
+
+        .profile-pic-label {
+            margin-top: 14px;
+            font-size: 0.65rem;
+            letter-spacing: 4px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            white-space: nowrap;
+            text-align: center;
+        }
+
+        .pic-corner {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--red);
+            z-index: 2;
+        }
+
+            .pic-corner.tl {
+                top: -8px;
+                left: -8px;
+                border-right: none;
+                border-bottom: none;
+            }
+
+            .pic-corner.tr {
+                top: -8px;
+                right: -8px;
+                border-left: none;
+                border-bottom: none;
+            }
+
+            .pic-corner.bl {
+                bottom: -8px;
+                left: -8px;
+                border-right: none;
+                border-top: none;
+            }
+
+            .pic-corner.br {
+                bottom: -8px;
+                right: -8px;
+                border-left: none;
+                border-top: none;
+            }
+
+        .profile-pic-inner::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient( 0deg, transparent, transparent 3px, rgba(0,0,0,0.15) 3px, rgba(0,0,0,0.15) 4px );
+            pointer-events: none;
+            border-radius: 10px;
+        }
+
+        .warning-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.5rem;
+            justify-content: center;
+        }
+
+        .warning-icon {
+            width: 28px;
+            height: 28px;
+            background: var(--amber);
+            color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+            padding-top: 4px;
+        }
+
+        .warning-text {
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+            color: var(--amber);
+            text-transform: uppercase;
+        }
+
+        .profile-line {
+            font-size: 1rem;
+            letter-spacing: 2px;
+            margin-bottom: 1rem;
+            color: var(--text);
+            text-align: center;
+        }
+
+        .timer-display {
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            margin-bottom: 2rem;
+            color: var(--text);
+            text-align: center;
+        }
+
+        .timer-value {
+            color: var(--red);
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(255,42,42,0.5);
+        }
+
+        .nav-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: 2px solid var(--text-dim);
+            color: var(--text);
+            padding: 1rem;
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .nav-btn::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+                transition: left 0.5s;
+            }
+
+            .nav-btn:hover::before {
+                left: 100%;
+            }
+
+            .nav-btn:hover {
+                border-color: var(--red);
+                color: var(--red);
+                box-shadow: 0 0 15px rgba(255,42,42,0.2);
+                text-shadow: 0 0 8px rgba(255,42,42,0.5);
+            }
+
+        .defuse-btn {
+            display: block;
+            width: 100%;
+            background: transparent;
+            border: 2px solid var(--text-dim);
+            color: var(--text);
+            padding: 1rem;
+            font-family: inherit;
+            font-size: 0.95rem;
+            font-weight: 700;
+            letter-spacing: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+            .defuse-btn:hover {
+                border-color: var(--green);
+                color: var(--green);
+                box-shadow: 0 0 20px rgba(0,255,65,0.2);
+                text-shadow: 0 0 10px rgba(0,255,65,0.5);
+            }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--text-dim);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: bounce 2s infinite;
+            cursor: pointer;
+        }
+
+            .scroll-indicator svg {
+                width: 20px;
+                height: 20px;
+                stroke: var(--text-dim);
+            }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateX(-50%) translateY(0);
+            }
+
+            50% {
+                transform: translateX(-50%) translateY(8px);
+            }
+        }
+
+        /* ===== SECTIONS ===== */
+        .section {
+            min-height: 100vh;
+            padding: 4rem 2rem 6rem;
+            display: none;
+            position: relative;
+        }
+
+            .section.active {
+                display: block;
+                animation: fadeIn 0.6s ease;
+            }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--panel-border);
+        }
+
+        .section-id {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            letter-spacing: 2px;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: 4px;
+            color: var(--red);
+            text-shadow: 0 0 15px rgba(255,42,42,0.3);
+        }
+
+        .section-status {
+            margin-left: auto;
+            font-size: 0.75rem;
+            color: var(--green);
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--green);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.3;
+            }
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: var(--panel);
+            border: 1px solid var(--text-dim);
+            color: var(--text);
+            padding: 8px 16px;
+            font-family: inherit;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            cursor: pointer;
+            z-index: 100;
+            transition: all 0.3s;
+            display: none;
+        }
+
+            .back-btn:hover {
+                border-color: var(--red);
+                color: var(--red);
+            }
+
+            .back-btn.visible {
+                display: block;
+            }
+
+        /* ===== TEAM LINK (project-wide nav) ===== */
+        .team-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--panel);
+            border: 1px solid var(--green-dim);
+            color: var(--green);
+            padding: 8px 16px;
+            font-family: inherit;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            text-decoration: none;
+            cursor: pointer;
+            z-index: 100;
+            transition: all 0.3s;
+            display: inline-block;
+        }
+
+            .team-btn:hover {
+                border-color: var(--green);
+                box-shadow: 0 0 15px rgba(0,255,65,0.2);
+                text-shadow: 0 0 8px rgba(0,255,65,0.5);
+            }
+
+        /* ===== SECTION NAV ARROWS ===== */
+        .section-nav {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: none;
+            align-items: center;
+            gap: 1.5rem;
+            z-index: 100;
+            background: rgba(13,13,13,0.85);
+            backdrop-filter: blur(8px);
+            padding: 10px 20px;
+            border: 1px solid var(--panel-border);
+            border-radius: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+
+            .section-nav.visible {
+                display: flex;
+            }
+
+        .nav-arrow {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--panel);
+            border: 2px solid var(--text-dim);
+            color: var(--text);
+            font-family: inherit;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+            .nav-arrow:hover {
+                border-color: var(--red);
+                color: var(--red);
+                box-shadow: 0 0 15px rgba(255,42,42,0.3);
+                transform: scale(1.08);
+            }
+
+            .nav-arrow:active {
+                transform: scale(0.95);
+            }
+
+            .nav-arrow svg {
+                width: 18px;
+                height: 18px;
+                stroke: currentColor;
+                fill: none;
+                stroke-width: 2.5px;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+
+        .nav-indicator {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            min-width: 80px;
+        }
+
+        .nav-dots {
+            display: flex;
+            gap: 6px;
+        }
+
+        .nav-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-dim);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+            .nav-dot.active {
+                background: var(--red);
+                box-shadow: 0 0 8px rgba(255,42,42,0.6);
+                transform: scale(1.2);
+            }
+
+            .nav-dot:hover {
+                background: var(--text);
+            }
+
+        .nav-label {
+            font-size: 0.6rem;
+            letter-spacing: 2px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+        }
+
+        /* ===== ABOUT SECTION ===== */
+        .about-content {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .info-card {
+            background: var(--panel);
+            border: 1px solid var(--panel-border);
+            border-radius: 6px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .info-card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 3px;
+                height: 100%;
+                background: var(--red);
+            }
+
+            .info-card.green-accent::before {
+                background: var(--green);
+            }
+
+            .info-card.amber-accent::before {
+                background: var(--amber);
+            }
+
+        .card-label {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 0.8rem;
+        }
+
+        .card-value {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: var(--text);
+        }
+
+            .card-value .highlight {
+                color: var(--red);
+                font-weight: 700;
+            }
+
+            .card-value .highlight-green {
+                color: var(--green);
+                font-weight: 700;
+            }
+
+            .card-value .highlight-amber {
+                color: var(--amber);
+                font-weight: 700;
+            }
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .profile-item {
+            background: var(--panel);
+            border: 1px solid var(--panel-border);
+            border-radius: 6px;
+            padding: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .profile-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,42,42,0.1);
+            border: 1px solid var(--red-dim);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .profile-label {
+            font-size: 0.65rem;
+            color: var(--text-dim);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .profile-val {
+            font-size: 0.95rem;
+            color: var(--text);
+            margin-top: 2px;
+        }
+
+        /* ===== SKILLS SECTION ===== */
+        .skills-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .skill-category {
+            margin-bottom: 2rem;
+        }
+
+        .skill-cat-title {
+            font-size: 0.8rem;
+            color: var(--amber);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+            .skill-cat-title::after {
+                content: '';
+                flex: 1;
+                height: 1px;
+                background: var(--panel-border);
+            }
+
+        .skill-bar-container {
+            margin-bottom: 1rem;
+        }
+
+        .skill-bar-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+
+        .skill-name {
+            font-size: 0.85rem;
+            color: var(--text);
+            letter-spacing: 1px;
+        }
+
+        .skill-level {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+        }
+
+        .skill-bar {
+            height: 8px;
+            background: var(--panel);
+            border: 1px solid var(--panel-border);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .skill-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--red-dim), var(--red));
+            border-radius: 2px;
+            width: 0;
+            transition: width 1.5s ease;
+            box-shadow: 0 0 8px rgba(255,42,42,0.3);
+        }
+
+            .skill-bar-fill.green {
+                background: linear-gradient(90deg, var(--green-dim), var(--green));
+                box-shadow: 0 0 8px rgba(0,255,65,0.3);
+            }
+
+            .skill-bar-fill.amber {
+                background: linear-gradient(90deg, #5a3d00, var(--amber));
+                box-shadow: 0 0 8px rgba(255,170,0,0.3);
+            }
+
+        /* ===== PROJECTS SECTION ===== */
+        .projects-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .project-card {
+            background: var(--panel);
+            border: 1px solid var(--panel-border);
+            border-radius: 6px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+            .project-card:hover {
+                border-color: var(--red-dim);
+                box-shadow: 0 0 20px rgba(255,42,42,0.05);
+            }
+
+        .project-status-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 0.65rem;
+            letter-spacing: 2px;
+            padding: 4px 10px;
+            border-radius: 3px;
+            text-transform: uppercase;
+        }
+
+        .badge-active {
+            background: rgba(0,255,65,0.1);
+            color: var(--green);
+            border: 1px solid var(--green-dim);
+        }
+
+        .badge-planned {
+            background: rgba(255,170,0,0.1);
+            color: var(--amber);
+            border: 1px solid rgba(255,170,0,0.3);
+        }
+
+        .project-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+        }
+
+        .project-desc {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            line-height: 1.7;
+            margin-bottom: 1rem;
+        }
+
+        .project-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .tag {
+            font-size: 0.7rem;
+            padding: 3px 10px;
+            background: rgba(255,42,42,0.08);
+            border: 1px solid var(--red-dim);
+            color: var(--red);
+            border-radius: 3px;
+            letter-spacing: 1px;
+        }
+
+        /* ===== HOBBIES SECTION ===== */
+        .hobbies-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .hobby-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .hobby-card {
+            background: var(--panel);
+            border: 1px solid var(--panel-border);
+            border-radius: 6px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: default;
+        }
+
+            .hobby-card:hover {
+                border-color: var(--green-dim);
+                transform: translateY(-4px);
+                box-shadow: 0 8px 25px rgba(0,255,65,0.05);
+            }
+
+        .hobby-emoji {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .hobby-name {
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+        }
+
+        .hobby-desc {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        .goals-card {
+            background: var(--panel);
+            border: 1px solid var(--panel-border);
+            border-radius: 6px;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .goals-card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 3px;
+                background: linear-gradient(90deg, var(--red), var(--amber), var(--green));
+            }
+
+        .goals-title {
+            font-size: 0.8rem;
+            color: var(--amber);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+        }
+
+        .goal-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--panel-border);
+        }
+
+            .goal-item:last-child {
+                border-bottom: none;
+                margin-bottom: 0;
+                padding-bottom: 0;
+            }
+
+        .goal-num {
+            width: 28px;
+            height: 28px;
+            background: rgba(255,42,42,0.1);
+            border: 1px solid var(--red-dim);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--red);
+            flex-shrink: 0;
+        }
+
+        .goal-text {
+            font-size: 0.9rem;
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* ===== DEFUSAL MINI-GAME ===== */
+        .defusal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.95);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+            .defusal-overlay.active {
+                display: flex;
+                animation: fadeIn 0.3s ease;
+            }
+
+        .defusal-panel {
+            background: var(--panel);
+            border: 2px solid var(--red-dim);
+            border-radius: 8px;
+            padding: 2.5rem;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .defusal-title {
+            font-size: 1.2rem;
+            color: var(--red);
+            letter-spacing: 3px;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 10px rgba(255,42,42,0.5);
+        }
+
+        .defusal-timer {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--red);
+            margin-bottom: 1.5rem;
+            text-shadow: 0 0 20px rgba(255,42,42,0.5);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .wires-container {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .wire {
+            width: 40px;
+            height: 120px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+            .wire::after {
+                content: 'CUT';
+                position: absolute;
+                bottom: -25px;
+                left: 50%;
+                transform: translateX(-50%);
+                font-size: 0.6rem;
+                letter-spacing: 2px;
+                color: var(--text-dim);
+                opacity: 0;
+                transition: opacity 0.3s;
+            }
+
+            .wire:hover::after {
+                opacity: 1;
+            }
+
+            .wire:hover {
+                transform: scaleY(1.05);
+            }
+
+            .wire.cut {
+                opacity: 0.3;
+                transform: scaleY(0.5);
+                pointer-events: none;
+            }
+
+        .wire-red {
+            background: var(--wire-red);
+            box-shadow: 0 0 10px rgba(255,51,51,0.3);
+        }
+
+        .wire-blue {
+            background: var(--wire-blue);
+            box-shadow: 0 0 10px rgba(51,102,255,0.3);
+        }
+
+        .wire-yellow {
+            background: var(--wire-yellow);
+            box-shadow: 0 0 10px rgba(255,204,0,0.3);
+        }
+
+        .wire-green {
+            background: var(--wire-green);
+            box-shadow: 0 0 10px rgba(51,255,51,0.3);
+        }
+
+        .defusal-message {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            letter-spacing: 1px;
+            min-height: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .defusal-close {
+            background: transparent;
+            border: 1px solid var(--text-dim);
+            color: var(--text);
+            padding: 8px 20px;
+            font-family: inherit;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+            .defusal-close:hover {
+                border-color: var(--text);
+                color: var(--text);
+            }
+
+        .defusal-success {
+            display: none;
+        }
+
+            .defusal-success.show {
+                display: block;
+            }
+
+            .defusal-success .success-text {
+                font-size: 1.5rem;
+                color: var(--green);
+                letter-spacing: 4px;
+                margin-bottom: 1rem;
+                text-shadow: 0 0 15px rgba(0,255,65,0.5);
+            }
+
+            .defusal-success .success-sub {
+                font-size: 0.85rem;
+                color: var(--text-dim);
+                margin-bottom: 1.5rem;
+                line-height: 1.6;
+            }
+
+        .defusal-fail {
+            display: none;
+        }
+
+            .defusal-fail.show {
+                display: block;
+            }
+
+            .defusal-fail .fail-text {
+                font-size: 1.5rem;
+                color: var(--red);
+                letter-spacing: 4px;
+                margin-bottom: 1rem;
+                text-shadow: 0 0 15px rgba(255,42,42,0.5);
+            }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 600px) {
+            .bomb-panel {
+                padding: 1.5rem;
+            }
+
+            .nav-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section-title {
+                font-size: 1.4rem;
+                letter-spacing: 2px;
+            }
+
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hobby-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .defusal-timer {
+                font-size: 2rem;
+            }
+
+            .wires-container {
+                gap: 1rem;
+            }
+
+            .wire {
+                width: 30px;
+                height: 90px;
+            }
+
+            .profile-pic-frame {
+                width: 180px;
+                height: 220px;
+            }
+
+            .section-nav {
+                bottom: 16px;
+                padding: 8px 14px;
+                gap: 1rem;
+            }
+
+            .nav-arrow {
+                width: 38px;
+                height: 38px;
+            }
+
+            .nav-label {
+                display: none;
+            }
+
+            .team-btn {
+                top: auto;
+                bottom: 20px;
+                right: 20px;
+            }
+        }
+
+        @keyframes ledBlink {
+            0%, 100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.4;
+            }
+        }
+
+        .led {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: ledBlink 1.5s infinite;
+        }
+
+        .led-red {
+            background: var(--red);
+            box-shadow: 0 0 6px var(--red);
+        }
+
+        .led-green {
+            background: var(--green);
+            box-shadow: 0 0 6px var(--green);
+        }
+
+        .led-amber {
+            background: var(--amber);
+            box-shadow: 0 0 6px var(--amber);
+        }
+
+        .glitch-hover:hover {
+            animation: glitch 0.3s ease;
+        }
+
+        @keyframes glitch {
+            0% {
+                transform: translate(0);
+            }
+
+            20% {
+                transform: translate(-2px, 2px);
+            }
+
+            40% {
+                transform: translate(-2px, -2px);
+            }
+
+            60% {
+                transform: translate(2px, 2px);
+            }
+
+            80% {
+                transform: translate(2px, -2px);
+            }
+
+            100% {
+                transform: translate(0);
+            }
+        }
+
+        .top-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--red), var(--amber), var(--green), var(--red));
+            background-size: 300% 100%;
+            animation: gradientShift 4s linear infinite;
+            z-index: 1001;
+        }
+
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            100% {
+                background-position: 300% 50%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-bar"></div>
+
+    <button class="back-btn" id="backBtn" onclick="showLanding()">← BACK TO PANEL</button>
+    <a href="../team.html" class="team-btn">⇦ RETURN TO TEAM</a>
+
+    <!-- ===== LANDING PAGE ===== -->
+    <div id="landing">
+        <div class="bomb-panel">
+            <button class="copy-btn" onclick="copyURL()" title="Copy URL">📋</button>
+
+            <div class="profile-pic-container">
+                <div class="profile-pic-frame">
+                    <div class="pic-corner tl"></div>
+                    <div class="pic-corner tr"></div>
+                    <div class="pic-corner bl"></div>
+                    <div class="pic-corner br"></div>
+                    <div class="profile-pic-inner">
+                        <img src="../../images/memberPhoto/hansenPhoto3.jpeg" alt="Hansen" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="profile-pic-placeholder" style="display:none;">👤</div>
+                    </div>
+                </div>
+                <div class="profile-pic-label">Subject ID: Hansen</div>
+            </div>
+
+            <div class="warning-row">
+                <div class="warning-icon">!</div>
+                <span class="warning-text">Unknown Device Detected</span>
+            </div>
+
+            <div class="profile-line">PERSONAL PROFILE: <span style="color:var(--red);font-weight:700;">HANSEN</span></div>
+
+            <div class="timer-display">
+                TIME REMAINING: <span class="timer-value" id="mainTimer">∞</span>
+            </div>
+
+            <div class="nav-grid">
+                <button class="nav-btn glitch-hover" onclick="showSection('about')">ABOUT</button>
+                <button class="nav-btn glitch-hover" onclick="showSection('skills')">SKILLS</button>
+                <button class="nav-btn glitch-hover" onclick="showSection('projects')">PROJECTS</button>
+                <button class="nav-btn glitch-hover" onclick="showSection('hobbies')">HOBBIES</button>
+            </div>
+
+            <button class="defuse-btn" onclick="startDefusal()">[ BEGIN DEFUSAL ]</button>
+        </div>
+
+        <div class="scroll-indicator" onclick="showSection('about')">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round">
+                <path d="M12 5v14M5 12l7 7 7-7" />
+            </svg>
+        </div>
+    </div>
+
+    <!-- ===== ABOUT SECTION ===== -->
+    <div class="section" id="section-about">
+        <div class="section-header">
+            <span class="section-id">SEC-01</span>
+            <h2 class="section-title">ABOUT</h2>
+            <div class="section-status"><span class="status-dot"></span> DECRYPTED</div>
+        </div>
+
+        <div class="about-content">
+            <div class="profile-grid">
+                <div class="profile-item">
+                    <div class="profile-icon"></div>
+                    <div>
+                        <div class="profile-label">Full Name</div>
+                        <div class="profile-val">Hansen Christian Suwito</div>
+                    </div>
+                </div>
+                <div class="profile-item">
+                    <div class="profile-icon"></div>
+                    <div>
+                        <div class="profile-label">Origin</div>
+                        <div class="profile-val">Indonesia</div>
+                    </div>
+                </div>
+                <div class="profile-item">
+                    <div class="profile-icon"></div>
+                    <div>
+                        <div class="profile-label">University</div>
+                        <div class="profile-val">北京理工大学 (BIT)</div>
+                    </div>
+                </div>
+                <div class="profile-item">
+                    <div class="profile-icon">💻</div>
+                    <div>
+                        <div class="profile-label">Major</div>
+                        <div class="profile-val">Computer Science & Technology</div>
+                    </div>
+                </div>
+                <div class="profile-item">
+                    <div class="profile-icon"></div>
+                    <div>
+                        <div class="profile-label">Year</div>
+                        <div class="profile-val">2nd Year Undergraduate</div>
+                    </div>
+                </div>
+                <div class="profile-item">
+                    <div class="profile-icon">🧠</div>
+                    <div>
+                        <div class="profile-label">Type</div>
+                        <div class="profile-val">Introvert</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="card-label">// Background</div>
+                <div class="card-value">
+                    My name is <span class="highlight">Hansen Christian Suwito</span>, but people usually just call me <span class="highlight">Hansen</span>. I grew up in <span class="highlight-green">Indonesia</span>, and I'm currently studying at one of the major universities in Beijing — <span class="highlight">Beijing Institute of Technology (北京理工大学)</span>. This year, I'm beginning my journey as a <span class="highlight-amber">second-year student</span> majoring in Computer Science and Technology, as I believe it is one of the highly demanded fields in today's world.
+                </div>
+            </div>
+
+            <div class="info-card green-accent">
+                <div class="card-label">// Current Focus</div>
+                <div class="card-value">
+                    So far, I've spent most of my time <span class="highlight-green">strengthening my problem-solving skills</span>, learning how to use <span class="highlight-green">AI effectively</span>, and building a <span class="highlight-green">strong foundation in programming</span>. I believe these core competencies will serve as the backbone of my future career in technology.
+                </div>
+            </div>
+
+            <div class="info-card amber-accent">
+                <div class="card-label">// Self-Awareness</div>
+                <div class="card-value">
+                    I'm an <span class="highlight-amber">introvert</span>, which means I sometimes need a few hours to recharge, especially after socializing with a large number of people. I also struggle with managing my time, especially when it comes to focusing on meaningful tasks and avoiding distractions. Communication is another area I find challenging — that's why I'm actively practicing and putting myself in situations where I need to communicate.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== SKILLS SECTION ===== -->
+    <div class="section" id="section-skills">
+        <div class="section-header">
+            <span class="section-id">SEC-02</span>
+            <h2 class="section-title">SKILLS</h2>
+            <div class="section-status"><span class="status-dot"></span> ANALYZING</div>
+        </div>
+
+        <div class="skills-container">
+            <div class="skill-category">
+                <div class="skill-cat-title"><span class="led led-red"></span> Programming & Technical</div>
+
+                <div class="skill-bar-container">
+                    <div class="skill-bar-header">
+                        <span class="skill-name">Problem Solving</span>
+                        <span class="skill-level">75%</span>
+                    </div>
+                    <div class="skill-bar"><div class="skill-bar-fill" data-width="75"></div></div>
+                </div>
+
+                <div class="skill-bar-container">
+                    <div class="skill-bar-header">
+                        <span class="skill-name">Programming Fundamentals</span>
+                        <span class="skill-level">70%</span>
+                    </div>
+                    <div class="skill-bar"><div class="skill-bar-fill" data-width="70"></div></div>
+                </div>
+
+                <div class="skill-bar-container">
+                    <div class="skill-bar-header">
+                        <span class="skill-name">AI / Machine Learning Usage</span>
+                        <span class="skill-level">65%</span>
+                    </div>
+                    <div class="skill-bar"><div class="skill-bar-fill" data-width="65"></div></div>
+                </div>
+
+                <div class="skill-bar-container">
+                    <div class="skill-bar-header">
+                        <span class="skill-name">Data Structures & Algorithms</span>
+                        <span class="skill-level">60%</span>
+                    </div>
+                    <div class="skill-bar"><div class="skill-bar-fill" data-width="60"></div></div>
+                </div>
+            </div>
+
+            <div class="skill-category">
+                <div class="skill-cat-title"><span class="led led-green"></span> Soft Skills (In Progress)</div>
+
+                <div class="skill-bar-container">
+                    <div class="skill-bar-header">
+                        <span class="skill-name">Communication</span>
+                        <span class="skill-level">50%</span>
+                    </div>
+                    <div class="skill-bar"><div class="skill-bar-fill green" data-width="50"></div></div>
+                </div>
+
+                <div class="skill-bar-container">
+                    <div class="skill-bar-header">
+                        <span class="skill-name">Time Management</span>
+                        <span class="skill-level">45%</span>
+                    </div>
+                    <div class="skill-bar"><div class="skill-bar-fill green" data-width="45"></div></div>
+                </div>
+
+                <div class="skill-bar-container">
+                    <div class="skill-bar-header">
+                        <span class="skill-name">Team Collaboration</span>
+                        <span class="skill-level">55%</span>
+                    </div>
+                    <div class="skill-bar"><div class="skill-bar-fill green" data-width="55"></div></div>
+                </div>
+            </div>
+
+            <div class="skill-category">
+                <div class="skill-cat-title"><span class="led led-amber"></span> Sports & Physical</div>
+
+                <div class="skill-bar-container">
+                    <div class="skill-bar-header">
+                        <span class="skill-name">Table Tennis</span>
+                        <span class="skill-level">70%</span>
+                    </div>
+                    <div class="skill-bar"><div class="skill-bar-fill amber" data-width="70"></div></div>
+                </div>
+
+                <div class="skill-bar-container">
+                    <div class="skill-bar-header">
+                        <span class="skill-name">Badminton</span>
+                        <span class="skill-level">65%</span>
+                    </div>
+                    <div class="skill-bar"><div class="skill-bar-fill amber" data-width="65"></div></div>
+                </div>
+
+                <div class="skill-bar-container">
+                    <div class="skill-bar-header">
+                        <span class="skill-name">Basketball</span>
+                        <span class="skill-level">60%</span>
+                    </div>
+                    <div class="skill-bar"><div class="skill-bar-fill amber" data-width="60"></div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== PROJECTS SECTION ===== -->
+    <div class="section" id="section-projects">
+        <div class="section-header">
+            <span class="section-id">SEC-03</span>
+            <h2 class="section-title">PROJECTS</h2>
+            <div class="section-status"><span class="status-dot"></span> LOADING</div>
+        </div>
+
+        <div class="projects-container">
+            <div class="project-card">
+                <span class="project-status-badge badge-active">● ACTIVE</span>
+                <div class="project-title">Personal Website — DEFUSE: HANSEN</div>
+                <div class="project-desc">
+                    A bomb-defusal themed personal portfolio website. Built with pure HTML, CSS, and JavaScript. Features interactive defusal mini-game, animated skill bars, and a dark industrial UI inspired by bomb control panels.
+                </div>
+                <div class="project-tags">
+                    <span class="tag">HTML</span>
+                    <span class="tag">CSS</span>
+                    <span class="tag">JavaScript</span>
+                    <span class="tag">UI/UX Design</span>
+                </div>
+            </div>
+
+            <div class="project-card">
+                <span class="project-status-badge badge-active">● ACTIVE</span>
+                <div class="project-title">AI-Powered Study Assistant</div>
+                <div class="project-desc">
+                    Exploring how to leverage AI tools effectively to streamline learning workflows, automate repetitive tasks, and enhance problem-solving efficiency in computer science coursework.
+                </div>
+                <div class="project-tags">
+                    <span class="tag">AI Integration</span>
+                    <span class="tag">Productivity</span>
+                    <span class="tag">Automation</span>
+                </div>
+            </div>
+
+            <div class="project-card">
+                <span class="project-status-badge badge-planned">◐ PLANNED</span>
+                <div class="project-title">Algorithm Practice Platform</div>
+                <div class="project-desc">
+                    A personal project to systematically practice and document solutions to common algorithmic problems, building a strong foundation in data structures and competitive programming.
+                </div>
+                <div class="project-tags">
+                    <span class="tag">Algorithms</span>
+                    <span class="tag">Data Structures</span>
+                    <span class="tag">Problem Solving</span>
+                </div>
+            </div>
+
+            <div class="project-card">
+                <span class="project-status-badge badge-planned">◐ PLANNED</span>
+                <div class="project-title">Communication Skills Tracker</div>
+                <div class="project-desc">
+                    A self-improvement tool to track and reflect on communication practice sessions, social interactions, and personal growth milestones in overcoming introversion challenges.
+                </div>
+                <div class="project-tags">
+                    <span class="tag">Self-Improvement</span>
+                    <span class="tag">Tracking</span>
+                    <span class="tag">Reflection</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== HOBBIES SECTION ===== -->
+    <div class="section" id="section-hobbies">
+        <div class="section-header">
+            <span class="section-id">SEC-04</span>
+            <h2 class="section-title">HOBBIES</h2>
+            <div class="section-status"><span class="status-dot"></span> RECREATION MODE</div>
+        </div>
+
+        <div class="hobbies-container">
+            <div class="hobby-grid">
+                <div class="hobby-card">
+                    <div class="hobby-emoji">🏓</div>
+                    <div class="hobby-name">TABLE TENNIS</div>
+                    <div class="hobby-desc">Fast-paced rallies that sharpen reflexes and strategic thinking. A great way to clear the mind after coding sessions.</div>
+                </div>
+
+                <div class="hobby-card">
+                    <div class="hobby-emoji">🏸</div>
+                    <div class="hobby-name">BADMINTON</div>
+                    <div class="hobby-desc">Agility and precision combined. Helps relieve stress and recharge both physically and mentally.</div>
+                </div>
+
+                <div class="hobby-card">
+                    <div class="hobby-emoji"></div>
+                    <div class="hobby-name">BASKETBALL</div>
+                    <div class="hobby-desc">Team sport that builds collaboration skills while improving mood and physical fitness.</div>
+                </div>
+            </div>
+
+            <div class="goals-card">
+                <div class="goals-title">// Future Objectives — Mission Briefing</div>
+
+                <div class="goal-item">
+                    <div class="goal-num">01</div>
+                    <div class="goal-text"><strong style="color:var(--red);">Problem Solving Mastery</strong> — Become better at solving different kinds of problems across various domains and difficulty levels.</div>
+                </div>
+
+                <div class="goal-item">
+                    <div class="goal-num">02</div>
+                    <div class="goal-text"><strong style="color:var(--green);">AI Integration</strong> — Use AI effectively to save time, reduce workload, and enhance productivity in both academic and personal projects.</div>
+                </div>
+
+                <div class="goal-item">
+                    <div class="goal-num">03</div>
+                    <div class="goal-text"><strong style="color:var(--amber);">Communication Growth</strong> — Improve communication skills through active practice and putting myself in situations that require effective interaction.</div>
+                </div>
+
+                <div class="goal-item">
+                    <div class="goal-num">04</div>
+                    <div class="goal-text"><strong style="color:var(--text);">Career Preparation</strong> — Dedicate more time to gaining knowledge and developing skills in my major to prepare for a future career in technology.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== SECTION NAV ARROWS (fixed bottom center) ===== -->
+    <div class="section-nav" id="sectionNav">
+        <button class="nav-arrow" id="prevArrow" onclick="navigateSection(-1)" title="Previous section">
+            <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6" /></svg>
+        </button>
+
+        <div class="nav-indicator">
+            <div class="nav-dots">
+                <div class="nav-dot" data-index="0" onclick="jumpToSection('about')"></div>
+                <div class="nav-dot" data-index="1" onclick="jumpToSection('skills')"></div>
+                <div class="nav-dot" data-index="2" onclick="jumpToSection('projects')"></div>
+                <div class="nav-dot" data-index="3" onclick="jumpToSection('hobbies')"></div>
+            </div>
+            <div class="nav-label" id="navLabel">ABOUT</div>
+        </div>
+
+        <button class="nav-arrow" id="nextArrow" onclick="navigateSection(1)" title="Next section">
+            <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" /></svg>
+        </button>
+    </div>
+
+    <!-- ===== DEFUSAL OVERLAY ===== -->
+    <div class="defusal-overlay" id="defusalOverlay">
+        <div class="defusal-panel">
+            <div id="defusalGame">
+                <div class="defusal-title">⚠ DEVICE ARMED ⚠</div>
+                <div class="defusal-timer" id="defusalTimer">00:10</div>
+                <div class="defusal-message" id="defusalMsg">Cut the correct wire to defuse...</div>
+                <div class="wires-container">
+                    <div class="wire wire-red" data-color="red" onclick="cutWire(this)"></div>
+                    <div class="wire wire-blue" data-color="blue" onclick="cutWire(this)"></div>
+                    <div class="wire wire-yellow" data-color="yellow" onclick="cutWire(this)"></div>
+                    <div class="wire wire-green" data-color="green" onclick="cutWire(this)"></div>
+                </div>
+                <button class="defusal-close" onclick="closeDefusal()">ABORT</button>
+            </div>
+
+            <div class="defusal-success" id="defusalSuccess">
+                <div class="success-text">✓ DEVICE DEFUSED</div>
+                <div class="success-sub">
+                    Welcome to Hansen's personal space.<br>
+                    You've successfully accessed the system.<br><br>
+                    <span style="color:var(--green);">Scroll down to explore →</span>
+                </div>
+                <button class="defusal-close" onclick="closeDefusalAndExplore()">ENTER SYSTEM</button>
+            </div>
+
+            <div class="defusal-fail" id="defusalFail">
+                <div class="fail-text">✗ DETONATION</div>
+                <div class="success-sub" style="color:var(--text-dim);">
+                    Wrong wire. The device has been triggered.<br>
+                    But don't worry — you can try again.<br><br>
+                    <span style="color:var(--red);">Retry defusal sequence?</span>
+                </div>
+                <button class="defusal-close" onclick="resetDefusal()">RETRY</button>
+                <button class="defusal-close" style="margin-left:8px;" onclick="closeDefusal()">ABORT</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Section order for navigation
+        const sectionOrder = ['about', 'skills', 'projects', 'hobbies'];
+        const sectionLabels = ['ABOUT', 'SKILLS', 'PROJECTS', 'HOBBIES'];
+        let currentSectionIndex = -1;
+
+        // Timer countdown
+        let timerSeconds = 999;
+        const mainTimerEl = document.getElementById('mainTimer');
+
+        function updateTimer() {
+        if (timerSeconds > 0) {
+        timerSeconds--;
+        const mins = Math.floor(timerSeconds / 60);
+        const secs = timerSeconds % 60;
+        mainTimerEl.textContent = `${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+        } else {
+        mainTimerEl.textContent = '00:00';
+        mainTimerEl.style.color = 'var(--amber)';
+        }
+        }
+
+        setInterval(updateTimer, 1000);
+
+        // Navigation
+        function showSection(name) {
+        document.getElementById('landing').style.display = 'none';
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.getElementById('section-' + name).classList.add('active');
+        document.getElementById('backBtn').classList.add('visible');
+
+        // Update current index
+        currentSectionIndex = sectionOrder.indexOf(name);
+        updateNavIndicator();
+
+        // Show nav arrows
+        document.getElementById('sectionNav').classList.add('visible');
+
+        window.scrollTo(0, 0);
+
+        if (name === 'skills') {
+        setTimeout(animateSkillBars, 300);
+        }
+        }
+
+        function showLanding() {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.getElementById('landing').style.display = 'flex';
+        document.getElementById('backBtn').classList.remove('visible');
+        document.getElementById('sectionNav').classList.remove('visible');
+        currentSectionIndex = -1;
+        window.scrollTo(0, 0);
+        }
+
+        // Navigate between sections with arrows
+        function navigateSection(direction) {
+        if (currentSectionIndex === -1) return;
+        const newIndex = (currentSectionIndex + direction + sectionOrder.length) % sectionOrder.length;
+        showSection(sectionOrder[newIndex]);
+        }
+
+        // Jump directly to a section (from dots)
+        function jumpToSection(name) {
+        showSection(name);
+        }
+
+        // Update the nav indicator (dots + label)
+        function updateNavIndicator() {
+        document.querySelectorAll('.nav-dot').forEach((dot, i) => {
+        dot.classList.toggle('active', i === currentSectionIndex);
+        });
+        document.getElementById('navLabel').textContent = sectionLabels[currentSectionIndex] || '';
+        }
+
+        // Skill bar animation
+        function animateSkillBars() {
+        document.querySelectorAll('.skill-bar-fill').forEach(bar => {
+        const width = bar.getAttribute('data-width');
+        bar.style.width = width + '%';
+        });
+        }
+
+        // Copy URL
+        function copyURL() {
+        navigator.clipboard.writeText(window.location.href).then(() => {
+        const btn = document.querySelector('.copy-btn');
+        btn.textContent = '✓';
+        setTimeout(() => btn.textContent = '📋', 1500);
+        });
+        }
+
+        // Defusal mini-game
+        let defusalTimerInterval;
+        let defusalTimeLeft = 10;
+        let correctWire = '';
+        let defusalActive = false;
+
+        function startDefusal() {
+        const overlay = document.getElementById('defusalOverlay');
+        overlay.classList.add('active');
+        document.getElementById('defusalGame').style.display = 'block';
+        document.getElementById('defusalSuccess').classList.remove('show');
+        document.getElementById('defusalFail').classList.remove('show');
+
+        document.querySelectorAll('.wire').forEach(w => w.classList.remove('cut'));
+
+        const colors = ['red', 'blue', 'yellow', 'green'];
+        correctWire = colors[Math.floor(Math.random() * colors.length)];
+
+        defusalTimeLeft = 10;
+        defusalActive = true;
+        updateDefusalTimer();
+
+        defusalTimerInterval = setInterval(() => {
+        defusalTimeLeft--;
+        updateDefusalTimer();
+        if (defusalTimeLeft <= 0) {
+        clearInterval(defusalTimerInterval);
+        defusalActive = false;
+        triggerFail();
+        }
+        }, 1000);
+        }
+
+        function updateDefusalTimer() {
+        const mins = Math.floor(defusalTimeLeft / 60);
+        const secs = defusalTimeLeft % 60;
+        const el = document.getElementById('defusalTimer');
+        el.textContent = `${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+
+        if (defusalTimeLeft <= 3) {
+        el.style.color = 'var(--red)';
+        el.style.animation = 'ledBlink 0.5s infinite';
+        } else {
+        el.style.color = 'var(--red)';
+        el.style.animation = 'none';
+        }
+        }
+
+        function cutWire(el) {
+        if (!defusalActive) return;
+        el.classList.add('cut');
+        clearInterval(defusalTimerInterval);
+        defusalActive = false;
+
+        const color = el.getAttribute('data-color');
+        if (color === correctWire) {
+        triggerSuccess();
+        } else {
+        triggerFail();
+        }
+        }
+
+        function triggerSuccess() {
+        document.getElementById('defusalGame').style.display = 'none';
+        document.getElementById('defusalSuccess').classList.add('show');
+        }
+
+        function triggerFail() {
+        document.getElementById('defusalGame').style.display = 'none';
+        document.getElementById('defusalFail').classList.add('show');
+        }
+
+        function resetDefusal() {
+        startDefusal();
+        }
+
+        function closeDefusal() {
+        clearInterval(defusalTimerInterval);
+        defusalActive = false;
+        document.getElementById('defusalOverlay').classList.remove('active');
+        }
+
+        function closeDefusalAndExplore() {
+        closeDefusal();
+        showSection('about');
+        }
+
+        // Keyboard navigation (left/right arrows)
+        document.addEventListener('keydown', (e) => {
+        if (document.getElementById('defusalOverlay').classList.contains('active')) return;
+        if (currentSectionIndex === -1) return;
+        if (e.key === 'ArrowLeft') navigateSection(-1);
+        if (e.key === 'ArrowRight') navigateSection(1);
+        });
+
+        // Intersection observer for skill bars
+        const skillsObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+        if (entry.isIntersecting) {
+        animateSkillBars();
+        }
+        });
+        }, { threshold: 0.3 });
+
+        const skillsSection = document.getElementById('section-skills');
+        if (skillsSection) skillsObserver.observe(skillsSection);
+    </script>
+
+</body>
+</html>
