@@ -2597,25 +2597,41 @@ saveAttemptButton.addEventListener("click", function () {
     markAttemptSaved();
 });
 
-viewHistoryFromResultButton.addEventListener("click", function () {
+// Which screen the History screen's Back button should return to -
+// set each time History is opened, so it works whether it was reached
+// from the result screen, the bomb overview, or the setup screen.
+let historyReturnScreen = null;
+
+function openHistoryScreen(returnScreen) {
+    historyReturnScreen = returnScreen;
+
+    // Make the button label match where it will actually go
+    if (returnScreen === resultScreen) {
+        backToOverviewFromHistory.innerHTML = "&larr; Back to Results";
+    } else if (returnScreen === setupScreen) {
+        backToOverviewFromHistory.innerHTML = "&larr; Back to Setup";
+    } else {
+        backToOverviewFromHistory.innerHTML = "&larr; Back to Bomb Overview";
+    }
+
     renderHistoryScreen();
     showScreen(historyScreen);
+}
+
+viewHistoryFromResultButton.addEventListener("click", function () {
+    openHistoryScreen(resultScreen);
 });
 
 openHistoryButton.addEventListener("click", function () {
-    renderHistoryScreen();
-    showScreen(historyScreen);
+    openHistoryScreen(overviewScreen);
 });
 
 openHistoryButtonSetup.addEventListener("click", function () {
-    renderHistoryScreen();
-    showScreen(historyScreen);
+    openHistoryScreen(setupScreen);
 });
 
 backToOverviewFromHistory.addEventListener("click", function () {
-    // No bomb armed yet (came here from the setup screen) - go back
-    // there instead of to an overview with nothing armed on it.
-    showScreen(armedConfig ? overviewScreen : setupScreen);
+    showScreen(historyReturnScreen || (armedConfig ? overviewScreen : setupScreen));
 });
 
 // ------------------- Bomb overview navigation -------------------
