@@ -2,6 +2,14 @@
     box-sizing: border-box;
 }
 
+body {
+    min-height: 100vh;
+    margin: 0;
+    color: white;
+    background-color: #020617;
+    font-family: Arial, sans-serif;
+}
+
 /* ============================================
    BACKGROUND SETTINGS (code-only)
    --bg-blur:    0 = no blur, 100 = max blur
@@ -24,10 +32,8 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
-
         /* 100 maps to 20px of blur */
         filter: blur(calc(var(--bg-blur) * 0.2px));
-
         /* Slight zoom so blurred edges don't show a fringe */
         transform: scale(calc(1 + var(--bg-blur) * 0.002));
     }
@@ -39,14 +45,6 @@
         inset: 0;
         background-color: rgba(2, 6, 23, var(--bg-darkness));
     }
-
-body {
-    min-height: 100vh;
-    margin: 0;
-    color: white;
-    background-color: #020617;
-    font-family: Arial, sans-serif;
-}
 
 a {
     text-decoration: none;
@@ -303,6 +301,7 @@ a {
     background-color: #000;
     border-radius: 6px;
     overflow: hidden;
+    counter-reset: bomb-module;
 }
 
 .bomb-cell {
@@ -318,15 +317,16 @@ a {
     background-image: repeating-linear-gradient(115deg, rgba(255, 255, 255, 0.02) 0, rgba(255, 255, 255, 0.02) 1px, transparent 1px, transparent 3px);
     border: none;
     font-family: inherit;
+    counter-increment: bomb-module;
 }
 
     .bomb-cell:disabled {
         cursor: default;
     }
 
-    /* stenciled "M1"-"M5" plate, top-left of every module cell */
+    /* stenciled "M1"-"M5" plate, top-left of every cell */
     .bomb-cell::before {
-        content: "";
+        content: "M" counter(bomb-module);
         position: absolute;
         top: 8px;
         left: 10px;
@@ -340,32 +340,6 @@ a {
         border: 1px solid rgba(255, 255, 255, 0.08);
         border-radius: 3px;
     }
-
-/* each plate matches its module number */
-#moduleIdentifySlot::before {
-    content: "M1";
-}
-
-#module2Slot::before {
-    content: "M2";
-}
-
-#module3Slot::before {
-    content: "M3";
-}
-
-#moduleAnalyzeSlot::before {
-    content: "M4";
-}
-
-#module5Slot::before {
-    content: "M5";
-}
-
-/* the timer isn't a module, so no plate */
-.bomb-cell.timer-cell::before {
-    display: none;
-}
 
 /* Recessed metal bezel around each status LED - amber while armed,
    green once solved (green-for-solved kept exactly as before) */
@@ -1803,11 +1777,11 @@ a {
 }
 
 .achievement-card.achievement-locked {
-        opacity: 0.7;
+    opacity: 0.7;
 }
 
 .achievement-card.achievement-unlocked {
-        border-left-color: #4ade80;
+    border-left-color: #4ade80;
 }
 
 .achievement-card-label {
@@ -1892,7 +1866,7 @@ a {
     flex-direction: column;
     gap: 14px;
     max-width: 640px;
-    margin: 0 auto; 
+    margin: 0 auto;
     text-align: left; /* long explanations read better left-aligned */
 }
 
@@ -2307,5 +2281,61 @@ a {
         width: 100%;
         max-width: 260px;
         margin: 0 auto;
+    }
+}
+
+/* ================= Mobile typing (Module 2 + Module 4) ================= */
+/* Tapping the answer box focuses an invisible real <input>, which is
+   what makes a phone open its own keyboard. The input is not
+   display:none (that would make it unfocusable) - it is just
+   transparent and tiny, tucked into the corner of the question panel. */
+.question-popup {
+    position: relative;
+}
+
+.mobile-answer-input {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    opacity: 0;
+    pointer-events: none;
+    font-size: 16px; /* 16px+ stops iOS zooming in on focus */
+}
+
+/* "I'm listening" state: cyan border + blinking cursor, except once the
+   answer has been graded (correct/wrong keep their own colors) */
+.answer-display.answer-display-focused:not(.correct):not(.wrong) {
+    border-color: #22d3ee;
+}
+
+.answer-display.answer-display-focused:not(.answer-display-placeholder)::after {
+    content: "_";
+    margin-left: 2px;
+    animation: answerCursorBlink 1s steps(1) infinite;
+}
+
+@keyframes answerCursorBlink {
+    0%, 50% {
+        opacity: 1;
+    }
+
+    50.01%, 100% {
+        opacity: 0;
+    }
+}
+
+@media (pointer: coarse) {
+    .answer-display {
+        cursor: pointer;
+    }
+
+    /* the physical-keyboard/keypad route isn't needed on touch devices */
+    .keypad-grid {
+        display: none;
     }
 }
