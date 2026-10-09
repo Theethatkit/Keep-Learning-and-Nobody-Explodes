@@ -2,6 +2,44 @@
     box-sizing: border-box;
 }
 
+/* ============================================
+   BACKGROUND SETTINGS (code-only)
+   --bg-blur:    0 = no blur, 100 = max blur
+   --bg-darkness: 0 = no dark layer, 1 = fully black
+   ============================================ */
+:root {
+    --bg-blur: 0;
+    --bg-darkness: 0.5;
+}
+
+.page-background {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    background-color: #020617;
+}
+
+    .page-background img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+
+        /* 100 maps to 20px of blur */
+        filter: blur(calc(var(--bg-blur) * 0.2px));
+
+        /* Slight zoom so blurred edges don't show a fringe */
+        transform: scale(calc(1 + var(--bg-blur) * 0.002));
+    }
+
+    /* Dark layer so the text and bomb stay readable */
+    .page-background::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-color: rgba(2, 6, 23, var(--bg-darkness));
+    }
+
 body {
     min-height: 100vh;
     margin: 0;

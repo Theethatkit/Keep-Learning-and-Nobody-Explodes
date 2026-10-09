@@ -4,15 +4,41 @@
 <head>
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
     <title>Data Structure Learning</title>
 
     <!-- External CSS -->
     <link rel="stylesheet" href="css/index.css">
+
+    <style>
+         /* ============================================
+        BACKGROUND BLUR SETTING (code-only)
+        Change this number: 0 = no blur, 100 = max blur
+        ============================================ */
+         :root {
+             --bg-blur: 0;
+         }
+
+         .background-image {
+             position: absolute;
+             top: 0;
+             left: 0;
+             width: 100%;
+             height: 100%;
+             object-fit: cover;
+             z-index: 0;
+             /* 100 maps to 20px of blur */
+             filter: blur(calc(var(--bg-blur) * 0.2px));
+             /* Slight zoom so blurred edges don't show a light fringe */
+             transform: scale(calc(1 + var(--bg-blur) * 0.002));
+         }
+
+         .hero-section {
+             overflow: hidden;
+         }
+    </style>
 </head>
 
 <body>
@@ -63,19 +89,10 @@
         <!-- Hero section -->
         <section class="hero-section">
 
-            <!-- Background video -->
-            <video
-                class="background-video"
-                autoplay
-                muted
-                loop
-                playsinline
-            >
-                <source
-                    src="video/mainpageBg.mp4"
-                    type="video/mp4"
-                >
-            </video>
+            <!-- Background image -->
+            <img class="background-image"
+                 src="images/breakroom_mainbg.png"
+                 alt="">
 
             <!-- Dark layer over the video -->
             <div class="dark-overlay"></div>
@@ -103,11 +120,9 @@
                         through interactive challenges.
                     </p>
 
-                    <a
-                        id="startLearningButton"
-                        href="html/lessons.html"
-                        class="start-button"
-                    >
+                    <a id="startLearningButton"
+                       href="html/lessons.html"
+                       class="start-button">
                         START LEARNING
                     </a>
 
