@@ -65,22 +65,25 @@ const startButton = document.getElementById("startButton");
 
 // ------------------- Module 2 (Fill in the Blanks) elements -------------------
 const keypadKeys = document.querySelectorAll(".module2-keypad-key");
+const module2TextInput = document.getElementById("module2TextInput");
+const IS_TOUCH_DEVICE = window.matchMedia("(pointer: coarse)").matches;
 const module2QuestionTopic = document.getElementById("module2QuestionTopic");
 const module2QuestionPrompt = document.getElementById("module2QuestionPrompt");
 const module2AnswerDisplay = document.getElementById("module2AnswerDisplay");
 
 // ------------------- Module 4 (Analyze) elements -------------------
 // Same keypad-driven input pattern as Module 2, but scoped to its own
-// screen/keys (".analyze-keypad-key" instead of ".module2-keypad-key")
+// screen/keys (".module4-keypad-key" instead of ".module2-keypad-key")
 // so the two modules' keydown/click handling never cross-fires, and
 // with a trace list in place of Module 2's plain prompt text, since
 // what the player needs to read here is a short sequence of
 // operations rather than a single fill-in-the-blank sentence.
-const analyzeKeypadKeys = document.querySelectorAll(".analyze-keypad-key");
-const analyzeQuestionTopic = document.getElementById("analyzeQuestionTopic");
-const analyzeTraceList = document.getElementById("analyzeTraceList");
-const analyzeQuestionPrompt = document.getElementById("analyzeQuestionPrompt");
-const analyzeAnswerDisplay = document.getElementById("analyzeAnswerDisplay");
+const module4KeypadKeys = document.querySelectorAll(".module4-keypad-key");
+const module4TextInput = document.getElementById("module4TextInput");
+const module4QuestionTopic = document.getElementById("module4QuestionTopic");
+const module4TraceList = document.getElementById("module4TraceList");
+const module4QuestionPrompt = document.getElementById("module4QuestionPrompt");
+const module4AnswerDisplay = document.getElementById("module4AnswerDisplay");
 
 // ------------------- Module 3 (Construct) elements -------------------
 const module3QuestionTopic = document.getElementById("module3QuestionTopic");
@@ -262,7 +265,7 @@ function createIdentifyStyleModule(moduleId, screenId) {
     return { renderQuestion: renderQuestion, resetInputs: resetInputs };
 }
 
-const identifyModuleWidgets = createIdentifyStyleModule("identify", "identifyGameScreen");
+const module1Widgets = createIdentifyStyleModule("identify", "module1GameScreen");
 
 // ------------------- Module registry -------------------
 // Every playable module plugs in here: its own screen/DOM elements,
@@ -273,16 +276,16 @@ const MODULE_REGISTRY = {
     identify: {
         moduleName: "module1-identify",
         label: "Module 1: Identify",
-        slot: document.getElementById("moduleIdentifySlot"),
-        screen: document.getElementById("identifyGameScreen"),
-        bombShell: document.getElementById("identifyBombShell"),
-        timerDisplay: document.getElementById("identifyTimerDisplay"),
-        strikesDisplay: document.getElementById("identifyStrikesDisplay"),
-        progressDisplay: document.getElementById("identifyProgressDisplay"),
-        backButton: document.getElementById("backToOverviewFromIdentify"),
+        slot: document.getElementById("module1Slot"),
+        screen: document.getElementById("module1GameScreen"),
+        bombShell: document.getElementById("module1BombShell"),
+        timerDisplay: document.getElementById("module1TimerDisplay"),
+        strikesDisplay: document.getElementById("module1StrikesDisplay"),
+        progressDisplay: document.getElementById("module1ProgressDisplay"),
+        backButton: document.getElementById("backToOverviewFromModule1"),
         questionBank: IDENTIFY_QUESTION_BANK,
-        renderQuestion: identifyModuleWidgets.renderQuestion,
-        resetInputs: identifyModuleWidgets.resetInputs
+        renderQuestion: module1Widgets.renderQuestion,
+        resetInputs: module1Widgets.resetInputs
     },
     module2: {
         moduleName: "module2-fillInTheBlank",
@@ -315,16 +318,16 @@ const MODULE_REGISTRY = {
     analyze: {
         moduleName: "module4-analyze",
         label: "Module 4: Analyze",
-        slot: document.getElementById("moduleAnalyzeSlot"),
-        screen: document.getElementById("analyzeGameScreen"),
-        bombShell: document.getElementById("analyzeBombShell"),
-        timerDisplay: document.getElementById("analyzeTimerDisplay"),
-        strikesDisplay: document.getElementById("analyzeStrikesDisplay"),
-        progressDisplay: document.getElementById("analyzeProgressDisplay"),
-        backButton: document.getElementById("backToOverviewFromAnalyze"),
+        slot: document.getElementById("module4Slot"),
+        screen: document.getElementById("module4GameScreen"),
+        bombShell: document.getElementById("module4BombShell"),
+        timerDisplay: document.getElementById("module4TimerDisplay"),
+        strikesDisplay: document.getElementById("module4StrikesDisplay"),
+        progressDisplay: document.getElementById("module4ProgressDisplay"),
+        backButton: document.getElementById("backToOverviewFromModule4"),
         questionBank: ANALYZE_QUESTION_BANK,
-        renderQuestion: renderAnalyzeQuestion,
-        resetInputs: resetAnalyzeInputs
+        renderQuestion: renderModule4Question,
+        resetInputs: resetModule4Inputs
     },
     module5: {
         moduleName: "module5-defuse",
@@ -740,9 +743,13 @@ function renderModule2AnswerDisplay() {
 
     module2AnswerDisplay.textContent = hasTyped
         ? module2TypedAnswer
-        : "type your answer...";
+        : (IS_TOUCH_DEVICE ? "tap here to type your answer..." : "type your answer...");
 
     module2AnswerDisplay.classList.toggle("answer-display-placeholder", !hasTyped);
+
+    if (module2TextInput.value !== module2TypedAnswer) {
+        module2TextInput.value = module2TypedAnswer;
+    }
 }
 
 // ----- Module 4 (Analyze) rendering -----
@@ -755,38 +762,42 @@ function renderModule2AnswerDisplay() {
 // under its own name so the two modules' state never collide).
 let module4TypedAnswer = "";
 
-function renderAnalyzeQuestion(question) {
-    analyzeQuestionTopic.textContent = question.topic;
-    analyzeQuestionPrompt.textContent = question.prompt;
+function renderModule4Question(question) {
+    module4QuestionTopic.textContent = question.topic;
+    module4QuestionPrompt.textContent = question.prompt;
 
-    analyzeTraceList.innerHTML = "";
+    module4TraceList.innerHTML = "";
     question.operations.forEach(function (operationLine) {
         const line = document.createElement("li");
         line.classList.add("trace-line");
         line.textContent = operationLine;
-        analyzeTraceList.appendChild(line);
+        module4TraceList.appendChild(line);
     });
 }
 
-function resetAnalyzeInputs() {
+function resetModule4Inputs() {
     module4TypedAnswer = "";
-    renderAnalyzeAnswerDisplay();
+    renderModule4AnswerDisplay();
 
-    analyzeKeypadKeys.forEach(function (key) {
+    module4KeypadKeys.forEach(function (key) {
         key.disabled = false;
     });
 
-    analyzeAnswerDisplay.classList.remove("correct", "wrong");
+    module4AnswerDisplay.classList.remove("correct", "wrong");
 }
 
-function renderAnalyzeAnswerDisplay() {
+function renderModule4AnswerDisplay() {
     const hasTyped = module4TypedAnswer.length > 0;
 
-    analyzeAnswerDisplay.textContent = hasTyped
+    module4AnswerDisplay.textContent = hasTyped
         ? module4TypedAnswer
-        : "type the result...";
+        : (IS_TOUCH_DEVICE ? "tap here to type the result..." : "type the result...");
 
-    analyzeAnswerDisplay.classList.toggle("answer-display-placeholder", !hasTyped);
+    module4AnswerDisplay.classList.toggle("answer-display-placeholder", !hasTyped);
+
+    if (module4TextInput.value !== module4TypedAnswer) {
+        module4TextInput.value = module4TypedAnswer;
+    }
 }
 
 // ----- Module 3 (Construct) rendering + engine -----
@@ -1315,7 +1326,7 @@ function resetScenarioInputs() {
 // ------------------- Answering -------------------
 // Identify's MC/True-False click handlers are wired up inside
 // createIdentifyStyleModule() above, scoped to its own screen - see
-// identifyModuleWidgets. Analyze's keypad handlers are wired up in
+// module1Widgets. Analyze's keypad handlers are wired up in
 // its own "Module 4 (Analyze) answering" section further down.
 //
 // Module 5's buttons are rebuilt every question (see
@@ -1381,6 +1392,10 @@ keypadKeys.forEach(function (key) {
 // A physical keyboard works the same as clicking the on-screen keys -
 // same character set (letters + space), same Backspace/Enter actions.
 document.addEventListener("keydown", function (event) {
+    if (event.target === module2TextInput) {
+        return; // the text input has its own handlers below
+    }
+
     if (!runState || runState.moduleId !== "module2" || runState.isAnswerLocked) {
         return;
     }
@@ -1420,6 +1435,53 @@ function backspaceModule2Answer() {
     renderModule2AnswerDisplay();
 }
 
+// ----- Module 2: real text input (phone soft keyboard) -----
+// Feeds the same module2TypedAnswer the on-screen keypad uses, so
+// grading (submitFillBlankAnswer) doesn't care which one was used.
+// Same character set as the keypad: letters + space.
+module2TextInput.addEventListener("input", function () {
+    const isInputOpen = runState && runState.moduleId === "module2" && !runState.isAnswerLocked;
+
+    if (!isInputOpen) {
+        module2TextInput.value = module2TypedAnswer; // locked: undo whatever was typed
+        return;
+    }
+
+    module2TypedAnswer = module2TextInput.value
+        .replace(/[^a-zA-Z ]/g, "")
+        .toLowerCase();
+    renderModule2AnswerDisplay();
+});
+
+// Tapping the answer box opens the phone keyboard (focus() has to happen
+// inside the tap handler for mobile browsers to allow it). The box lights
+// up while the input has focus.
+module2AnswerDisplay.addEventListener("click", function () {
+    if (runState && runState.moduleId === "module2" && !runState.isAnswerLocked) {
+        module2TextInput.focus();
+    }
+});
+
+module2TextInput.addEventListener("focus", function () {
+    module2AnswerDisplay.classList.add("answer-display-focused");
+});
+
+module2TextInput.addEventListener("blur", function () {
+    module2AnswerDisplay.classList.remove("answer-display-focused");
+});
+
+module2TextInput.addEventListener("keydown", function (event) {
+    if (event.key !== "Enter") {
+        return;
+    }
+
+    event.preventDefault();
+
+    if (runState && runState.moduleId === "module2" && !runState.isAnswerLocked) {
+        submitFillBlankAnswer();
+    }
+});
+
 function submitFillBlankAnswer() {
     const question = runState.questions[runState.currentIndex];
     const isCorrect =
@@ -1448,7 +1510,7 @@ function submitFillBlankAnswer() {
 // rather than shared so Analyze's answers can include digits (trace
 // results are often numbers, e.g. a sum or a count) without Module 2's
 // letter-only fill-in-the-blank keys picking up digit input too.
-analyzeKeypadKeys.forEach(function (key) {
+module4KeypadKeys.forEach(function (key) {
     key.addEventListener("click", function () {
         if (!runState || runState.moduleId !== "analyze" || runState.isAnswerLocked) {
             return;
@@ -1457,68 +1519,118 @@ analyzeKeypadKeys.forEach(function (key) {
         const action = key.dataset.action;
 
         if (action === "backspace") {
-            backspaceAnalyzeAnswer();
+            backspaceModule4Answer();
             return;
         }
 
         if (action === "submit") {
-            submitAnalyzeAnswer();
+            submitModule4Answer();
             return;
         }
 
         // a regular letter/digit key
-        typeAnalyzeCharacter(key.dataset.letter);
+        typeModule4Character(key.dataset.letter);
     });
 });
 
 document.addEventListener("keydown", function (event) {
+    if (event.target === module4TextInput) {
+        return; // the text input has its own handlers below
+    }
+
     if (!runState || runState.moduleId !== "analyze" || runState.isAnswerLocked) {
         return;
     }
 
     if (event.key === "Enter") {
         event.preventDefault();
-        submitAnalyzeAnswer();
+        submitModule4Answer();
         return;
     }
 
     if (event.key === "Backspace") {
         event.preventDefault();
-        backspaceAnalyzeAnswer();
+        backspaceModule4Answer();
         return;
     }
 
     if (/^[a-zA-Z0-9]$/.test(event.key)) {
-        typeAnalyzeCharacter(event.key);
+        typeModule4Character(event.key);
     }
 });
 
-function typeAnalyzeCharacter(character) {
+// ----- Module 4: real text input (phone soft keyboard) -----
+// Same idea as Module 2's input, but digits are allowed too since
+// trace results are often numbers.
+module4TextInput.addEventListener("input", function () {
+    const isInputOpen = runState && runState.moduleId === "analyze" && !runState.isAnswerLocked;
+
+    if (!isInputOpen) {
+        module4TextInput.value = module4TypedAnswer; // locked: undo whatever was typed
+        return;
+    }
+
+    module4TypedAnswer = module4TextInput.value
+        .replace(/[^a-zA-Z0-9]/g, "")
+        .toLowerCase();
+    renderModule4AnswerDisplay();
+});
+
+// Tapping the answer box opens the phone keyboard (focus() has to happen
+// inside the tap handler for mobile browsers to allow it). The box lights
+// up while the input has focus.
+module4AnswerDisplay.addEventListener("click", function () {
+    if (runState && runState.moduleId === "analyze" && !runState.isAnswerLocked) {
+        module4TextInput.focus();
+    }
+});
+
+module4TextInput.addEventListener("focus", function () {
+    module4AnswerDisplay.classList.add("answer-display-focused");
+});
+
+module4TextInput.addEventListener("blur", function () {
+    module4AnswerDisplay.classList.remove("answer-display-focused");
+});
+
+module4TextInput.addEventListener("keydown", function (event) {
+    if (event.key !== "Enter") {
+        return;
+    }
+
+    event.preventDefault();
+
+    if (runState && runState.moduleId === "analyze" && !runState.isAnswerLocked) {
+        submitModule4Answer();
+    }
+});
+
+function typeModule4Character(character) {
     module4TypedAnswer += character.toLowerCase();
-    renderAnalyzeAnswerDisplay();
+    renderModule4AnswerDisplay();
     SFX.playKeyTap()
 }
 
-function backspaceAnalyzeAnswer() {
+function backspaceModule4Answer() {
     module4TypedAnswer = module4TypedAnswer.slice(0, -1);
-    renderAnalyzeAnswerDisplay();
+    renderModule4AnswerDisplay();
     SFX.playKeyTap()
 }
 
-function submitAnalyzeAnswer() {
+function submitModule4Answer() {
     const question = runState.questions[runState.currentIndex];
     const isCorrect =
         module4TypedAnswer.trim().toLowerCase() === question.answer.toLowerCase();
 
-    analyzeKeypadKeys.forEach(function (key) {
+    module4KeypadKeys.forEach(function (key) {
         key.disabled = true;
     });
 
-    analyzeAnswerDisplay.classList.add(isCorrect ? "correct" : "wrong");
+    module4AnswerDisplay.classList.add(isCorrect ? "correct" : "wrong");
 
     if (!module4TypedAnswer.trim().length) {
-        analyzeAnswerDisplay.textContent = "(no answer)";
-        analyzeAnswerDisplay.classList.remove("answer-display-placeholder");
+        module4AnswerDisplay.textContent = "(no answer)";
+        module4AnswerDisplay.classList.remove("answer-display-placeholder");
     }
 
     commitAnswer(isCorrect, {
@@ -2569,6 +2681,11 @@ backFromReview.addEventListener("click", function () {
 // and every module's own game screen), so a future module's screen
 // is handled automatically as long as it has that class.
 function showScreen(screenToShow) {
+    // drop focus from the hidden answer inputs so the phone keyboard
+    // closes when leaving a module (or the run ending)
+    module2TextInput.blur();
+    module4TextInput.blur();
+
     document.querySelectorAll(".screen").forEach(function (screen) {
         screen.classList.add("hidden");
     });
@@ -2597,41 +2714,25 @@ saveAttemptButton.addEventListener("click", function () {
     markAttemptSaved();
 });
 
-// Which screen the History screen's Back button should return to -
-// set each time History is opened, so it works whether it was reached
-// from the result screen, the bomb overview, or the setup screen.
-let historyReturnScreen = null;
-
-function openHistoryScreen(returnScreen) {
-    historyReturnScreen = returnScreen;
-
-    // Make the button label match where it will actually go
-    if (returnScreen === resultScreen) {
-        backToOverviewFromHistory.innerHTML = "&larr; Back to Results";
-    } else if (returnScreen === setupScreen) {
-        backToOverviewFromHistory.innerHTML = "&larr; Back to Setup";
-    } else {
-        backToOverviewFromHistory.innerHTML = "&larr; Back to Bomb Overview";
-    }
-
+viewHistoryFromResultButton.addEventListener("click", function () {
     renderHistoryScreen();
     showScreen(historyScreen);
-}
-
-viewHistoryFromResultButton.addEventListener("click", function () {
-    openHistoryScreen(resultScreen);
 });
 
 openHistoryButton.addEventListener("click", function () {
-    openHistoryScreen(overviewScreen);
+    renderHistoryScreen();
+    showScreen(historyScreen);
 });
 
 openHistoryButtonSetup.addEventListener("click", function () {
-    openHistoryScreen(setupScreen);
+    renderHistoryScreen();
+    showScreen(historyScreen);
 });
 
 backToOverviewFromHistory.addEventListener("click", function () {
-    showScreen(historyReturnScreen || (armedConfig ? overviewScreen : setupScreen));
+    // No bomb armed yet (came here from the setup screen) - go back
+    // there instead of to an overview with nothing armed on it.
+    showScreen(armedConfig ? overviewScreen : setupScreen);
 });
 
 // ------------------- Bomb overview navigation -------------------
