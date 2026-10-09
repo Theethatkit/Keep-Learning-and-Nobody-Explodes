@@ -367,6 +367,11 @@ let pendingSaveResult = null;
 // screen if opened via a saved attempt's "Review" button.
 let reviewReturnScreen = null;
 
+// Which screen the history screen's "Back" button should return to -
+// the result screen, the bomb overview, or the setup screen,
+// depending on where History was opened from.
+let historyReturnScreen = null;
+
 // ------------------- Set up the difficulty dropdown -------------------
 // Difficulty ids/labels are the same set across every module bank
 // (easy/intermediate/hard/expert), just with different numbers behind
@@ -2714,25 +2719,32 @@ saveAttemptButton.addEventListener("click", function () {
     markAttemptSaved();
 });
 
-viewHistoryFromResultButton.addEventListener("click", function () {
+function openHistoryScreen(returnScreen) {
+    historyReturnScreen = returnScreen;
+
+    backToOverviewFromHistory.textContent =
+        returnScreen === resultScreen ? "\u2190 Back to Results"
+        : returnScreen === setupScreen ? "\u2190 Back to Setup"
+        : "\u2190 Back to Bomb Overview";
+
     renderHistoryScreen();
     showScreen(historyScreen);
+}
+
+viewHistoryFromResultButton.addEventListener("click", function () {
+    openHistoryScreen(resultScreen);
 });
 
 openHistoryButton.addEventListener("click", function () {
-    renderHistoryScreen();
-    showScreen(historyScreen);
+    openHistoryScreen(overviewScreen);
 });
 
 openHistoryButtonSetup.addEventListener("click", function () {
-    renderHistoryScreen();
-    showScreen(historyScreen);
+    openHistoryScreen(setupScreen);
 });
 
 backToOverviewFromHistory.addEventListener("click", function () {
-    // No bomb armed yet (came here from the setup screen) - go back
-    // there instead of to an overview with nothing armed on it.
-    showScreen(armedConfig ? overviewScreen : setupScreen);
+    showScreen(historyReturnScreen || (armedConfig ? overviewScreen : setupScreen));
 });
 
 // ------------------- Bomb overview navigation -------------------

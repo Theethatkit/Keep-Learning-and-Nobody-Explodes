@@ -17,7 +17,7 @@ body {
    ============================================ */
 :root {
     --bg-blur: 0;
-    --bg-darkness: 0.5;
+    --bg-darkness: 0.65;
 }
 
 .page-background {
@@ -301,7 +301,6 @@ a {
     background-color: #000;
     border-radius: 6px;
     overflow: hidden;
-    counter-reset: bomb-module;
 }
 
 .bomb-cell {
@@ -317,16 +316,15 @@ a {
     background-image: repeating-linear-gradient(115deg, rgba(255, 255, 255, 0.02) 0, rgba(255, 255, 255, 0.02) 1px, transparent 1px, transparent 3px);
     border: none;
     font-family: inherit;
-    counter-increment: bomb-module;
 }
 
     .bomb-cell:disabled {
         cursor: default;
     }
 
-    /* stenciled "M1"-"M5" plate, top-left of every cell */
+    /* stenciled "M1"-"M5" plate, top-left of every module cell */
     .bomb-cell::before {
-        content: "M" counter(bomb-module);
+        content: "";
         position: absolute;
         top: 8px;
         left: 10px;
@@ -340,6 +338,33 @@ a {
         border: 1px solid rgba(255, 255, 255, 0.08);
         border-radius: 3px;
     }
+
+/* each plate matches its module number */
+#module1::before {
+    content: "M1";
+}
+
+#module2Slot::before {
+    content: "M2";
+}
+
+#module3Slot::before {
+    content: "M3";
+}
+
+#module4Slot::before {
+    content: "M4";
+}
+
+#module5Slot::before {
+    content: "M5";
+}
+
+/* the timer isn't a module, so no plate */
+.bomb-cell.timer-cell::before {
+    display: none;
+}
+
 
 /* Recessed metal bezel around each status LED - amber while armed,
    green once solved (green-for-solved kept exactly as before) */
@@ -2338,4 +2363,38 @@ a {
     .keypad-grid {
         display: none;
     }
+}
+
+/* ================= Mobile layout fixes ================= */
+/* Must stay at the END of the file: the Module 3 rules above are
+   declared after the main mobile block, so an earlier media query
+   would lose to them. */
+@media (max-width: 600px) {
+    /* stretch panels to the width of the module face instead of
+       shrink-wrapping their content */
+    .module-face-columns {
+        align-items: stretch;
+    }
+
+    .question-popup {
+        width: 100%;
+        min-width: 0;
+    }
+
+    /* line the block tray up with the panel below it */
+    .construct-tray-wrap {
+        max-width: none;
+    }
+
+    /* let the two buttons share the row and wrap if they must */
+    .construct-actions {
+        flex-wrap: wrap;
+    }
+
+        .construct-actions .primary-button,
+        .construct-actions .secondary-button {
+            flex: 1 1 120px;
+            padding-left: 16px;
+            padding-right: 16px;
+        }
 }
